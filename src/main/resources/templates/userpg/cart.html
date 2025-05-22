@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shopping Cart - Ahmad Shop</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts for Calligraphy and Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .calligraphy {
+            font-family: 'Amiri', serif;
+        }
+        .bg-primary-blue {
+            background: linear-gradient(45deg, #003087, #005566) !important;
+        }
+        .text-primary-blue {
+            color: #003087 !important;
+        }
+        .btn-primary-blue {
+            background: linear-gradient(45deg, #003087, #005566);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: white !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary-blue:hover {
+            background: linear-gradient(45deg, #005566, #007a7a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 48, 135, 0.3);
+            color: white !important;
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #b02a37);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: white !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #b02a37, #8b232f);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            color: white !important;
+        }
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #003087, #005566);
+            border-radius: 50%;
+            color: white !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1.25rem;
+        }
+        .icon-btn:hover {
+            background: linear-gradient(45deg, #005566, #007a7a);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 48, 135, 0.3);
+        }
+        .cart-count {
+            animation: pulse 0.5s ease;
+            top: -5px !important;
+            right: -10px !important;
+        }
+        .cart-item {
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .cart-item:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
+        }
+        .input-quantity {
+            transition: all 0.3s;
+            border: 2px solid #e5e7eb;
+        }
+        .input-quantity:focus {
+            border-color: #003087;
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.2);
+        }
+        .card {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .nav-shadow {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: linear-gradient(45deg, #003087, #005566);
+        }
+        .navbar {
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .navbar-scrolled {
+            background: linear-gradient(45deg, #003087, #005566) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .search-input {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+        }
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.2);
+            border-color: #003087;
+        }
+        .container {
+            max-width: 1320px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1400px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 960px;
+            }
+            .text-3xl {
+                font-size: 1.875rem;
+            }
+            .cart-item img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        @media (max-width: 992px) {
+            .container {
+                max-width: 720px;
+            }
+            .navbar {
+                padding: 0.5rem 1rem;
+            }
+            .navbar .container {
+                flex-wrap: wrap;
+            }
+            .navbar h1 {
+                font-size: 1.5rem;
+            }
+            .search-input {
+                width: 150px;
+            }
+            .text-3xl {
+                font-size: 1.5rem;
+            }
+            .cart-item img {
+                width: 50px;
+                height: 50px;
+            }
+            .input-quantity {
+                width: 60px;
+                padding: 0.25rem;
+            }
+            .btn-primary-blue, .btn-danger {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            .icon-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                max-width: 540px;
+            }
+            .navbar .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .d-flex {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 0.5rem;
+            }
+            .search-input.d-none {
+                display: block !important;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .search-input.d-sm-block {
+                display: none !important;
+            }
+            .table-auto {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .table-auto thead, .table-auto tbody, .table-auto tr {
+                display: block;
+            }
+            .table-auto th, .table-auto td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 0.5rem;
+            }
+            .table-auto th {
+                display: none;
+            }
+            .cart-item {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+                border-radius: 0.5rem;
+                padding: 1rem;
+            }
+            .cart-item .flex {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .cart-item img {
+                width: 80px;
+                height: 80px;
+            }
+            .input-quantity {
+                width: 100%;
+                max-width: 80px;
+            }
+            .p-8 {
+                padding: 1.5rem;
+            }
+            .p-6 {
+                padding: 1rem;
+            }
+            .p-4 {
+                padding: 0.5rem;
+            }
+            .btn-primary-blue, .btn-danger {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+            .icon-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            .text-xl {
+                font-size: 1.125rem;
+            }
+            .card {
+                border-radius: 0.75rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .container {
+                max-width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .navbar {
+                padding: 0.5rem;
+            }
+            .navbar h1 {
+                font-size: 1.25rem;
+            }
+            .search-input {
+                font-size: 0.85rem;
+            }
+            .text-3xl {
+                font-size: 1.25rem;
+            }
+            .cart-item img {
+                width: 60px;
+                height: 60px;
+            }
+            .cart-item .font-medium {
+                font-size: 0.9rem;
+            }
+            .input-quantity {
+                max-width: 70px;
+                font-size: 0.85rem;
+            }
+            .p-8 {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .btn-primary-blue, .btn-danger {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            .icon-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.85rem;
+            }
+            .text-xl {
+                font-size: 1rem;
+            }
+            .text-lg {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .navbar h1 {
+                font-size: 1rem;
+            }
+            .navbar .btn-primary-blue, .navbar .btn-danger {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            .cart-item img {
+                width: 50px;
+                height: 50px;
+            }
+            .cart-item .font-medium {
+                font-size: 0.85rem;
+            }
+            .input-quantity {
+                max-width: 60px;
+                font-size: 0.8rem;
+            }
+            .text-3xl {
+                font-size: 1.125rem;
+            }
+            .btn-primary-blue, .btn-danger {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .icon-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar bg-primary-blue text-white py-3 px-4 fixed-top z-50">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h4 mb-0 calligraphy">Ahmad Shop</h1>
+            <div class="d-flex align-items-center gap-3">
+                <div class="position-relative">
+
+                </div>
+<!--                <a href="orders.html" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</a>-->
+<!--                <a href="logout.html" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>-->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-8 pt-24">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 tracking-tight">Your Shopping Cart</h2>
+
+        <div class="card bg-white mb-8">
+            <form>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead class="table-header text-white">
+                            <tr>
+                                <th class="p-4 text-left font-semibold">Product</th>
+                                <th class="p-4 text-left font-semibold">Price</th>
+                                <th class="p-4 text-left font-semibold">Quantity</th>
+                                <th class="p-4 text-left font-semibold">Subtotal</th>
+                                <th class="p-4 text-left font-semibold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Cart Item 1: Classic Novel    th:value="${list.value.quantity}"    th:text="${list.value.subtotal}"-->
+                            <tr class="cart-item border-b border-gray-200" th:each="list : ${list_cart}">
+                                <td class="p-4 flex items-center space-x-4">
+                                    <img th:src="@{'data:image/jpeg;base64,'+${list.product_image}}"
+                                         th:alt="${list.product_name}" class="w-20 h-20 object-cover rounded-lg border border-gray-200">
+                                    <span class="font-medium text-gray-800" th:text="${list.product_name}" >Classic Novel</span>
+                                </td>
+                                <td class="p-4 text-gray-700" th:text="${list.selling_price}" >500.00 BDT</td>
+                                <td class="p-4 text-gray-700" th:text="'Qty: '+${list.quantity}">
+<!--                                    <input type="number"-->
+<!--                                           name="quantities[1]"-->
+<!--                                           -->
+<!--                                           min="0"-->
+<!--                                           class="input-quantity w-20 p-2 rounded-lg text-center bg-gray-50" />-->
+
+                                </td>
+                                <td class="p-4 text-gray-700"  th:text="${list.subtotal}" >1000.00 BDT</td>
+                                <td class="p-4">
+                                    <form class="inline">
+                                        <input type="hidden" name="product_id" value="1">
+                                        <button type="button" onclick="alert('Item removed from cart!')" 
+                                                class="btn-danger text-white px-4 py-2 rounded-full font-medium hover:bg-opacity-90">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 flex justify-between items-center">
+                    <div class="text-white font-semibold py-3 px-6 rounded-full hover:bg-opacity-90">
+
+                    </div>
+                    <div class="text-right" >
+                        <p class="text-xl font-bold text-gray-800" th:text="'Total: '+' '+${total}" > 1300.00 BDT</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <form method="POST" th:action="@{/checkout}">
+            <div class="text-right">
+                <button type="submit"
+                   class="btn-primary-blue inline-block text-white font-semibold py-3 px-8 rounded-full hover:bg-opacity-90">
+                    Proceed to Checkout
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <script >
+
+
+    </script>
+
+    <script>
+        // Initialize tooltips
+        $(document).ready(function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('navbar-scrolled', window.scrollY > 50);
+        });
+
+        // Filter products by search (placeholder for consistency)
+        const searchFilter = document.getElementById('searchFilter');
+        searchFilter.addEventListener('input', () => {
+            // Placeholder for search functionality
+            console.log('Search input:', searchFilter.value);
+        });
+    </script>
+</body>
+</html>

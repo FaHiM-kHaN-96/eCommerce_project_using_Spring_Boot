@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ahmad Shop</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #003087;
+            --secondary-blue: #005566;
+            --accent-red: #dc3545;
+            --gold: #f59e0b;
+            --light-bg: #F5F8FD;
+            --white: #ffffff;
+            --gray: #6b7280;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .calligraphy {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+        }
+
+        .bg-primary-blue {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
+        }
+
+        .bg-secondary-blue {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a) !important;
+        }
+
+        .text-primary-blue {
+            color: var(--primary-blue) !important;
+        }
+
+        .btn-primary-blue {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-blue:hover {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 48, 135, 0.4);
+        }
+
+        .btn-primary-blue:focus {
+            outline: 2px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .btn-wishlist {
+            background: linear-gradient(45deg, var(--accent-red), #b02a37);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wishlist:hover {
+            background: linear-gradient(45deg, #b02a37, #8b232f);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-wishlist:focus {
+            outline: 2px solid var(--accent-red);
+            outline-offset: 2px;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 50%;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+        }
+
+        .icon-btn:hover {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a);
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(0, 48, 135, 0.4);
+        }
+
+        .icon-btn:focus {
+            outline: 2px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .cart-count {
+            animation: pulse 0.5s ease;
+            top: -5px !important;
+            right: -10px !important;
+            font-size: 0.75rem;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        .navbar {
+            transition: all 0.3s ease;
+            padding: 1rem 1.5rem;
+        }
+
+        .navbar-scrolled {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .carousel-item {
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .carousel-caption {
+            background: rgba(0, 48, 135, 0.75);
+            border-radius: 12px;
+            padding: 2rem;
+            bottom: 2rem;
+            text-align: left;
+            max-width: 600px;
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 10%;
+            background: rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .carousel-control-prev:hover, .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card img {
+            border-radius: 12px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .category-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-badge:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.2rem;
+            align-items: center;
+        }
+
+        .rating-star {
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+
+        .rating-star.empty {
+            color: #d1d5db;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+        }
+
+        .filter-btn:hover {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .sort-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .sort-container label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
+        .sort-dropdown {
+            border-radius: 10px;
+            border: 1px solid var(--primary-blue);
+            padding: 0.5rem 1rem;
+            font-size: 0.95rem;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .sort-dropdown:focus {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .geometric-bg {
+            background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M20 0L40 20L20 40L0 20z" fill="%23E6F0FA" fill-opacity="0.15"/%3E%3C/svg%3E');
+        }
+
+        .footer {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 5rem 0 2rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .footer-column h3 {
+            font-family: 'Amiri', serif;
+            font-size: 1.75rem;
+            margin-bottom: 1.75rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        .footer-column p {
+            font-size: 0.95rem;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+            transform: translateX(8px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.25rem;
+            margin-top: 1.75rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            color: var(--white) !important;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--gold);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2.5rem;
+            margin-top: 2.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .footer-bottom p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-body img {
+            border-radius: 12px;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .spinner {
+            display: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden;
+        }
+
+        .sticky-shop-now {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .carousel-item {
+                height: 500px;
+            }
+            .product-card img {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .carousel-item {
+                height: 450px;
+            }
+            .carousel-caption {
+                padding: 1.5rem;
+                max-width: 500px;
+            }
+            .product-card {
+                padding: 1.25rem;
+            }
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            .sort-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                height: 400px;
+            }
+            .carousel-caption {
+                padding: 1rem;
+                bottom: 1.5rem;
+            }
+            .carousel-caption h1 {
+                font-size: 1.75rem;
+            }
+            .carousel-caption p {
+                font-size: 1rem;
+            }
+            .product-card {
+                margin-bottom: 1.5rem;
+            }
+            .product-card img {
+                height: 160px;
+            }
+            .filter-btn {
+                padding: 0.4rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .sticky-shop-now {
+                display: block;
+            }
+            .sort-container {
+                align-items: center;
+            }
+            .sort-dropdown {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .carousel-item {
+                height: 300px;
+            }
+            .carousel-caption {
+                padding: 0.75rem;
+                bottom: 1rem;
+                max-width: 90%;
+            }
+            .carousel-caption h1 {
+                font-size: 1.5rem;
+            }
+            .carousel-caption p {
+                font-size: 0.9rem;
+            }
+            .product-card img {
+                height: 140px;
+            }
+            .product-card h3 {
+                font-size: 1.25rem;
+            }
+            .product-card .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            .filter-btn {
+                padding: 0.3rem 1rem;
+                font-size: 0.85rem;
+                margin: 0.25rem;
+            }
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .carousel-item {
+                height: 250px;
+            }
+            .carousel-caption h1 {
+                font-size: 1.25rem;
+            }
+            .carousel-caption p {
+                font-size: 0.8rem;
+            }
+            .product-card img {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-primary-blue text-white fixed-top z-50">
+    <div class="container">
+        <a class="navbar-brand calligraphy text-white" href="index.html">Ahmad Shop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <input
+                        type="text"
+                        id="searchFilter"
+                        placeholder="Search products..."
+                        class="search-input border-0 bg-white text-gray-800 focus:outline-none form-control"
+                        aria-label="Search Products"
+                >
+                <div class="position-relative">
+                    <form th:action="@{/cart}" method="post">
+                        <button  class="icon-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Cart"
+                                type="submit"
+                                aria-label="View">
+                            <i class="bi bi-cart"></i>
+                            <span class="cart-count position-absolute translate-middle badge rounded-pill bg-danger" th:text="${cart_dt}" ></span>
+                        </button>
+
+                    </form>
+                </div>
+                <a href="/login" class="icon-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" aria-label="Login" data-bs-original-title="Login">
+                    <i class="bi bi-person"></i>
+                </a>
+                <a href="/signup" class="icon-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" aria-label="Sign Up" data-bs-original-title="Sign Up">
+                    <i class="bi bi-person-plus"></i>
+                </a>
+<!--                <a href="orders.html" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</a>-->
+<!--                <a href="logout.html" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>-->
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Carousel -->
+<div id="heroCarousel" class="carousel slide geometric-bg" data-bs-ride="carousel">
+    <div class="carousel-inner" >
+        <div class="carousel-item active" th:each="photo : ${imagelst}">
+            <img th:if="${photo.image != null and !photo.image.isEmpty()}"
+                 th:src="@{'data:image/jpeg;base64,'+${photo.image[0].imageData}}" alt="Books" loading="lazy">
+            <div class="carousel-caption">
+                <h1 class="calligraphy text-white">Welcome to Ahmad Shop</h1>
+                <p class="text-white lead">Discover premium books and toys for all ages!</p>
+                <a href="#products" class="btn btn-primary-blue">Shop Now</a>
+            </div>
+        </div>
+<!--        <div class="carousel-item">-->
+<!--            <img src="https://images.unsplash.com/photo-1550399105-c4db5f3a9a15?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="Toys" loading="lazy">-->
+<!--            <div class="carousel-caption">-->
+<!--                <h1 class="calligraphy text-white">Explore Our Collection</h1>-->
+<!--                <p class="text-white lead">Find the perfect gift for learning and fun!</p>-->
+<!--                <a href="#products" class="btn btn-primary-blue">Shop Now</a>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous Slide">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next Slide">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<!-- Sticky Shop Now Button for Mobile -->
+<div class="sticky-shop-now">
+    <a href="#products" class="btn btn-primary-blue w-100">Shop Now</a>
+</div>
+
+<!-- Product Collection -->
+<section id="products" class="container py-5 py-md-12 geometric-bg">
+    <h2 class="calligraphy text-primary-blue text-center mb-5">Our Collection</h2>
+    <div class="d-flex justify-content-center flex-wrap mb-4">
+        <button class="filter-btn active" data-filter="all">All Categories</button>
+        <button class="filter-btn" data-filter="Book">Books</button>
+        <button class="filter-btn" data-filter="Toy">Toys</button>
+    </div>
+    <div class="sort-container justify-content-center">
+        <label for="sortSelect">Sort by:</label>
+        <select id="sortSelect" class="sort-dropdown" aria-label="Sort products">
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating-desc">Rating: High to Low</option>
+            <option value="name-asc">Name: A-Z</option>
+            <option value="name-desc">Name: Z-A</option>
+        </select>
+    </div>
+    <div class="row g-4" id="productList">
+        <div class="col-md-6 col-lg-4 product-item" th:each="p : ${productlist}"
+             th:attr="data-category=${p.product_category},data-product-id=${p.product_id},data-price=${p.selling_price},data-name=${p.product_name}">
+            <div class="product-card fade-in">
+                <!-- Display first image or placeholder -->
+                <img src="" th:if="${p.image != null and !p.image.isEmpty()}"
+                     th:src="@{'data:image/jpeg;base64,'+${p.image[0].imageData}}"
+                     th:alt="${p.product_name}"
+                     class="product-image"
+
+                     loading="lazy"/>
+                <img th:unless="${p.image != null and !p.image.isEmpty()}"
+                     src="https://via.placeholder.com/300x200?text=No+Image"
+                     alt="No Image Available"
+                     loading="lazy"/>
+                <span class="category-badge px-3 py-1 text-white rounded-pill bg-primary-blue" th:text="${p.product_category}"></span>
+                <h3 class="h5 mt-3 mb-2 text-primary-blue" th:text="${p.product_name}"></h3>
+                <p class="text-gray-700 mb-3" th:text="${p.product_description}"></p>
+                <p class="text-primary-blue fw-bold mb-3 fs-5" th:text="${p.selling_price} + ' BDT'"></p>
+                <div class="rating-stars mb-3">
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star empty">★</span>
+                    <span class="text-gray-600 text-sm ms-2">(4.0/5, 10)</span>
+                </div>
+                <div class="d-flex gap-2 mt-auto">
+                    <form th:action="@{'/add/'+${p.product_id}}" method="post">
+                        <input
+                                type="number"
+                                name="quantity"
+                                value="1"
+                                min="1"
+                                class="form-control w-25 text-center bg-gray-50"
+                                aria-label="Quantity"
+                        >
+                        <button class="btn btn-primary-blue add-to-cart"
+                                type="submit"
+                                th:attr="data-product-id=${p.product_id}"
+                                aria-label="Add to Cart">
+                            <span class="spinner"></span>
+                            <span class="btn-text">Add to Cart</span>
+                        </button>
+                    </form>
+
+                    <form th:action="@{'/details/'+${p.product_id}}" method="post">
+                        <button class="btn btn-outline-primary"
+                                type="submit"
+                                aria-label="View">
+                            <span class="spinner"></span>
+                            <span class="btn-text">View</span>
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-12 text-center" th:if="${productlist == null or productlist.isEmpty()}">
+            <p class="no-products text-gray-600">No products available.</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3 class="calligraphy">Ahmad Shop</h3>
+            <p>Your premier destination for quality books and toys that inspire learning and creativity. Discover a curated selection designed to spark joy and imagination.</p>
+            <div class="social-links">
+                <a href="#" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="social-link" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="social-link" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
+                <a href="#" class="social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Blog</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Customer Service</h3>
+            <ul class="footer-links">
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Contact Us</h3>
+            <ul class="footer-links">
+                <li><i class="bi bi-geo-alt-fill me-2"></i> 123 Shop Street, City</li>
+                <li><i class="bi bi-telephone-fill me-2"></i> +880 1234 567890</li>
+                <li><i class="bi bi-envelope-fill me-2"></i> info@ahmadshop.com</li>
+                <li><i class="bi bi-clock-fill me-2"></i> Mon-Sat: 9AM - 8PM</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 Ahmad Shop. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Simulated session storage for cart
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    // Update cart count in navbar
+    function updateCartCount() {
+        const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+        const cartCount = document.getElementById('cart-count');
+        if (totalItems > 0) {
+            cartCount.textContent = totalItems;
+            cartCount.style.display = 'block';
+        } else {
+            cartCount.style.display = 'none';
+        }
+    }
+
+    // Show loading state on button
+    function showLoading(button) {
+        button.classList.add('btn-loading');
+        button.disabled = true;
+    }
+
+    // Hide loading state on button
+    function hideLoading(button) {
+        button.classList.remove('btn-loading');
+        button.disabled = false;
+    }
+
+    // Initialize on document ready
+    $(document).ready(function() {
+        // Add to cart handler
+        $('.add-to-cart').on('click', function() {
+            const productId = $(this).data('product-id');
+            showLoading(this);
+            setTimeout(() => {
+                cart[productId] = (cart[productId] || 0) + 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                alert('Product added to cart!');
+                hideLoading(this);
+            }, 1000);
+        });
+
+        // Modal image carousel
+        $('.product-image').on('click', function() {
+            const images = $(this).data('images').split(',');
+            const carouselInner = $('#modalCarouselInner');
+            carouselInner.empty();
+            images.forEach((img, index) => {
+                const div = $('<div>').addClass(`carousel-item ${index === 0 ? 'active' : ''}`);
+                div.html(`<img src="/Uploads/${img}" class="d-block w-100" alt="Product Image" loading="lazy">`);
+                carouselInner.append(div);
+            });
+        });
+
+        // Category Filter
+        $('.filter-btn').on('click', function() {
+            const filter = $(this).data('filter');
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            $('.product-item').each(function() {
+                const category = $(this).data('category');
+                if (filter === 'all' || category === filter) {
+                    $(this).fadeIn(300);
+                } else {
+                    $(this).fadeOut(300);
+                }
+            });
+        });
+
+        // Sort handler
+        $('#sortSelect').on('change', function() {
+            const sortBy = $(this).val();
+            localStorage.setItem('sortPreference', sortBy);
+
+            const $productList = $('#productList');
+            const $products = $productList.children('.product-item').get();
+
+            $products.sort((a, b) => {
+                const aValue = $(a).data(sortBy.includes('price') ? 'price' : 'name');
+                const bValue = $(b).data(sortBy.includes('price') ? 'price' : 'name');
+                if (sortBy === 'price-asc') return aValue - bValue;
+                if (sortBy === 'price-desc') return bValue - aValue;
+                if (sortBy === 'name-asc') return aValue.localeCompare(bValue);
+                if (sortBy === 'name-desc') return bValue.localeCompare(aValue);
+            });
+
+            $productList.fadeOut(300, () => {
+                $productList.empty().append($products);
+                $productList.fadeIn(300);
+            });
+        });
+
+        // Load sort preference
+        const savedSort = localStorage.getItem('sortPreference') || 'price-asc';
+        $('#sortSelect').val(savedSort).trigger('change');
+
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        // Fade-in animation
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        $(entry.target).addClass('visible');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        $('.fade-in').each(function() {
+            observer.observe(this);
+        });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const navbar = document.querySelector('.navbar');
+        navbar.classList.toggle('navbar-scrolled', window.scrollY > 50);
+    });
+
+    // Initialize cart count
+    updateCartCount();
+</script>
+</body>
+</html>

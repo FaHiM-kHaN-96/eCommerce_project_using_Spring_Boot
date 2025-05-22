@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard - Ahmad Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .table-row:hover {
+            background-color: #f1f5f9;
+            transition: background-color 0.3s;
+        }
+        .filter-input {
+            transition: all 0.3s;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        .filter-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+        .btn-blue {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #e5e7eb;
+            border-top: 6px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .container {
+            max-width: 1320px;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1400px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 960px;
+            }
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+            .text-xl {
+                font-size: 1.25rem;
+            }
+        }
+        @media (max-width: 992px) {
+            .container {
+                max-width: 720px;
+            }
+            .navbar .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .flex {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: flex-start;
+            }
+            .text-2xl {
+                font-size: 1.25rem;
+            }
+            .text-xl {
+                font-size: 1.125rem;
+            }
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .filter-input {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+            .btn-blue, .bg-blue-500, .bg-red-500 {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                max-width: 540px;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+            .table-auto {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .table-auto thead, .table-auto tbody, .table-auto tr {
+                display: block;
+            }
+            .table-auto th, .table-auto td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 0.5rem;
+            }
+            .table-auto th {
+                display: none;
+            }
+            .table-row {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+                border-radius: 0.5rem;
+                padding: 1rem;
+            }
+            .table-row .flex {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .p-6 {
+                padding: 1.5rem;
+            }
+            .p-4 {
+                padding: 1rem;
+            }
+            .p-3 {
+                padding: 0.5rem;
+            }
+            .btn-blue, .bg-blue-500, .bg-red-500 {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+            .filter-input {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            .text-2xl {
+                font-size: 1.125rem;
+            }
+            .text-xl {
+                font-size: 1rem;
+            }
+            .text-lg {
+                font-size: 0.9rem;
+            }
+            .progress-circle {
+                width: 50px;
+                height: 50px;
+                border-width: 5px;
+            }
+            .grid-cols-5 {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .container {
+                max-width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .navbar h1 {
+                font-size: 1.25rem;
+            }
+            .navbar .bg-red-500 {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .text-2xl {
+                font-size: 1rem;
+            }
+            .text-xl {
+                font-size: 0.9rem;
+            }
+            .text-lg {
+                font-size: 0.85rem;
+            }
+            .p-6 {
+                padding: 1rem;
+            }
+            .p-4 {
+                padding: 0.75rem;
+            }
+            .btn-blue, .bg-blue-500, .bg-red-500 {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            .filter-input {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+            .progress-circle {
+                width: 40px;
+                height: 40px;
+                border-width: 4px;
+            }
+            .modal-content {
+                padding: 0.75rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .navbar h1 {
+                font-size: 1rem;
+            }
+            .navbar .bg-red-500 {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            .text-2xl {
+                font-size: 0.9rem;
+            }
+            .text-xl {
+                font-size: 0.85rem;
+            }
+            .text-lg {
+                font-size: 0.8rem;
+            }
+            .btn-blue, .bg-blue-500, .bg-red-500 {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .filter-input {
+                padding: 0.3rem;
+                font-size: 0.75rem;
+            }
+            .progress-circle {
+                width: 36px;
+                height: 36px;
+                border-width: 4px;
+            }
+        }
+        .error-message, .success-message {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        /* Alert styles */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .alert.error-message {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #b91c1c;
+        }
+        .alert.success-message {
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+<!-- Progress Overlay -->
+<div id="progressOverlay" class="progress-overlay hidden">
+    <div class="progress-circle"></div>
+</div>
+
+<!-- Add Admin Modal -->
+<div id="addAdminModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="flex justify-end space-x-2">
+            <button type="button" onclick="closeAddAdminModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">X</button>
+        </div>
+        <h2 class="text-xl font-semibold text-blue-800 mb-4">Add New Admin</h2>
+        <form method="POST" th:action="@{/admin/admin_input}"   id="addAdminForm">
+
+            <div class="mb-4">
+                <label for="mail" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="mail" name="mail" class="filter-input mt-1 w-full p-2 border rounded"  required >
+            </div>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700">Access Level</label>
+                <select id="role" name="role" class="filter-input mt-1 w-full p-2 border rounded"   required>
+<!--                    <option value="super_admin">Super Admin</option>-->
+                    <option value="order">Order</option>
+                    <option value="product">Product</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="submit" class="btn-blue text-white px-4 py-2 rounded">Add Admin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Admin Modal -->
+<div id="editAdminModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 class="text-xl font-semibold text-blue-800 mb-4">Edit Admin Access</h2>
+        <form id="editAdminForm">
+            <input type="hidden" id="editAdminId" name="id">
+            <div class="mb-4">
+                <label for="editAdminName" class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" id="editAdminName" name="name" class="filter-input mt-1 w-full p-2 border rounded" disabled>
+            </div>
+            <div class="mb-4">
+                <label for="editAdminAccess" class="block text-sm font-medium text-gray-700">Access Level</label>
+                <select id="editAdminAccess" name="access" class="filter-input mt-1 w-full p-2 border rounded" required>
+                    <option value="super_admin">Super Admin</option>
+                    <option value="order_manager">Order Manager</option>
+                    <option value="product_manager">Product Manager</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeEditAdminModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
+                <button type="submit" class="btn-blue text-white px-4 py-2 rounded">Update Access</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="bg-blue-600 text-white p-4 shadow-lg">
+    <div class="container flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+        <div>
+            <span class="mr-4">Welcome, Admin</span>
+            <a href="#" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mx-auto p-6">
+    <!-- Messages -->
+    <div class="bg-green-100 text-green-800 p-3 rounded mb-4 hidden" id="successMessage"></div>
+    <div class="bg-red-100 text-red-800 p-3 rounded mb-4 hidden" id="errorMessage"></div>
+
+    <!-- Financial Overview -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4">Financial Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-green-100 p-4 rounded-lg text-center">
+                <h3 class="text-lg font-medium">Total Revenue</h3>
+                <p class="text-2xl font-bold" id="totalRevenue">150,000.00 BDT</p>
+            </div>
+            <div class="bg-red-100 p-4 rounded-lg text-center">
+                <h3 class="text-lg font-medium">Total Costs</h3>
+                <p class="text-2xl font-bold" id="totalCost">100,000.00 BDT</p>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg text-center">
+                <h3 class="text-lg font-medium">Profit</h3>
+                <p class="text-2xl font-bold text-green-600" id="profitLoss">50,000.00 BDT</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Management -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div th:if="${session.message}" th:classappend="${session.message.type}" class="alert" role="alert">
+            <p th:text="${session.message.content}"></p>
+        </div>
+        <div class="flex justify-between items-center mb-4">
+
+            <h2 class="text-xl font-semibold">Admin Management</h2>
+            <button onclick="openAddAdminModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                Add New Admin
+            </button>
+        </div>
+        <!--    <div th:each="p: ${productEns}" class="card">-->
+        <!--        <img th:src="'data:image/png;base64,' + ${p.key}" class="card-img-top w-100" alt="Product Image"-->
+        <!--             onerror="this.src='/default-image.jpg';" style="height:400px; object-fit: cover; border-radius: 8px;" />-->
+        <!--        <div class="card-body">-->
+        <!--            <h5 class="card-title" th:text="${p.value.product_name}">Product Name </h5>-->
+        <!--            <p class="card-text">-->
+        <!--                <strong>Product ID</strong> <span th:text="${p.value.productID}">ID</span><br>-->
+        <!--                <strong>Creation Date:</strong> <span th:text="${p.value.created_at}">01-01-2025</span><br>-->
+        <!--            </p>-->
+        <!--            <form th:action="@{'/user/view_batch/'+${p.value.id}}" method="post">-->
+        <!--                <button type="submit" class="btn btn-primary">View details</button>-->
+        <!--            </form>-->
+        <!--        </div>-->
+        <div  class="overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead class="bg-gray-200">
+                <tr>
+                    <th  class="p-3 text-left">ID</th>
+                    <th  class="p-3 text-left">Name</th>
+                    <th  class="p-3 text-left">Email</th>
+                    <th  class="p-3 text-left">Access Level</th>
+                    <th class="p-3 text-left">Actions</th>
+                </tr>
+                </thead>
+                <tbody th:each="p: ${userdatamap}" id="adminTable">
+                <!-- Admins will be populated by JavaScript -->
+                <tr>
+                    <td th:text="${p.id}" class="p-3">1</td>
+                    <td th:text="${p.fullname}" class="p-3">John Doe</td>
+                    <td th:text="${p.username}" class="p-3">john.doe@example.com</td>
+                    <td th:text="${p.role}" class="p-3">Super Admin</td>
+                    <td class="p-3">
+                        <button class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</button>
+                        <button class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Order Management -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Order Management</h2>
+            <a th:href="@{/admin/products}"  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                Manage Products
+            </a>
+        </div>
+        <!-- Filters -->
+        <div class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4">
+            <input type="text" id="filterOrderId" placeholder="Filter by Order ID" class="filter-input p-2 border rounded">
+            <input type="text" id="filterCustomer" placeholder="Filter by Customer" class="filter-input p-2 border rounded">
+            <input type="text" id="filterInvNumber" placeholder="Filter by INV Number" class="filter-input p-2 border rounded">
+            <select id="filterStatus" class="filter-input p-2 border rounded">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="filterPaymentStatus" class="filter-input p-2 border rounded">
+                <option value="">All Payment Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="cod">COD</option>
+                <option value="paid">Paid</option>
+            </select>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-3 text-left">Order ID</th>
+                    <th class="p-3 text-left">Customer</th>
+                    <th class="p-3 text-left">INV Number</th>
+                    <th class="p-3 text-left">Date</th>
+                    <th class="p-3 text-left">Total</th>
+                    <th class="p-3 text-left">Status</th>
+                    <th class="p-3 text-left">Payment Status</th>
+                    <th class="p-3 text-left">Transaction ID</th>
+                    <th class="p-3 text-left">Action</th>
+                </tr>
+                </thead>
+                <tbody id="orderTable">
+                <!-- Sample Order 1 -->
+                <tr class="table-row border-b">
+                    <td class="p-3">1001</td>
+                    <td class="p-3">John Doe (Call: 123-456-7890)</td>
+                    <td class="p-3">INV-1001</td>
+                    <td class="p-3">2025-05-10 14:30</td>
+                    <td class="p-3">5,000.00 BDT</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">Delivered</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">Paid</span>
+                    </td>
+                    <td class="p-3">TXN12345 (Online)</td>
+                    <td class="p-3 flex flex-col space-y-2">
+                        <button
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                onclick='generateSellerInvoice({
+                                        "order_id": 1001,
+                                        "inv_number": "INV-1001",
+                                        "order_date": "May 10, 2025, 2:30 PM",
+                                        "total": "5,000.00",
+                                        "status": "delivered",
+                                        "payment_status": "Paid",
+                                        "transaction_id": "TXN12345",
+                                        "payment_method": "online",
+                                        "customer_name": "John Doe",
+                                        "email": "john@example.com",
+                                        "phone": "123-456-7890",
+                                        "address": "123 Main St, City",
+                                        "items": [
+                                            {"name": "Book A", "price": 2000.00, "quantity": 2, "product_id": 1},
+                                            {"name": "Toy B", "price": 1000.00, "quantity": 1, "product_id": 2}
+                                        ]
+                                    })'
+                        >
+                            Download Seller Invoice
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="payment_status_1001" value="COD" class="mr-1">
+                                COD
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="payment_status_1001" value="Paid" class="mr-1" checked>
+                                Paid
+                            </label>
+                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                Set Payment Status
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="status_1001" value="delivered" class="mr-1" checked>
+                                Delivered
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="status_1001" value="cancelled" class="mr-1">
+                                Cancelled
+                            </label>
+                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                Set Status
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Sample Order 2 -->
+                <tr class="table-row border-b">
+                    <td class="p-3">1002</td>
+                    <td class="p-3">Jane Smith (Call: 987-654-3210)</td>
+                    <td class="p-3">INV-1002</td>
+                    <td class="p-3">2025-05-12 09:15</td>
+                    <td class="p-3">3,000.00 BDT</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded text-sm bg-yellow-100 text-yellow-800">Pending</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded text-sm bg-orange-100 text-orange-800">COD</span>
+                    </td>
+                    <td class="p-3">Cash on Delivery (COD)</td>
+                    <td class="p-3 flex flex-col space-y-2">
+                        <button
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                onclick='generateSellerInvoice({
+                                        "order_id": 1002,
+                                        "inv_number": "INV-1002",
+                                        "order_date": "May 12, 2025, 9:15 AM",
+                                        "total": "3,000.00",
+                                        "status": "pending",
+                                        "payment_status": "COD",
+                                        "transaction_id": "Cash on Delivery",
+                                        "payment_method": "cod",
+                                        "customer_name": "Jane Smith",
+                                        "email": "jane@example.com",
+                                        "phone": "987-654-3210",
+                                        "address": "456 Elm St, City",
+                                        "items": [
+                                            {"name": "Book C", "price": 1500.00, "quantity": 2, "product_id": 3}
+                                        ]
+                                    })'
+                        >
+                            Download Seller Invoice
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="payment_status_1002" value="COD" class="mr-1" checked>
+                                COD
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="payment_status_1002" value="Paid" class="mr-1">
+                                Paid
+                            </label>
+                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                Set Payment Status
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="status_1002" value="delivered" class="mr-1">
+                                Delivered
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="status_1002" value="cancelled" class="mr-1">
+                                Cancelled
+                            </label>
+                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                Set Status
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/noto-sans-bengali@latest/noto-sans-bengali.js"></script>
+<script>
+    // Admin Management
+    // let admins = [
+    //     { id: 1, name: "Current Admin", email: "admin@example.com", access: "super_admin" },
+    //     { id: 2, name: "Jane Doe", email: "jane.doe@example.com", access: "order_manager" }
+    // ];
+
+    // function renderAdminTable() {
+    //     const tableBody = document.getElementById('adminTable');
+    //     tableBody.innerHTML = '';
+    //     admins.forEach(admin => {
+    //         const row = document.createElement('tr');
+    //         row.className = 'table-row border-b';
+    //         row.innerHTML = `
+    //                 <td class="p-3">${admin.id}</td>
+    //                 <td class="p-3">${admin.name}</td>
+    //                 <td class="p-3">${admin.email}</td>
+    //                 <td class="p-3">
+    //                     <span class="px-2 py-1 rounded text-sm ${
+    //             admin.access === 'super_admin' ? 'bg-blue-100 text-blue-800' :
+    //                 admin.access === 'order_manager' ? 'bg-green-100 text-green-800' :
+    //                     'bg-purple-100 text-purple-800'
+    //         }">
+    //                         ${admin.access === 'super_admin' ? 'Super Admin' :
+    //             admin.access === 'order_manager' ? 'Order Manager' : 'Product Manager'}
+    //                     </span>
+    //                 </td>
+    //                 <td class="p-3 flex space-x-2">
+    //                     <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+    //                             onclick="openEditAdminModal(${admin.id}, '${admin.name}', '${admin.access}')">
+    //                         Edit Access
+    //                     </button>
+    //                     <button class="bg-red-500 hover:bg-red-600 text-white px-3 py Saffrony-1 rounded text-sm"
+    //                             onclick="deleteAdmin(${admin.id})">
+    //                         Delete
+    //                     </button>
+    //                 </td>
+    //             `;
+    //         tableBody.appendChild(row);
+    //     });
+    // }
+
+    function openAddAdminModal() {
+        document.getElementById('addAdminModal').classList.remove('hidden');
+    }
+
+    function closeAddAdminModal() {
+        document.getElementById('addAdminModal').classList.add('hidden');
+        document.getElementById('addAdminForm').reset();
+    }
+
+    function openEditAdminModal(id, name, access) {
+        document.getElementById('editAdminId').value = id;
+        document.getElementById('editAdminName').value = name;
+        document.getElementById('editAdminAccess').value = access;
+        document.getElementById('editAdminModal').classList.remove('hidden');
+    }
+
+    function closeEditAdminModal() {
+        document.getElementById('editAdminModal').classList.add('hidden');
+        document.getElementById('editAdminForm').reset();
+    }
+
+    function deleteAdmin(id) {
+        if (confirm('Are you sure you want to delete this admin?')) {
+            admins = admins.filter(admin => admin.id !== id);
+            renderAdminTable();
+            showSuccessMessage('Admin deleted successfully.');
+        }
+    }
+
+    // document.getElementById('addAdminForm').addEventListener('submit', (e) => {
+    //     e.preventDefault();
+    //
+    //     const email = document.getElementById('username').value;
+    //     const access = document.getElementById('role').value;
+    //     const id = admins.length ? Math.max(...admins.map(a => a.id)) + 1 : 1;
+    //     admins.push({ id, name, email, access });
+    //     renderAdminTable();
+    //     closeAddAdminModal();
+    //     showSuccessMessage('Admin added successfully.');
+    // });
+
+    document.getElementById('editAdminForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = parseInt(document.getElementById('editAdminId').value);
+        const access = document.getElementById('editAdminAccess').value;
+        const admin = admins.find(a => a.id === id);
+        if (admin) {
+            admin.access = access;
+            renderAdminTable();
+            closeEditAdminModal();
+            showSuccessMessage('Admin access updated successfully.');
+        }
+    });
+
+    // Messages
+    function showSuccessMessage(message) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        successMessage.classList.remove('hidden');
+        setTimeout(() => successMessage.classList.add('hidden'), 3000);
+    }
+
+    function showErrorMessage(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.classList.remove('hidden');
+        setTimeout(() => errorMessage.classList.add('hidden'), 3000);
+    }
+
+    // Initialize admin table
+    renderAdminTable();
+
+    // Existing Order Filtering
+    const filters = {
+        orderId: document.getElementById('filterOrderId'),
+        customer: document.getElementById('filterCustomer'),
+        invNumber: document.getElementById('filterInvNumber'),
+        status: document.getElementById('filterStatus'),
+        paymentStatus: document.getElementById('filterPaymentStatus')
+    };
+
+    Object.values(filters).forEach(input => {
+        input.addEventListener('input', filterOrders);
+    });
+
+    function filterOrders() {
+        const rows = document.querySelectorAll('#orderTable tr');
+        rows.forEach(row => {
+            const orderId = row.children[0].textContent.toLowerCase();
+            const customer = row.children[1].textContent.toLowerCase();
+            const invNumber = row.children[2].textContent.toLowerCase();
+            const status = row.children[5].textContent.toLowerCase();
+            const paymentStatus = row.children[6].textContent.toLowerCase();
+
+            const matches =
+                orderId.includes(filters.orderId.value.toLowerCase()) &&
+                customer.includes(filters.customer.value.toLowerCase()) &&
+                invNumber.includes(filters.invNumber.value.toLowerCase()) &&
+                (filters.status.value === '' || status.includes(filters.status.value.toLowerCase())) &&
+                (filters.paymentStatus.value === '' || paymentStatus.includes(filters.paymentStatus.value.toLowerCase()));
+
+            row.style.display = matches ? '' : 'none';
+        });
+    }
+
+    // Existing PDF Generation
+    async function generateSellerInvoice(order) {
+        const progressOverlay = document.getElementById('progressOverlay');
+        progressOverlay.classList.remove('hidden');
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(40);
+            doc.setTextColor(200, 200, 200);
+            doc.setFont('helvetica', 'italic');
+            doc.text('Seller Copy', 20, 200, { angle: 45 });
+
+            doc.setFillColor(59, 130, 246);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Ahmad Shop', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Seller Invoice: ' + order.inv_number, 20, 30);
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.text('Customer Details:', 20, 50);
+            doc.setFontSize(10);
+            doc.text('Name: ' + order.customer_name, 20, 60);
+            doc.text('Email: ' + order.email, 20, 67);
+            doc.text('Phone: ' + order.phone, 20, 74);
+            doc.text('Address: ' + order.address, 20, 81);
+
+            doc.setFontSize(12);
+            doc.text('Order Details:', 20, 95);
+            doc.setFontSize(10);
+            doc.text('Order ID: ' + order.order_id, 20, 105);
+            doc.text('Date: ' + order.order_date, 20, 112);
+            doc.text('Total: ' + order.total + ' BDT', 20, 119);
+            doc.text('Status: ' + order.status.charAt(0).toUpperCase() + order.status.slice(1), 20, 126);
+            doc.text('Payment Status: ' + order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1), 20, 133);
+            doc.text('Payment Method: ' + order.payment_method.charAt(0).toUpperCase() + order.payment_method.slice(1), 20, 140);
+            doc.text('Transaction ID: ' + order.transaction_id, 20, 147);
+
+            doc.setFontSize(12);
+            doc.text('Order Items:', 20, 161);
+            doc.setDrawColor(0);
+            doc.setFillColor(229, 231, 235);
+            doc.rect(20, 166, 170, 10, 'F');
+            doc.setTextColor(0);
+            doc.setFontSize(10);
+            doc.text('Product', 22, 173);
+            doc.text('Price', 100, 173);
+            doc.text('Quantity', 130, 173);
+            doc.text('Subtotal', 160, 173);
+
+            let y = 183;
+            order.items.forEach(item => {
+                doc.text(item.name, 22, y);
+                doc.text(parseFloat(item.price).toFixed(2) + ' BDT', 100, y);
+                doc.text(item.quantity.toString(), 130, y);
+                doc.text((item.price * item.quantity).toFixed(2) + ' BDT', 160, y);
+                y += 10;
+            });
+
+            const barcodeValue = 'INV-' + order.order_id + '-SELLER';
+            const qrCodeUrl = 'https://example.com/order/' + order.order_id;
+            const canvas = document.createElement('canvas');
+            JsBarcode(canvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
+            doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, y, 80, 20);
+
+            const qrCanvas = document.createElement('canvas');
+            QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
+                if (!error) {
+                    doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 120, y, 20, 20);
+                }
+            });
+
+            doc.save(`seller-invoice-${order.inv_number}.pdf`);
+        } catch (error) {
+            showErrorMessage('Error generating seller invoice: ' + error.message);
+        } finally {
+            progressOverlay.classList.add('hidden');
+        }
+    }
+</script>
+</body>
+</html>

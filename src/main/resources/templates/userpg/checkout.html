@@ -1,0 +1,637 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - Book & Toy Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .gradient-bg {
+            background: linear-gradient(45deg, #003087, #005566);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #003087, #005566);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 80, 134, 0.3);
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #b91c1c, #dc2626);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        .btn-selected {
+            background: linear-gradient(45deg, #005566, #007a7a);
+            transform: scale(1.05);
+        }
+        .cart-item {
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        .cart-item:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
+        }
+        .input-focus {
+            transition: all 0.3s;
+            border: 2px solid #e5e7eb;
+        }
+        .input-focus:focus {
+            border-color: #003087;
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.2);
+        }
+        .card {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .nav-shadow {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: linear-gradient(45deg, #003087, #005566);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-content.show {
+            transform: translateY(0);
+        }
+        .modal-content button {
+            background: linear-gradient(45deg, #003087, #005566);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s ease;
+        }
+        .modal-content button:hover {
+            background: linear-gradient(45deg, #005566, #007a7a);
+        }
+        .container {
+            max-width: 1320px;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1400px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 960px;
+            }
+            .text-3xl {
+                font-size: 1.875rem;
+            }
+            .cart-item img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        @media (max-width: 992px) {
+            .container {
+                max-width: 720px;
+            }
+            .navbar .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .flex {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: flex-start;
+            }
+            .text-3xl {
+                font-size: 1.5rem;
+            }
+            .text-xl {
+                font-size: 1.25rem;
+            }
+            .cart-item img {
+                width: 50px;
+                height: 50px;
+            }
+            .btn-primary, .btn-danger {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+            .lg\\:col-span-1, .lg\\:col-span-2 {
+                grid-column: span 1 / span 1;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                max-width: 540px;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+            .navbar h1 {
+                font-size: 1.5rem;
+            }
+            .table-auto {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .table-auto thead, .table-auto tbody, .table-auto tr {
+                display: block;
+            }
+            .table-auto th, .table-auto td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 0.5rem;
+            }
+            .table-auto th {
+                display: none;
+            }
+            .cart-item {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+                border-radius: 0.5rem;
+                padding: 1rem;
+            }
+            .cart-item .flex {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .cart-item img {
+                width: 80px;
+                height: 80px;
+            }
+            .input-focus {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            .p-8 {
+                padding: 1.5rem;
+            }
+            .p-6 {
+                padding: 1rem;
+            }
+            .p-4 {
+                padding: 0.5rem;
+            }
+            .btn-primary, .btn-danger {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+            .text-xl {
+                font-size: 1.125rem;
+            }
+            .card {
+                border-radius: 0.75rem;
+            }
+            .modal-content {
+                max-width: 90%;
+                padding: 16px;
+            }
+            .modal-content h3 {
+                font-size: 1.25rem;
+            }
+            .modal-content p {
+                font-size: 0.9rem;
+            }
+            .modal-content button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .container {
+                max-width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .navbar h1 {
+                font-size: 1.25rem;
+            }
+            .navbar .btn-primary, .navbar .btn-danger {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .text-3xl {
+                font-size: 1.25rem;
+            }
+            .text-xl {
+                font-size: 1rem;
+            }
+            .cart-item img {
+                width: 60px;
+                height: 60px;
+            }
+            .cart-item .font-medium {
+                font-size: 0.9rem;
+            }
+            .input-focus {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            .p-8 {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .btn-primary, .btn-danger {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            .text-lg {
+                font-size: 1rem;
+            }
+            .modal-content {
+                padding: 12px;
+            }
+            .modal-content h3 {
+                font-size: 1.125rem;
+            }
+            .modal-content p {
+                font-size: 0.85rem;
+            }
+            .modal-content button {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .navbar h1 {
+                font-size: 1rem;
+            }
+            .navbar .btn-primary, .navbar .btn-danger {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            .text-3xl {
+                font-size: 1.125rem;
+            }
+            .cart-item img {
+                width: 50px;
+                height: 50px;
+            }
+            .cart-item .font-medium {
+                font-size: 0.85rem;
+            }
+            .input-focus {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .btn-primary, .btn-danger {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .modal-content {
+                padding: 10px;
+            }
+            .modal-content h3 {
+                font-size: 1rem;
+            }
+            .modal-content p {
+                font-size: 0.8rem;
+            }
+            .modal-content button {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="gradient-bg text-white p-5 nav-shadow">
+        <div class="container flex justify-between items-center">
+            <h1 class="text-3xl font-bold tracking-tight">Ahmad Shop</h1>
+            <div class="flex items-center space-x-4">
+                <a href="cart.html" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">View Cart</a>
+                <a href="orders.html" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">View Orders</a>
+                <a href="logout.html" class="btn-danger text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Warning Modal -->
+    <div id="warningModal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-lg font-semibold text-red-600">Invalid Input</h3>
+            <p class="text-gray-700 mt-2">Only English characters, numbers, and basic punctuation are allowed.</p>
+            <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 tracking-tight">Checkout</h2>
+
+        <!-- Messages -->
+        <!-- Static messages can be added here if needed -->
+        <!-- Example: <div class="bg-red-100 text-red-800 p-4 rounded-lg mb-6 animate__animated animate__fadeIn">Error message</div> -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Shipping Details -->
+            <div class="lg:col-span-1">
+                <div class="card bg-white p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Shipping Details</h3>
+                    <form method="POST" action="" id="checkoutForm">
+                        <div class="mb-5">
+                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                                value="John Doe" 
+                                required
+                                oninput="validateEnglish(this)"
+                            >
+                        </div>
+                        <div class="mb-5">
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <input 
+                                type="text" 
+                                id="phone" 
+                                name="phone" 
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                                value="12345678901" 
+                                required
+                                oninput="validatePhone(this)"
+                            >
+                        </div>
+                        <div class="mb-5">
+                            <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                            <textarea 
+                                id="address" 
+                                name="address" 
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                                required
+                                oninput="validateEnglish(this)"
+                            >123 Main St, City, Country</textarea>
+                        </div>
+                        <!-- Payment Method Selection -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
+                            <div class="flex space-x-4">
+                                <button 
+                                    type="button" 
+                                    id="prepaidBtn" 
+                                    class="btn-primary w-1/2 text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
+                                    onclick="selectPaymentMethod('prepaid')"
+                                >
+                                    Prepaid
+                                </button>
+                                <button 
+                                    type="button" 
+                                    id="postpaidBtn" 
+                                    class="btn-primary w-1/2 text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
+                                    onclick="selectPaymentMethod('postpaid')"
+                                >
+                                    Postpaid
+                                </button>
+                            </div>
+                            <input 
+                                type="hidden" 
+                                id="payment_method" 
+                                name="payment_method" 
+                                value=""
+                            >
+                        </div>
+                        <!-- Payment Instructions -->
+                        <div id="paymentInstructions" class="mb-5 hidden">
+                            <p class="text-sm text-gray-700">
+                                Please send payment to: <strong>123-456-7890</strong>
+                            </p>
+                        </div>
+                        <!-- Transaction ID -->
+                        <div id="transactionIdField" class="mb-5 hidden">
+                            <label for="transaction_id" class="block text-sm font-medium text-gray-700">Transaction ID</label>
+                            <input 
+                                type="text" 
+                                id="transaction_id" 
+                                name="transaction_id" 
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                                oninput="validateEnglish(this)"
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="btn-primary w-full text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
+                            disabled
+                            id="placeOrderBtn"
+                        >
+                            Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-2">
+                <div class="card bg-white p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Order Summary</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead class="table-header text-white">
+                                <tr>
+                                    <th class="p-4 text-left font-semibold">Product</th>
+                                    <th class="p-4 text-left font-semibold">Price</th>
+                                    <th class="p-4 text-left font-semibold">Quantity</th>
+                                    <th class="p-4 text-left font-semibold">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="cart-item border-b border-gray-200">
+                                    <td class="p-4 flex items-center space-x-4">
+                                        <img src="https://via.placeholder.com/150?text=Product+1" alt="Sample Product 1" 
+                                             class="w-20 h-20 object-cover rounded-lg border border-gray-200">
+                                        <span class="font-medium text-gray-800">Sample Product 1</span>
+                                    </td>
+                                    <td class="p-4 text-gray-700">100.00 BDT</td>
+                                    <td class="p-4 text-gray-700">2</td>
+                                    <td class="p-4 text-gray-700">200.00 BDT</td>
+                                </tr>
+                                <tr class="cart-item border-b border-gray-200">
+                                    <td class="p-4 flex items-center space-x-4">
+                                        <img src="https://via.placeholder.com/150?text=Product+2" alt="Sample Product 2" 
+                                             class="w-20 h-20 object-cover rounded-lg border border-gray-200">
+                                        <span class="font-medium text-gray-800">Sample Product 2</span>
+                                    </td>
+                                    <td class="p-4 text-gray-700">150.00 BDT</td>
+                                    <td class="p-4 text-gray-700">1</td>
+                                    <td class="p-4 text-gray-700">150.00 BDT</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <p class="text-xl font-bold text-gray-800">Total: 350.00 BDT</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Regular expression for English letters, numbers, spaces, and basic punctuation
+        const englishRegex = /^[a-zA-Z0-9\s.,#-]*$/;
+        // Regular expression for phone (digits only)
+        const phoneRegex = /^\d*$/;
+
+        function validateEnglish(input) {
+            if (!englishRegex.test(input.value)) {
+                showWarning(input);
+            }
+        }
+
+        function validatePhone(input) {
+            if (!phoneRegex.test(input.value)) {
+                showWarning(input);
+            }
+        }
+
+        function showWarning(input) {
+            // Clear the invalid input
+            input.value = input.value.replace(/[^a-zA-Z0-9\s.,#-]/g, '');
+            // Disable all inputs
+            const inputs = document.querySelectorAll('#checkoutForm input, #checkoutForm textarea, #checkoutForm button');
+            inputs.forEach(el => el.disabled = true);
+            // Show modal
+            const modal = document.getElementById('warningModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+        }
+
+        function closeModal() {
+            // Hide modal
+            const modal = document.getElementById('warningModal');
+            modal.querySelector('.modal-content').classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                // Re-enable all inputs
+                const inputs = document.querySelectorAll('#checkoutForm input, #checkoutForm textarea, #checkoutForm button');
+                inputs.forEach(el => el.disabled = false);
+            }, 300);
+        }
+
+        function selectPaymentMethod(method) {
+            const prepaidBtn = document.getElementById('prepaidBtn');
+            const postpaidBtn = document.getElementById('postpaidBtn');
+            const paymentInstructions = document.getElementById('paymentInstructions');
+            const transactionIdField = document.getElementById('transactionIdField');
+            const transactionIdInput = document.getElementById('transaction_id');
+            const paymentMethodInput = document.getElementById('payment_method');
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+            // Update button styles
+            if (method === 'prepaid') {
+                prepaidBtn.classList.add('btn-selected');
+                postpaidBtn.classList.remove('btn-selected');
+                paymentInstructions.classList.remove('hidden');
+                transactionIdField.classList.remove('hidden');
+                transactionIdInput.value = '';
+                transactionIdInput.disabled = false;
+                transactionIdInput.required = true;
+            } else {
+                postpaidBtn.classList.add('btn-selected');
+                prepaidBtn.classList.remove('btn-selected');
+                paymentInstructions.classList.add('hidden');
+                transactionIdField.classList.remove('hidden');
+                transactionIdInput.value = 'Cash on Delivery';
+                transactionIdInput.disabled = true;
+                transactionIdInput.required = false;
+            }
+
+            // Set payment method
+            paymentMethodInput.value = method;
+
+            // Enable place order button
+            placeOrderBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>

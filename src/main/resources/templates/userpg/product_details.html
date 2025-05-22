@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Product Details - Ahmad Shop</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #003087;
+            --secondary-blue: #005566;
+            --accent-red: #dc3545;
+            --gold: #f59e0b;
+            --light-bg: #F5F8FD;
+            --white: #ffffff;
+            --gray: #6b7280;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .calligraphy {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+        }
+
+        .bg-primary-blue {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
+        }
+
+        .bg-secondary-blue {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a) !important;
+        }
+
+        .text-primary-blue {
+            color: var(--primary-blue) !important;
+        }
+
+        .btn-primary-blue {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-blue:hover {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 48, 135, 0.4);
+        }
+
+        .btn-primary-blue:focus {
+            outline: 2px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .btn-wishlist {
+            background: linear-gradient(45deg, var(--accent-red), #b02a37);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wishlist:hover {
+            background: linear-gradient(45deg, #b02a37, #8b232f);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-wishlist:focus {
+            outline: 2px solid var(--accent-red);
+            outline-offset: 2px;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 50%;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+        }
+
+        .icon-btn:hover {
+            background: linear-gradient(45deg, var(--secondary-blue), #007a7a);
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(0, 48, 135, 0.4);
+        }
+
+        .icon-btn:focus {
+            outline: 2px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        .cart-count {
+            animation: pulse 0.5s ease;
+            top: -5px !important;
+            right: -10px !important;
+            font-size: 0.75rem;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        .navbar {
+            transition: all 0.3s ease;
+            padding: 1rem 1.5rem;
+        }
+
+        .navbar-scrolled {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .product-container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 2.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .product-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            height: 550px;
+            cursor: zoom-in;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .image-container:hover .main-image {
+            transform: scale(1.15);
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.75rem;
+            scrollbar-width: thin;
+        }
+
+        .thumbnail {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .thumbnail:hover, .thumbnail.active {
+            border: 2px solid var(--primary-blue);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-details {
+            padding-left: 2.5rem;
+        }
+
+        .category-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-badge:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.2rem;
+            align-items: center;
+        }
+
+        .rating-star {
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+
+        .rating-star.empty {
+            color: #d1d5db;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem;
+            width: 100px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .geometric-bg {
+            background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M20 0L40 20L20 40L0 20z" fill="%23E6F0FA" fill-opacity="0.15"/%3E%3C/svg%3E');
+        }
+
+        .footer {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 5rem 0 2rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .footer-column h3 {
+            font-family: 'Amiri', serif;
+            font-size: 1.75rem;
+            margin-bottom: 1.75rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        .footer-column p {
+            font-size: 0.95rem;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+            transform: translateX(8px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.25rem;
+            margin-top: 1.75rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            color: var(--white) !important;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--gold);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2.5rem;
+            margin-top: 2.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .footer-bottom p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .spinner {
+            display: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden;
+        }
+
+        .sticky-cart {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .product-details {
+                padding-left: 1.5rem;
+            }
+            .image-container {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .product-container {
+                padding: 2rem;
+            }
+            .image-container {
+                height: 450px;
+            }
+            .product-details {
+                padding-left: 0;
+                padding-top: 2rem;
+            }
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .image-container {
+                height: 350px;
+            }
+            .thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            .product-container {
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+                padding: 1.5rem;
+            }
+            .product-details h1 {
+                font-size: 1.75rem;
+            }
+            .product-details .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.95rem;
+            }
+            .form-control {
+                width: 80px;
+            }
+            .sticky-cart {
+                display: block;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .image-container {
+                height: 300px;
+            }
+            .thumbnail-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+            .product-details h1 {
+                font-size: 1.5rem;
+            }
+            .form-control {
+                width: 70px;
+            }
+            .product-container {
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            .category-badge {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .image-container {
+                height: 250px;
+            }
+            .product-details h1 {
+                font-size: 1.25rem;
+            }
+            .product-details .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-primary-blue text-white fixed-top z-50">
+        <div class="container">
+            <a class="navbar-brand calligraphy text-white" th:href="@{/}">Ahmad Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <input
+                        type="text"
+                        id="searchFilter"
+                        placeholder="Search products..."
+                        class="search-input border-0 bg-white text-gray-800 focus:outline-none form-control"
+                        aria-label="Search Products"
+                    >
+                    <div class="position-relative">
+                        <a href="cart.html" class="icon-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Cart" aria-label="View Cart">
+                            <i class="bi bi-cart"></i>
+                            <span id="cart-count" class="cart-count position-absolute translate-middle badge rounded-pill bg-danger" style="display: none;"></span>
+                        </a>
+                    </div>
+                    <a href="orders.html" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</a>
+                    <a href="logout.html" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5 py-md-12 geometric-bg">
+        <div class="product-container row fade-in" th:each="pr : ${product}">
+            <!-- Image Section -->
+            <div class="col-lg-6">
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="The Great Novel"  class="main-image"  th:src="@{'data:image/jpeg;base64,'+${pr.value.image[0].imageData}}" loading="lazy">
+                </div>
+                <div  class="thumbnail-container">
+                    <div th:each="img, iterStat : ${pr.value.image}" >
+                        <img th:src="@{'data:image/jpeg;base64,'+${img.imageData}}"  alt="Thumbnail 1" class="thumbnail" loading="lazy">
+                    </div>
+
+                </div>
+            </div>
+            <!-- Details Section -->
+            <div class="col-lg-6 product-details">
+                <span class="category-badge px-3 py-1 text-white rounded-pill bg-primary-blue" th:text="${pr.value.product_category}">Book</span>
+                <h1 class="h2 mt-3 mb-3 calligraphy text-primary-blue" th:text="${pr.value.product_name}">The Great Novel</h1>
+                <div class="rating-stars mb-4">
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="rating-star">★</span>
+                    <span class="text-gray-600 text-sm ms-2">(4.8/5, 120 reviews)</span>
+                </div>
+                <p class="text-primary-blue fw-bold mb-4 fs-3" th:text="${pr.value.selling_price}">350.00 BDT</p>
+                <p class="text-gray-700 mb-5 lead" th:text="${pr.value.product_description}">A captivating tale of adventure and discovery, 'The Great Novel' takes readers on a journey through a richly imagined world. Perfect for book lovers seeking an immersive and thought-provoking read, this novel combines intricate storytelling with unforgettable characters.</p>
+                <form id="product-form" class="d-flex align-items-center gap-3 mb-5">
+                    <input
+                        type="hidden"
+                        name="product_id"
+                        value="1"
+                    >
+                    <input
+                        type="number"
+                        name="quantity"
+                        value="1"
+                        min="1"
+                        class="form-control text-center"
+                        aria-label="Quantity"
+                    >
+                    <button
+                        type="submit"
+                        name="add_to_cart"
+                        class="btn btn-primary-blue"
+                        aria-label="Add to Cart"
+                    >
+                        <span class="spinner"></span>
+                        <span class="btn-text">Add to Cart</span>
+                    </button>
+                    <button
+                        type="submit"
+                        name="add_to_wishlist"
+                        class="btn btn-wishlist"
+                        aria-label="Add to Wishlist"
+                    >
+                        <span class="spinner"></span>
+                        <span class="btn-text"><i class="bi bi-heart-fill me-2"></i>Wishlist</span>
+                    </button>
+                </form>
+                <div class="border-top pt-4">
+                    <p class="mb-2"><strong>SKU:</strong> BK123456</p>
+                    <p class="mb-2"><strong>Category:</strong> Book</p>
+                    <p class="mb-0"><strong>Availability:</strong> In Stock</p>
+                </div>
+            </div>
+        </div>
+        <!-- Sticky Cart Button for Mobile -->
+        <div class="sticky-cart">
+            <button
+                type="button"
+                id="sticky-add-to-cart"
+                class="btn btn-primary-blue w-100"
+                aria-label="Add to Cart"
+            >
+                <span class="spinner"></span>
+                <span class="btn-text">Add to Cart</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3 class="calligraphy">Ahmad Shop</h3>
+                <p>Your premier destination for quality books and toys that inspire learning and creativity. Discover a curated selection designed to spark joy and imagination.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-link" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-link" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
+                    <a href="#" class="social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Customer Service</h3>
+                <ul class="footer-links">
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="bi bi-geo-alt-fill me-2"></i> 123 Shop Street, City</li>
+                    <li><i class="bi bi-telephone-fill me-2"></i> +880 1234 567890</li>
+                    <li><i class="bi bi-envelope-fill me-2"></i> info@ahmadshop.com</li>
+                    <li><i class="bi bi-clock-fill me-2"></i> Mon-Sat: 9AM - 8PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Ahmad Shop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simulated session storage for cart and wishlist
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+        // Update cart count in navbar
+        function updateCartCount() {
+            const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+            const cartCount = document.getElementById('cart-count');
+            if (totalItems > 0) {
+                cartCount.textContent = totalItems;
+                cartCount.style.display = 'block';
+            } else {
+                cartCount.style.display = 'none';
+            }
+        }
+
+        // Show loading state on button
+        function showLoading(button) {
+            button.classList.add('btn-loading');
+            button.disabled = true;
+        }
+
+        // Hide loading state on button
+        function hideLoading(button) {
+            button.classList.remove('btn-loading');
+            button.disabled = false;
+        }
+
+        // Handle form submission for Add to Cart and Wishlist
+        document.getElementById('product-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const productId = formData.get('product_id');
+            const quantity = parseInt(formData.get('quantity'));
+            const action = e.submitter.name;
+            const button = e.submitter;
+
+            showLoading(button);
+
+            setTimeout(() => {
+                if (action === 'add_to_cart' && quantity > 0) {
+                    cart[productId] = (cart[productId] || 0) + quantity;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartCount();
+                    alert('Product added to cart!');
+                } else if (action === 'add_to_wishlist') {
+                    if (!wishlist.includes(productId)) {
+                        wishlist.push(productId);
+                        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                        alert('Product added to wishlist!');
+                    } else {
+                        alert('Product is already in wishlist!');
+                    }
+                }
+                hideLoading(button);
+            }, 1000);
+        });
+
+        // Handle sticky cart button
+        document.getElementById('sticky-add-to-cart').addEventListener('click', function() {
+            const form = document.getElementById('product-form');
+            const quantity = form.querySelector('input[name="quantity"]').value;
+            const productId = form.querySelector('input[name="product_id"]').value;
+
+            showLoading(this);
+
+            setTimeout(() => {
+                if (parseInt(quantity) > 0) {
+                    cart[productId] = (cart[productId] || 0) + parseInt(quantity);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartCount();
+                    alert('Product added to cart!');
+                }
+                hideLoading(this);
+            }, 1000);
+        });
+
+        // Initialize tooltips
+        $(document).ready(function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('navbar-scrolled', window.scrollY > 50);
+        });
+
+        // Scroll animation
+        $(document).ready(function () {
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            $(entry.target).addClass('visible');
+                        }
+                    });
+                },
+                { threshold: 0.1 }
+            );
+
+            $('.fade-in').each(function () {
+                observer.observe(this);
+            });
+        });
+
+        // Thumbnail image switcher
+        $(document).ready(function () {
+            $('.thumbnail').on('click', function () {
+                const newSrc = $(this).attr('src').replace('w=90&h=90', 'w=600');
+                $('.main-image').attr('src', newSrc);
+                $('.thumbnail').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Set first thumbnail as active
+            $('.thumbnail').first().addClass('active');
+
+            // Initialize cart count
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
