@@ -2,10 +2,12 @@ package com.example.ecomarce.controllers;
 
 import com.example.ecomarce.entity.Common_UserEN;
 import com.example.ecomarce.entity.ImageEN;
+import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
 
 import com.example.ecomarce.helper.MessAge;
 
+import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.adminrepo.Change_role_repo;
 import com.example.ecomarce.service_pkg.adminservice.RoleChangerService;
@@ -28,6 +30,9 @@ public class AdminController {
     private Change_role_repo change_role_repo    ;
     @Autowired
     private ProDuct_repo proDuct_repo;
+
+    @Autowired
+    private Order_Manage order_manage;
 
 
 
@@ -121,6 +126,7 @@ public class AdminController {
 
         List<Common_UserEN> user = change_role_repo.findAll();
         List<Common_UserEN> userdatamap = new ArrayList();
+        List<OrderTableEN> pendinglist = order_manage.findByStatus("pending");
 
         for (Common_UserEN link : user) {
             try {
@@ -131,7 +137,7 @@ public class AdminController {
                 e.printStackTrace();
             }
         }
-
+        model.addAttribute("order_list" , pendinglist);
         model.addAttribute("userdatamap", userdatamap);
         return "adminpg/admin";
 

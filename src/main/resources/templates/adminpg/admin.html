@@ -520,19 +520,19 @@
                 </thead>
                 <tbody id="orderTable">
                 <!-- Sample Order 1 -->
-                <tr class="table-row border-b">
-                    <td class="p-3">1001</td>
-                    <td class="p-3">John Doe (Call: 123-456-7890)</td>
-                    <td class="p-3">INV-1001</td>
-                    <td class="p-3">2025-05-10 14:30</td>
+                <tr class="table-row border-b" th:each="o: ${order_list}">
+                    <td class="p-3" th:text="${o.order_id}">1001</td>
+                    <td class="p-3" th:text="${o.user.fullname}+' '+${o.user.phone}">John Doe (Call: 123-456-7890)</td>
+                    <td class="p-3" th:text="'#INV '+${o.invoice_id}">INV-1001</td>
+                    <td class="p-3" th:text="${o.order_date}">2025-05-10 14:30</td>
                     <td class="p-3">5,000.00 BDT</td>
                     <td class="p-3">
-                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">Delivered</span>
+                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800" th:text="${o.order_status}">Delivered</span>
                     </td>
                     <td class="p-3">
-                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">Paid</span>
+                        <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800" th:text="${o.order_payment_status}">Paid</span>
                     </td>
-                    <td class="p-3">TXN12345 (Online)</td>
+                    <td class="p-3" th:text="${o.order_payment_method}">TXN12345 (Online)</td>
                     <td class="p-3 flex flex-col space-y-2">
                         <button
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"

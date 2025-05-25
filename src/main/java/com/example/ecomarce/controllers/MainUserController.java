@@ -176,7 +176,6 @@ public class MainUserController {
                 orderTableEN.setOrder_date(formattedTime);
                 orderTableEN.setProducten(proDuct_repo.findByProduct_id(item.getProduct_id()));
                 orderTableEN.setUser(userAuth.findByUsername(principal.getName()));
-
                 orderTableEN.setInvoice_id(invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin())));
                 orderManage.save(orderTableEN);
             }
