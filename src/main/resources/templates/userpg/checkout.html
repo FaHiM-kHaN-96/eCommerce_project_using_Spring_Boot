@@ -1,44 +1,5 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -200,7 +161,8 @@
             .grid-cols-1 {
                 grid-template-columns: 1fr;
             }
-            .lg\\:col-span-1, .lg\\:col-span-2 {
+            .col-span-1,
+            .col-span-2 {
                 grid-column: span 1 / span 1;
             }
         }
@@ -284,6 +246,7 @@
                 font-size: 0.9rem;
             }
         }
+
         @media (max-width: 576px) {
             .container {
                 max-width: 100%;
@@ -413,21 +376,23 @@
         <!-- Static messages can be added here if needed -->
         <!-- Example: <div class="bg-red-100 text-red-800 p-4 rounded-lg mb-6 animate__animated animate__fadeIn">Error message</div> -->
 
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Shipping Details -->
             <div class="lg:col-span-1">
                 <div class="card bg-white p-8">
                     <h3 class="text-xl font-semibold text-gray-800 mb-6">Shipping Details</h3>
-                    <form method="POST" action="" id="checkoutForm">
+                    <form method="POST" th:action="@{/checkout_cm}" th:object="${commonUserEN}"  id="checkoutForm">
                         <div class="mb-5">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700"  >Full Name</label>
                             <input 
                                 type="text" 
                                 id="name" 
-                                name="name" 
+                                name="fullname"
                                 class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
                                 value="John Doe" 
                                 required
+                                th:value="${commonUserEN.fullname}"
                                 oninput="validateEnglish(this)"
                             >
                         </div>
@@ -440,6 +405,7 @@
                                 class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
                                 value="12345678901" 
                                 required
+                                th:value="${commonUserEN.phone}"
                                 oninput="validatePhone(this)"
                             >
                         </div>
@@ -451,6 +417,7 @@
                                 class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
                                 required
                                 oninput="validateEnglish(this)"
+                                th:text="${commonUserEN.address}"
                             >123 Main St, City, Country</textarea>
                         </div>
                         <!-- Payment Method Selection -->
@@ -475,7 +442,8 @@
                                 </button>
                             </div>
                             <input 
-                                type="hidden" 
+                                type="hidden"
+
                                 id="payment_method" 
                                 name="payment_method" 
                                 value=""
@@ -525,31 +493,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="cart-item border-b border-gray-200">
+                                <tr class="cart-item border-b border-gray-200" th:each="products : ${order_product}">
                                     <td class="p-4 flex items-center space-x-4">
-                                        <img src="https://via.placeholder.com/150?text=Product+1" alt="Sample Product 1" 
+                                        <img th:src="@{'data:image/jpeg;base64,'+${products.product_image}}" alt="Sample Product 1"
                                              class="w-20 h-20 object-cover rounded-lg border border-gray-200">
-                                        <span class="font-medium text-gray-800">Sample Product 1</span>
+                                        <span class="font-medium text-gray-800" th:text="${products.product_name}">Sample Product 1</span>
                                     </td>
-                                    <td class="p-4 text-gray-700">100.00 BDT</td>
-                                    <td class="p-4 text-gray-700">2</td>
-                                    <td class="p-4 text-gray-700">200.00 BDT</td>
-                                </tr>
-                                <tr class="cart-item border-b border-gray-200">
-                                    <td class="p-4 flex items-center space-x-4">
-                                        <img src="https://via.placeholder.com/150?text=Product+2" alt="Sample Product 2" 
-                                             class="w-20 h-20 object-cover rounded-lg border border-gray-200">
-                                        <span class="font-medium text-gray-800">Sample Product 2</span>
-                                    </td>
-                                    <td class="p-4 text-gray-700">150.00 BDT</td>
-                                    <td class="p-4 text-gray-700">1</td>
-                                    <td class="p-4 text-gray-700">150.00 BDT</td>
+                                    <td class="p-4 text-gray-700"  th:text="${products.selling_price}">100.00 BDT</td>
+                                    <td class="p-4 text-gray-700"  th:text="${products.quantity}">2</td>
+                                    <td class="p-4 text-gray-700"  th:text="${products.subtotal}">200.00 BDT</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="mt-6 text-right">
-                        <p class="text-xl font-bold text-gray-800">Total: 350.00 BDT</p>
+                        <p class="text-xl font-bold text-gray-800" th:text="${total_price}">Total: 350.00 BDT</p>
                     </div>
                 </div>
             </div>
@@ -633,5 +591,45 @@
             placeOrderBtn.disabled = false;
         }
     </script>
+<!--    <script type="text/javascript">-->
+<!--        var gk_isXlsx = false;-->
+<!--        var gk_xlsxFileLookup = {};-->
+<!--        var gk_fileData = {};-->
+<!--        function filledCell(cell) {-->
+<!--            return cell !== '' && cell != null;-->
+<!--        }-->
+<!--        function loadFileData(filename) {-->
+<!--            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {-->
+<!--                try {-->
+<!--                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });-->
+<!--                    var firstSheetName = workbook.SheetNames[0];-->
+<!--                    var worksheet = workbook.Sheets[firstSheetName];-->
+
+<!--                    // Convert sheet to JSON to filter blank rows-->
+<!--                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });-->
+<!--                    // Filter out blank rows (rows where all cells are empty, null, or undefined)-->
+<!--                    var filteredData = jsonData.filter(row => row.some(filledCell));-->
+
+<!--                    // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row-->
+<!--                    var headerRowIndex = filteredData.findIndex((row, index) =>-->
+<!--                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length-->
+<!--                    );-->
+<!--                    // Fallback-->
+<!--                    if (headerRowIndex === -1 || headerRowIndex > 25) {-->
+<!--                        headerRowIndex = 0;-->
+<!--                    }-->
+
+<!--                    // Convert filtered JSON back to CSV-->
+<!--                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays-->
+<!--                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });-->
+<!--                    return csv;-->
+<!--                } catch (e) {-->
+<!--                    console.error(e);-->
+<!--                    return "";-->
+<!--                }-->
+<!--            }-->
+<!--            return gk_fileData[filename] || "";-->
+<!--        }-->
+<!--    </script>-->
 </body>
 </html>

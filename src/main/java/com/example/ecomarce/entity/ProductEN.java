@@ -4,6 +4,7 @@ package com.example.ecomarce.entity;
 import jakarta.persistence.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,10 +18,14 @@ public class ProductEN {
     private float selling_price;
     private String product_category;
     @OneToMany(cascade=CascadeType.ALL)
-    private List<ImageEN> image;
+    private List<OrderTableEN> order_tables;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<ImageEN> image = new ArrayList<>();
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private String templete_image;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Common_UserEN> useren = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -31,17 +36,11 @@ public class ProductEN {
                 ", buying_price=" + buying_price +
                 ", selling_price=" + selling_price +
                 ", product_category='" + product_category + '\'' +
+                ", order_tables=" + order_tables +
                 ", image=" + image +
                 ", templete_image='" + templete_image + '\'' +
+                ", useren=" + useren +
                 '}';
-    }
-
-    public String getTemplete_image() {
-        return templete_image;
-    }
-
-    public void setTemplete_image(String templete_image) {
-        this.templete_image = templete_image;
     }
 
     public int getProduct_id() {
@@ -92,11 +91,35 @@ public class ProductEN {
         this.product_category = product_category;
     }
 
+    public List<OrderTableEN> getOrder_tables() {
+        return order_tables;
+    }
+
+    public void setOrder_tables(List<OrderTableEN> order_tables) {
+        this.order_tables = order_tables;
+    }
+
     public List<ImageEN> getImage() {
         return image;
     }
 
     public void setImage(List<ImageEN> image) {
         this.image = image;
+    }
+
+    public String getTemplete_image() {
+        return templete_image;
+    }
+
+    public void setTemplete_image(String templete_image) {
+        this.templete_image = templete_image;
+    }
+
+    public List<Common_UserEN> getUseren() {
+        return useren;
+    }
+
+    public void setUseren(List<Common_UserEN> useren) {
+        this.useren = useren;
     }
 }

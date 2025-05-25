@@ -2,6 +2,7 @@ package com.example.ecomarce.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,9 @@ private String phone;
 private String role;
 private boolean is_verified;
 @OneToMany(cascade=CascadeType.ALL)
-private List<OrderTableEN> order_tables;
+private List<OrderTableEN> order_tables = new ArrayList<>();
+@ManyToOne
+private ProductEN producten;
 
     @Override
     public String toString() {
@@ -33,6 +36,7 @@ private List<OrderTableEN> order_tables;
                 ", role='" + role + '\'' +
                 ", is_verified=" + is_verified +
                 ", order_tables=" + order_tables +
+                ", producten=" + producten +
                 '}';
     }
 
@@ -106,5 +110,13 @@ private List<OrderTableEN> order_tables;
 
     public void setOrder_tables(List<OrderTableEN> order_tables) {
         this.order_tables = order_tables;
+    }
+
+    public ProductEN getProducten() {
+        return producten;
+    }
+
+    public void setProducten(ProductEN producten) {
+        this.producten = producten;
     }
 }
