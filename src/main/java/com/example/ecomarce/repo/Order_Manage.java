@@ -19,4 +19,8 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
 
     @Query("SELECT o FROM OrderTableEN o WHERE o.order_status = :order_status")
     List<OrderTableEN> findByStatus(@Param("order_status") String order_status );
+
+    @Query("SELECT o FROM OrderTableEN o WHERE o.order_id = :order_id")
+    OrderTableEN findByOrderid(@Param("order_id") int order_id );
+
 }

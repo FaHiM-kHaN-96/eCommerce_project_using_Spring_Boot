@@ -13,13 +13,16 @@ import com.example.ecomarce.repo.adminrepo.Change_role_repo;
 import com.example.ecomarce.service_pkg.adminservice.RoleChangerService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -119,6 +122,7 @@ public class AdminController {
         return "adminpg/admin_products";
 
     }
+
 
     @GetMapping("/lg")
     public String admin(Model model) {

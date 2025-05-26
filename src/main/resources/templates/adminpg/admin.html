@@ -92,12 +92,48 @@
             background: white;
             padding: 1.5rem;
             border-radius: 0.5rem;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
         }
-
+        .invoice-preview {
+            font-family: 'Helvetica', sans-serif;
+            padding: 20px;
+            background: white;
+        }
+        .invoice-header {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .invoice-section {
+            margin-top: 20px;
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+        }
+        .invoice-table th {
+            background-color: #e5e7eb;
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            color: #d1d5db;
+            font-size: 40px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
         /* Responsive Adjustments */
         @media (max-width: 1400px) {
             .container {
@@ -302,7 +338,6 @@
         .error-message, .success-message {
             animation: fadeIn 0.5s ease-in-out;
         }
-        /* Alert styles */
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
@@ -336,16 +371,14 @@
             <button type="button" onclick="closeAddAdminModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">X</button>
         </div>
         <h2 class="text-xl font-semibold text-blue-800 mb-4">Add New Admin</h2>
-        <form method="POST" th:action="@{/admin/admin_input}"   id="addAdminForm">
-
+        <form method="POST" th:action="@{/admin/admin_input}" id="addAdminForm">
             <div class="mb-4">
                 <label for="mail" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="mail" name="mail" class="filter-input mt-1 w-full p-2 border rounded"  required >
+                <input type="email" id="mail" name="mail" class="filter-input mt-1 w-full p-2 border rounded" required>
             </div>
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700">Access Level</label>
-                <select id="role" name="role" class="filter-input mt-1 w-full p-2 border rounded"   required>
-<!--                    <option value="super_admin">Super Admin</option>-->
+                <select id="role" name="role" class="filter-input mt-1 w-full p-2 border rounded" required>
                     <option value="order">Order</option>
                     <option value="product">Product</option>
                 </select>
@@ -380,6 +413,20 @@
                 <button type="submit" class="btn-blue text-white px-4 py-2 rounded">Update Access</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Invoice Preview Modal -->
+<div id="invoiceModal" class="modal hidden">
+    <div class="modal-content relative">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-blue-800">Invoice Preview</h2>
+            <div>
+                <button id="downloadInvoiceBtn" class="btn-blue text-white px-4 py-2 rounded mr-2">Download PDF</button>
+                <button type="button" onclick="closeInvoiceModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Close</button>
+            </div>
+        </div>
+        <div id="invoiceContent" class="invoice-preview"></div>
     </div>
 </div>
 
@@ -425,38 +472,23 @@
             <p th:text="${session.message.content}"></p>
         </div>
         <div class="flex justify-between items-center mb-4">
-
             <h2 class="text-xl font-semibold">Admin Management</h2>
             <button onclick="openAddAdminModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
                 Add New Admin
             </button>
         </div>
-        <!--    <div th:each="p: ${productEns}" class="card">-->
-        <!--        <img th:src="'data:image/png;base64,' + ${p.key}" class="card-img-top w-100" alt="Product Image"-->
-        <!--             onerror="this.src='/default-image.jpg';" style="height:400px; object-fit: cover; border-radius: 8px;" />-->
-        <!--        <div class="card-body">-->
-        <!--            <h5 class="card-title" th:text="${p.value.product_name}">Product Name </h5>-->
-        <!--            <p class="card-text">-->
-        <!--                <strong>Product ID</strong> <span th:text="${p.value.productID}">ID</span><br>-->
-        <!--                <strong>Creation Date:</strong> <span th:text="${p.value.created_at}">01-01-2025</span><br>-->
-        <!--            </p>-->
-        <!--            <form th:action="@{'/user/view_batch/'+${p.value.id}}" method="post">-->
-        <!--                <button type="submit" class="btn btn-primary">View details</button>-->
-        <!--            </form>-->
-        <!--        </div>-->
-        <div  class="overflow-x-auto">
+        <div class="overflow-x-auto">
             <table class="w-full table-auto">
                 <thead class="bg-gray-200">
                 <tr>
-                    <th  class="p-3 text-left">ID</th>
-                    <th  class="p-3 text-left">Name</th>
-                    <th  class="p-3 text-left">Email</th>
-                    <th  class="p-3 text-left">Access Level</th>
+                    <th class="p-3 text-left">ID</th>
+                    <th class="p-3 text-left">Name</th>
+                    <th class="p-3 text-left">Email</th>
+                    <th class="p-3 text-left">Access Level</th>
                     <th class="p-3 text-left">Actions</th>
                 </tr>
                 </thead>
                 <tbody th:each="p: ${userdatamap}" id="adminTable">
-                <!-- Admins will be populated by JavaScript -->
                 <tr>
                     <td th:text="${p.id}" class="p-3">1</td>
                     <td th:text="${p.fullname}" class="p-3">John Doe</td>
@@ -472,12 +504,11 @@
         </div>
     </div>
 
-
     <!-- Order Management -->
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold">Order Management</h2>
-            <a th:href="@{/admin/products}"  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            <a th:href="@{/admin/products}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
                 Manage Products
             </a>
         </div>
@@ -536,7 +567,7 @@
                     <td class="p-3 flex flex-col space-y-2">
                         <button
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                                onclick='generateSellerInvoice({
+                                onclick='previewInvoice({
                                         "order_id": 1001,
                                         "inv_number": "INV-1001",
                                         "order_date": "May 10, 2025, 2:30 PM",
@@ -602,7 +633,7 @@
                     <td class="p-3 flex flex-col space-y-2">
                         <button
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                                onclick='generateSellerInvoice({
+                                onclick='previewInvoice({
                                         "order_id": 1002,
                                         "inv_number": "INV-1002",
                                         "order_date": "May 12, 2025, 9:15 AM",
@@ -658,46 +689,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/noto-sans-bengali@latest/noto-sans-bengali.js"></script>
 <script>
-    // Admin Management
-    // let admins = [
-    //     { id: 1, name: "Current Admin", email: "admin@example.com", access: "super_admin" },
-    //     { id: 2, name: "Jane Doe", email: "jane.doe@example.com", access: "order_manager" }
-    // ];
-
-    // function renderAdminTable() {
-    //     const tableBody = document.getElementById('adminTable');
-    //     tableBody.innerHTML = '';
-    //     admins.forEach(admin => {
-    //         const row = document.createElement('tr');
-    //         row.className = 'table-row border-b';
-    //         row.innerHTML = `
-    //                 <td class="p-3">${admin.id}</td>
-    //                 <td class="p-3">${admin.name}</td>
-    //                 <td class="p-3">${admin.email}</td>
-    //                 <td class="p-3">
-    //                     <span class="px-2 py-1 rounded text-sm ${
-    //             admin.access === 'super_admin' ? 'bg-blue-100 text-blue-800' :
-    //                 admin.access === 'order_manager' ? 'bg-green-100 text-green-800' :
-    //                     'bg-purple-100 text-purple-800'
-    //         }">
-    //                         ${admin.access === 'super_admin' ? 'Super Admin' :
-    //             admin.access === 'order_manager' ? 'Order Manager' : 'Product Manager'}
-    //                     </span>
-    //                 </td>
-    //                 <td class="p-3 flex space-x-2">
-    //                     <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-    //                             onclick="openEditAdminModal(${admin.id}, '${admin.name}', '${admin.access}')">
-    //                         Edit Access
-    //                     </button>
-    //                     <button class="bg-red-500 hover:bg-red-600 text-white px-3 py Saffrony-1 rounded text-sm"
-    //                             onclick="deleteAdmin(${admin.id})">
-    //                         Delete
-    //                     </button>
-    //                 </td>
-    //             `;
-    //         tableBody.appendChild(row);
-    //     });
-    // }
+    let currentOrder = null;
 
     function openAddAdminModal() {
         document.getElementById('addAdminModal').classList.remove('hidden');
@@ -720,40 +712,6 @@
         document.getElementById('editAdminForm').reset();
     }
 
-    function deleteAdmin(id) {
-        if (confirm('Are you sure you want to delete this admin?')) {
-            admins = admins.filter(admin => admin.id !== id);
-            renderAdminTable();
-            showSuccessMessage('Admin deleted successfully.');
-        }
-    }
-
-    // document.getElementById('addAdminForm').addEventListener('submit', (e) => {
-    //     e.preventDefault();
-    //
-    //     const email = document.getElementById('username').value;
-    //     const access = document.getElementById('role').value;
-    //     const id = admins.length ? Math.max(...admins.map(a => a.id)) + 1 : 1;
-    //     admins.push({ id, name, email, access });
-    //     renderAdminTable();
-    //     closeAddAdminModal();
-    //     showSuccessMessage('Admin added successfully.');
-    // });
-
-    document.getElementById('editAdminForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = parseInt(document.getElementById('editAdminId').value);
-        const access = document.getElementById('editAdminAccess').value;
-        const admin = admins.find(a => a.id === id);
-        if (admin) {
-            admin.access = access;
-            renderAdminTable();
-            closeEditAdminModal();
-            showSuccessMessage('Admin access updated successfully.');
-        }
-    });
-
-    // Messages
     function showSuccessMessage(message) {
         const successMessage = document.getElementById('successMessage');
         successMessage.textContent = message;
@@ -768,10 +726,7 @@
         setTimeout(() => errorMessage.classList.add('hidden'), 3000);
     }
 
-    // Initialize admin table
-    renderAdminTable();
-
-    // Existing Order Filtering
+    // Order Filtering
     const filters = {
         orderId: document.getElementById('filterOrderId'),
         customer: document.getElementById('filterCustomer'),
@@ -804,7 +759,85 @@
         });
     }
 
-    // Existing PDF Generation
+    function previewInvoice(order) {
+        currentOrder = order;
+        const invoiceContent = document.getElementById('invoiceContent');
+        invoiceContent.innerHTML = `
+            <div class="watermark">Seller Copy</div>
+            <div class="invoice-header">
+                <h1 style="font-size: 20px; margin: 0;">E-Commerce</h1>
+                <p style="font-size: 12px; margin: 5px 0 0;">Seller Invoice: ${order.inv_number}</p>
+            </div>
+            <div class="invoice-section">
+                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Customer Details:</h2>
+                <p>Name: ${order.customer_name}</p>
+                <p>Email: ${order.email}</p>
+                <p>Phone: ${order.phone}</p>
+                <p>Address: ${order.address}</p>
+            </div>
+            <div class="invoice-section">
+                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Order Details:</h2>
+                <p>Order ID: ${order.order_id}</p>
+                <p>Date: ${order.order_date}</p>
+                <p>Total: ${order.total} BDT</p>
+                <p>Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</p>
+                <p>Payment Status: ${order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}</p>
+                <p>Payment Method: ${order.payment_method.charAt(0).toUpperCase() + order.payment_method.slice(1)}</p>
+                <p>Transaction ID: ${order.transaction_id}</p>
+            </div>
+            <div class="invoice-section">
+                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Order Items:</h2>
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${order.items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${parseFloat(item.price).toFixed(2)} BDT</td>
+                                <td>${item.quantity}</td>
+                                <td>${(item.price * item.quantity).toFixed(2)} BDT</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="invoice-section" style="margin-top: 20px;">
+                <canvas id="barcodeCanvas" style="width: 200px; height: 50px;"></canvas>
+                <canvas id="qrCodeCanvas" style="width: 60px; height: 60px;"></canvas>
+            </div>
+        `;
+
+        // Generate Barcode
+        const barcodeValue = 'INV-' + order.order_id + '-SELLER';
+        const barcodeCanvas = document.getElementById('barcodeCanvas');
+        JsBarcode(barcodeCanvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
+
+        // Generate QR Code
+        const qrCodeUrl = 'https://example.com/order/' + order.order_id;
+        const qrCanvas = document.getElementById('qrCodeCanvas');
+        QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
+            if (error) {
+                showErrorMessage('Error generating QR code: ' + error.message);
+            }
+        });
+
+        // Show Modal
+        document.getElementById('invoiceModal').classList.remove('hidden');
+    }
+
+    function closeInvoiceModal() {
+        document.getElementById('invoiceModal').classList.add('hidden');
+        document.getElementById('invoiceContent').innerHTML = '';
+        currentOrder = null;
+    }
+
     async function generateSellerInvoice(order) {
         const progressOverlay = document.getElementById('progressOverlay');
         progressOverlay.classList.remove('hidden');
@@ -888,6 +921,13 @@
             progressOverlay.classList.add('hidden');
         }
     }
+
+    // Download button event listener
+    document.getElementById('downloadInvoiceBtn').addEventListener('click', () => {
+        if (currentOrder) {
+            generateSellerInvoice(currentOrder);
+        }
+    });
 </script>
 </body>
 </html>
