@@ -7,6 +7,7 @@ public class HeaderDecorator extends MessageDecorator  {
 
     @Override
     public String getContent() {
+
         return "Header: Confidential\n" + super.getContent();
     }
 }
