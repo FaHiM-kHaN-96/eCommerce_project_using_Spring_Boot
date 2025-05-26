@@ -7,12 +7,15 @@ import com.example.ecomarce.entity.ProductEN;
 
 import com.example.ecomarce.helper.MessAge;
 
+import com.example.ecomarce.pdf_maker_class.InvoiceGenerator;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.adminrepo.Change_role_repo;
 import com.example.ecomarce.service_pkg.adminservice.RoleChangerService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -122,6 +125,41 @@ public class AdminController {
         return "adminpg/admin_products";
 
     }
+    @PostMapping("/invoice/{id}")
+    public ResponseEntity<?> invoice_generator(@PathVariable("id") String  id) {
+        try {
+            // Fetch orders by invoice_id
+            List<OrderTableEN> orders = order_manage.findByOrderid(id);
+            if (orders == null || orders.isEmpty()) {
+                return ResponseEntity.status(404).body("No orders found for invoice ID: " + id);
+            }
+
+            // Generate PDF
+            byte[] pdfBytes = InvoiceGenerator.generateSellerInvoice(orders);
+            ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=seller-invoice-" + id + ".pdf");
+            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+            headers.add(HttpHeaders.PRAGMA, "no-cache");
+            headers.add(HttpHeaders.EXPIRES, "0");
+
+            // Return PDF response
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfBytes.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(resource);
+        } catch (Exception e) {
+            // Log error (in production, use SLF4J)
+            System.err.println("Error generating invoice: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error generating invoice: " + e.getMessage());
+        }
+    }
+
+
+
 
 
     @GetMapping("/lg")
@@ -130,9 +168,19 @@ public class AdminController {
 
         List<Common_UserEN> user = change_role_repo.findAll();
         List<Common_UserEN> userdatamap = new ArrayList();
-        List<OrderTableEN> pendinglist = order_manage.findByStatus("pending");
+        List<OrderTableEN> all_order_list = order_manage.fatchallorder();
+        List<OrderTableEN> all_uniq_invoice_order = new ArrayList();
+        Set<String> seenInvoiceIds = new HashSet<>();
 
-        for (Common_UserEN link : user) {
+        for (OrderTableEN order : all_order_list) {
+            String invoiceId = order.getInvoice_id();
+            if (invoiceId != null && !seenInvoiceIds.contains(invoiceId)) {
+                all_uniq_invoice_order.add(order);
+                seenInvoiceIds.add(invoiceId);
+            }
+        }
+
+            for (Common_UserEN link : user) {
             try {
                 if (!link.getRole().equals("ROLE_USER")) {
                     userdatamap.add(link);
@@ -141,7 +189,7 @@ public class AdminController {
                 e.printStackTrace();
             }
         }
-        model.addAttribute("order_list" , pendinglist);
+        model.addAttribute("order_list" , all_uniq_invoice_order);
         model.addAttribute("userdatamap", userdatamap);
         return "adminpg/admin";
 

@@ -153,10 +153,12 @@ public class MainUserController {
 
         // Format time
         String formattedTime = time.format(formatter);
-
+        String invoice = invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin()));
         System.out.println("time  "+ formattedTime);
         try {
+            String invoice_data = null;
             for (Cart_Add item : cartlist) {
+                invoice_data= invoice;
                 OrderTableEN orderTableEN = new OrderTableEN();
                 System.out.println("\n\n\nproducts list "+item.getProduct_name());
                 orderTableEN.setOrder_product_id(item.getProduct_id());
@@ -176,8 +178,9 @@ public class MainUserController {
                 orderTableEN.setOrder_date(formattedTime);
                 orderTableEN.setProducten(proDuct_repo.findByProduct_id(item.getProduct_id()));
                 orderTableEN.setUser(userAuth.findByUsername(principal.getName()));
-                orderTableEN.setInvoice_id(invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin())));
+                orderTableEN.setInvoice_id(invoice_data);
                 orderManage.save(orderTableEN);
+
             }
             cartlist.clear();
             session.setAttribute("message_check",new MessAge("Order Processed Successfully","success-message") );

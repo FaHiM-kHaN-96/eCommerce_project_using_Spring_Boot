@@ -565,29 +565,13 @@
                     </td>
                     <td class="p-3" th:text="${o.order_payment_method}">TXN12345 (Online)</td>
                     <td class="p-3 flex flex-col space-y-2">
-                        <button
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                                onclick='previewInvoice({
-                                        "order_id": 1001,
-                                        "inv_number": "INV-1001",
-                                        "order_date": "May 10, 2025, 2:30 PM",
-                                        "total": "5,000.00",
-                                        "status": "delivered",
-                                        "payment_status": "Paid",
-                                        "transaction_id": "TXN12345",
-                                        "payment_method": "online",
-                                        "customer_name": "John Doe",
-                                        "email": "john@example.com",
-                                        "phone": "123-456-7890",
-                                        "address": "123 Main St, City",
-                                        "items": [
-                                            {"name": "Book A", "price": 2000.00, "quantity": 2, "product_id": 1},
-                                            {"name": "Toy B", "price": 1000.00, "quantity": 1, "product_id": 2}
-                                        ]
-                                    })'
-                        >
-                            Download Seller Invoice
-                        </button>
+                        <form th:action="@{'/admin/invoice/'+${o.invoice_id}}" method="post">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                    type="submit">
+                                Download Seller Invoice
+                            </button>
+                        </form>
+
                         <div class="flex items-center space-x-2">
                             <label class="flex items-center">
                                 <input type="radio" name="payment_status_1001" value="COD" class="mr-1">
@@ -608,71 +592,6 @@
                             </label>
                             <label class="flex items-center">
                                 <input type="radio" name="status_1001" value="cancelled" class="mr-1">
-                                Cancelled
-                            </label>
-                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-                                Set Status
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Sample Order 2 -->
-                <tr class="table-row border-b">
-                    <td class="p-3">1002</td>
-                    <td class="p-3">Jane Smith (Call: 987-654-3210)</td>
-                    <td class="p-3">INV-1002</td>
-                    <td class="p-3">2025-05-12 09:15</td>
-                    <td class="p-3">3,000.00 BDT</td>
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded text-sm bg-yellow-100 text-yellow-800">Pending</span>
-                    </td>
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded text-sm bg-orange-100 text-orange-800">COD</span>
-                    </td>
-                    <td class="p-3">Cash on Delivery (COD)</td>
-                    <td class="p-3 flex flex-col space-y-2">
-                        <button
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                                onclick='previewInvoice({
-                                        "order_id": 1002,
-                                        "inv_number": "INV-1002",
-                                        "order_date": "May 12, 2025, 9:15 AM",
-                                        "total": "3,000.00",
-                                        "status": "pending",
-                                        "payment_status": "COD",
-                                        "transaction_id": "Cash on Delivery",
-                                        "payment_method": "cod",
-                                        "customer_name": "Jane Smith",
-                                        "email": "jane@example.com",
-                                        "phone": "987-654-3210",
-                                        "address": "456 Elm St, City",
-                                        "items": [
-                                            {"name": "Book C", "price": 1500.00, "quantity": 2, "product_id": 3}
-                                        ]
-                                    })'
-                        >
-                            Download Seller Invoice
-                        </button>
-                        <div class="flex items-center space-x-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="payment_status_1002" value="COD" class="mr-1" checked>
-                                COD
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="payment_status_1002" value="Paid" class="mr-1">
-                                Paid
-                            </label>
-                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-                                Set Payment Status
-                            </button>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="status_1002" value="delivered" class="mr-1">
-                                Delivered
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="status_1002" value="cancelled" class="mr-1">
                                 Cancelled
                             </label>
                             <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">

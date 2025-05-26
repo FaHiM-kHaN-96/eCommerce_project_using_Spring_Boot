@@ -16,7 +16,6 @@ public class OrderTableEN {
     private String order_payment_method;
     private String order_status;
     private String order_date;
-    @Column(unique = true, nullable = false)
     private String invoice_id;
     private String order_payment_status;
     @ManyToOne

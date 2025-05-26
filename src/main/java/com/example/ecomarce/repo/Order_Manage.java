@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
@@ -17,10 +18,10 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM OrderTableEN o WHERE o.invoice_id = :invoice_id")
     Boolean findinvoiceId(@Param("invoice_id") String invoice_id);
 
-    @Query("SELECT o FROM OrderTableEN o WHERE o.order_status = :order_status")
-    List<OrderTableEN> findByStatus(@Param("order_status") String order_status );
+    @Query("SELECT c FROM OrderTableEN c")
+    List<OrderTableEN> fatchallorder();
 
-    @Query("SELECT o FROM OrderTableEN o WHERE o.order_id = :order_id")
-    OrderTableEN findByOrderid(@Param("order_id") int order_id );
+    @Query("SELECT o FROM OrderTableEN o WHERE o.invoice_id = :invoice_id")
+    List<OrderTableEN> findByOrderid(@Param("invoice_id") String invoice_id );
 
 }
