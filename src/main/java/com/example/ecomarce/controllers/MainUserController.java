@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -41,7 +42,7 @@ public class MainUserController {
     private Order_Manage orderManage;
 
 
-    private PinGenerator pinGenerator ;
+
 
 
 
@@ -146,12 +147,9 @@ public class MainUserController {
         System.out.println("\n\n\n\npin   "+invoice_checker(PinGenerator.generateSixDigitPin()));
         String transaction_data = transaction_id;
         //session.setAttribute("transaction_data    ", transaction_data);
-        LocalTime time = LocalTime.now();
+        LocalDateTime time = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
 
-        // 12-hour clock formatter with AM/PM
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-
-        // Format time
         String formattedTime = time.format(formatter);
         String invoice = invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin()));
         System.out.println("time  "+ formattedTime);
@@ -242,6 +240,29 @@ public class MainUserController {
 
     }
 
+    @PostMapping("/order-list")
+    public String order_list(Model model,Principal principal) {
+
+        Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
+        //ekhane ekta list add korbo
+        Map<OrderTableEN,List<OrderTableEN>> ord = new HashMap<>();
+        List<OrderTableEN> orderlist = orderManage.findOrderList(commonUserEN.getId());
+        Set<String> seenInvoiceIds = new HashSet<>();
+        for (OrderTableEN order : orderlist) {
+            List<OrderTableEN> same_invoice_order = orderManage.findinvoice(order.getInvoice_id());
+            if (!seenInvoiceIds.contains(order.getInvoice_id())) {
+                ord.put(order,same_invoice_order);
+            }
+            seenInvoiceIds.add(order.getInvoice_id());
+
+        }
+        System.out.println(ord.size());
+
+ //   model.addAttribute("order_list",ord);
+
+
+        return "userpg/orders";
+    }
     @RequestMapping(value = "/signup_successful",method = RequestMethod.POST)
     public String signupsub(Model model,
                             @ModelAttribute("customer") Common_UserEN customer,

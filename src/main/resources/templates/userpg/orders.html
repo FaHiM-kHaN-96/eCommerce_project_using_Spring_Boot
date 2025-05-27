@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Your Orders - Ahmad Shop</title>
+  <title>Your Orders - E-Commerce</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -438,386 +438,334 @@
 <div class="container mx-auto p-8">
   <h2 class="text-3xl font-bold text-gray-800 mb-8 tracking-tight">Your Orders</h2>
 
-  <!-- Static Data -->
-  <script>
-    // Simulated customer data
-    const customer = {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+8801234567890",
-      address: "123 Main St, Dhaka, Bangladesh"
-    };
+  <!-- Sample Orders -->
+  <div class="card bg-white p-8 mb-8" th:each="list : ${order_list}">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800" th:text="'Order #'+${list.value.}">Order #1001</h3>
+        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.invoice_id}">Invoice: INV-1001</p>
+        <p class="text-sm text-gray-600" th:text="'Date: '+${list.order_date}" >Date: May 25, 2025, 10:30 AM</p>
+      </div>
+      <div class="text-left sm:text-right mt-4 sm:mt-0">
+        <p class="text-lg font-semibold text-gray-800">Total: 1500.00 BDT</p>
+        <p class="text-sm status-delivered font-medium" th:text="'Status: '+${list.order_status}">Status: Delivered</p>
+        <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.order_payment_status}">Payment: Paid</p>
+        <div class="flex flex-col sm:flex-row gap-3 mt-3">
+          <button
+                  class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                  onclick='generateInvoice(
+                                1001,
+                                "INV-1001",
+                                "May 25, 2025, 10:30 AM",
+                                1500.00,
+                                "Delivered",
+                                "Paid",
+                                [
+                                    {"product_id": 1, "name": "Book - Mystery Novel", "quantity": 2, "price": 500.00},
+                                    {"product_id": 2, "name": "Toy - Action Figure", "quantity": 1, "price": 500.00}
+                                ]
+                            )'
+          >
+            Download Invoice
+          </button>
+          <button
+                  class="btn-rating text-white font-semibold py-2 px-4 rounded-lg"
+                  onclick='openRatingModal(1001, [
+                                {"product_id": 1, "name": "Book - Mystery Novel", "quantity": 2, "price": 500.00},
+                                {"product_id": 2, "name": "Toy - Action Figure", "quantity": 1, "price": 500.00}
+                            ], {"1": 4, "2": 0})'
+          >
+            Give Rating
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto"  >
+      <table class="w-full table-auto">
+        <thead class="table-header text-white">
+        <tr>
+          <th class="p-4 text-left font-semibold">Rating</th>
+          <th class="p-4 text-left font-semibold" >Product</th>
+          <th class="p-4 text-left font-semibold">Price</th>
+          <th class="p-4 text-left font-semibold">Quantity</th>
+          <th class="p-4 text-left font-semibold">Subtotal</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="order-item border-b border-gray-200">
+          <td class="p-4 text-gray-700">
+            <div class="rating-stars">
+              <span class="rating-star">★</span>
+              <span class="rating-star">★</span>
+              <span class="rating-star">★</span>
+              <span class="rating-star">★</span>
+              <span class="rating-star empty">★</span>
+            </div>
+          </td>
+          <td class="p-4 text-gray-700" >Book - Mystery Novel</td>
+          <td class="p-4 text-gray-700" >500.00 BDT</td>
+          <td class="p-4 text-gray-700"  >2</td>
+          <td class="p-4 text-gray-700" >1000.00 BDT</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-    // Simulated orders data
-    const orders = [
-      {
-        order_id: 1,
-        inv_number: "INV001",
-        order_date: "2025-05-20 10:30:00",
-        total: 1500.00,
-        status: "delivered",
-        payment_status: "paid"
-      },
-      {
-        order_id: 2,
-        inv_number: "INV002",
-        order_date: "2025-05-18 14:20:00",
-        total: 800.00,
-        status: "processing",
-        payment_status: "pending"
-      }
-    ];
+  <div class="card bg-white p-8 mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800">Order #1002</h3>
+        <p class="text-sm text-gray-600">Invoice: INV-1002</p>
+        <p class="text-sm text-gray-600">Date: May 20, 2025, 2:15 PM</p>
+      </div>
+      <div class="text-left sm:text-right mt-4 sm:mt-0">
+        <p class="text-lg font-semibold text-gray-800">Total: 800.00 BDT</p>
+        <p class="text-sm status-pending font-medium">Status: Pending</p>
+        <p class="text-sm payment-pending font-medium">Payment: Pending</p>
+        <div class="flex flex-col sm:flex-row gap-3 mt-3">
+          <button
+                  class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                  onclick='generateInvoice(
+                                1002,
+                                "INV-1002",
+                                "May 20, 2025, 2:15 PM",
+                                800.00,
+                                "Pending",
+                                "Pending",
+                                [
+                                    {"product_id": 3, "name": "Book - Sci-Fi Adventure", "quantity": 1, "price": 800.00}
+                                ]
+                            )'
+          >
+            Download Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto">
+        <thead class="table-header text-white" >
+        <tr>
+          <th class="p-4 text-left font-semibold">Rating</th>
+          <th class="p-4 text-left font-semibold">Product</th>
+          <th class="p-4 text-left font-semibold">Price</th>
+          <th class="p-4 text-left font-semibold">Quantity</th>
+          <th class="p-4 text-left font-semibold">Subtotal</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="order-item border-b border-gray-200" >
+          <td class="p-4 text-gray-700">Not Rated</td>
+          <td class="p-4 text-gray-700">Book - Sci-Fi Adventure</td>
+          <td class="p-4 text-gray-700">800.00 BDT</td>
+          <td class="p-4 text-gray-700">1</td>
+          <td class="p-4 text-gray-700">800.00 BDT</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-    // Simulated order items
-    const order_items = {
-      1: [
-        { product_id: 101, quantity: 2, price: 500.00, name: "Book A" },
-        { product_id: 102, quantity: 1, price: 500.00, name: "Toy B" }
-      ],
-      2: [
-        { product_id: 103, quantity: 1, price: 800.00, name: "Book C" }
-      ]
-    };
+<script>
+  // Sample customer data
+  const customer = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "+8801234567890",
+    address: "123 Main Street, Dhaka, Bangladesh"
+  };
 
-    // Simulated order ratings
-    const order_ratings = {
-      1: { 101: 4, 102: 0 },
-      2: {}
-    };
+  // Sample customer ID
+  const customerId = 1;
 
-    // Simulated customer ID
-    const customer_id = 1;
+  // Rating Modal Functions
+  let productRatings = {};
+  let currentOrderId = null;
 
-    // Error message if no orders
-    const error = orders.length === 0 ? 'You have no orders yet.' : '';
-  </script>
+  function openRatingModal(orderId, orderItems, existingRatings) {
+    currentOrderId = orderId;
+    const modal = document.getElementById('ratingModal');
+    const modalOrderId = document.getElementById('modalOrderId');
+    const modalProductList = document.getElementById('modalProductList');
+    const submitButton = document.getElementById('submitRating');
+    modalOrderId.textContent = orderId;
 
-  <!-- Error Message -->
-  <div id="errorMessage" class="bg-red-100 text-red-800 p-4 rounded-lg mb-6 animate__animated animate__fadeIn hidden"></div>
-  <a id="shopNowButton" href="index.html" class="btn-primary inline-block text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 hidden">Shop Now</a>
+    // Initialize product ratings
+    productRatings = {};
+    orderItems.forEach(item => {
+      productRatings[item.product_id] = existingRatings[item.product_id] || 0;
+    });
 
-  <!-- Orders List -->
-  <div id="ordersList"></div>
+    // Check if all products are rated
+    const allRated = Object.values(productRatings).every(rating => rating > 0);
+    submitButton.disabled = allRated;
 
-  <script>
-    // Render orders dynamically
-    const ordersList = document.getElementById('ordersList');
-    const errorMessage = document.getElementById('errorMessage');
-    const shopNowButton = document.getElementById('shopNowButton');
-
-    if (error) {
-      errorMessage.textContent = error;
-      errorMessage.classList.remove('hidden');
-      shopNowButton.classList.remove('hidden');
-    } else {
-      orders.forEach(order => {
-        // Check if all products in the order are rated
-        const order_products = order_items[order.order_id].map(item => item.product_id);
-        const rated_products = Object.keys(order_ratings[order.order_id]);
-        const all_rated = order_products.every(pid => rated_products.includes(pid.toString()) && order_ratings[order.order_id][pid] > 0);
-
-        const orderDiv = document.createElement('div');
-        orderDiv.className = 'card bg-white p-8 mb-8';
-        orderDiv.innerHTML = `
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800">Order #${order.order_id}</h3>
-                                <p class="text-sm text-gray-600">Invoice: ${order.inv_number}</p>
-                                <p class="text-sm text-gray-600">Date: ${new Date(order.order_date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
-                            </div>
-                            <div class="text-left sm:text-right mt-4 sm:mt-0">
-                                <p class="text-lg font-semibold text-gray-800">Total: ${order.total.toFixed(2)} BDT</p>
-                                <p class="text-sm status-${order.status.toLowerCase()} font-medium">Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</p>
-                                <p class="text-sm payment-${order.payment_status.toLowerCase()} font-medium">Payment: ${order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}</p>
-                                <div class="flex flex-col sm:flex-row gap-3 mt-3">
-                                    <button
-                                        class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
-                                        onclick='generateInvoice(
-                                            ${order.order_id},
-                                            "${order.inv_number}",
-                                            "${new Date(order.order_date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}",
-                                            ${order.total},
-                                            "${order.status.charAt(0).toUpperCase() + order.status.slice(1)}",
-                                            "${order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}",
-                                            ${JSON.stringify(order_items[order.order_id])}
-                                        )'
-                                    >
-                                        Download Invoice
-                                    </button>
-                                    ${order.status === 'delivered' ? `
-                                        <button
-                                            class="btn-rating text-white font-semibold py-2 px-4 rounded-lg"
-                                            onclick='openRatingModal(${order.order_id}, ${JSON.stringify(order_items[order.order_id])}, ${JSON.stringify(order_ratings[order.order_id])})'
-                                            ${all_rated ? 'disabled' : ''}
-                                        >
-                                            ${all_rated ? 'Rated' : 'Give Rating'}
-                                        </button>
-                                    ` : ''}
-                                </div>
-                            </div>
+    // Populate product list with star ratings
+    modalProductList.innerHTML = '';
+    orderItems.forEach(item => {
+      const existingRating = existingRatings[item.product_id] || 0;
+      const isRated = existingRating > 0;
+      const row = document.createElement('tr');
+      row.className = 'border-b border-gray-200';
+      row.innerHTML = `
+                    <td class="p-3 text-gray-700">${item.name}</td>
+                    <td class="p-3 text-gray-700">${Number(item.price).toFixed(2)} BDT</td>
+                    <td class="p-3 text-gray-700">${item.quantity}</td>
+                    <td class="p-3 text-gray-700">${(item.price * item.quantity).toFixed(2)} BDT</td>
+                    <td class="p-3">
+                        <div class="star-rating" data-product-id="${item.product_id}">
+                            <span class="star ${isRated && existingRating >= 1 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="1">★</span>
+                            <span class="star ${isRated && existingRating >= 2 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="2">★</span>
+                            <span class="star ${isRated && existingRating >= 3 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="3">★</span>
+                            <span class="star ${isRated && existingRating >= 4 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="4">★</span>
+                            <span class="star ${isRated && existingRating >= 5 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="5">★</span>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full table-auto">
-                                <thead class="table-header text-white">
-                                    <tr>
-                                        <th class="p-4 text-left font-semibold">Rating</th>
-                                        <th class="p-4 text-left font-semibold">Product</th>
-                                        <th class="p-4 text-left font-semibold">Price</th>
-                                        <th class="p-4 text-left font-semibold">Quantity</th>
-                                        <th class="p-4 text-left font-semibold">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${order_items[order.order_id].map(item => `
-                                        <tr class="order-item border-b border-gray-200">
-                                            <td class="p-4 text-gray-700">
-                                                ${order_ratings[order.order_id][item.product_id] > 0 ? `
-                                                    <div class="rating-stars">
-                                                        ${[...Array(5)].map((_, i) => `
-                                                            <span class="rating-star ${i < order_ratings[order.order_id][item.product_id] ? '' : 'empty'}">★</span>
-                                                        `).join('')}
-                                                    </div>
-                                                ` : 'Not Rated'}
-                                            </td>
-                                            <td class="p-4 text-gray-700">${item.name}</td>
-                                            <td class="p-4 text-gray-700">${item.price.toFixed(2)} BDT</td>
-                                            <td class="p-4 text-gray-700">${item.quantity}</td>
-                                            <td class="p-4 text-gray-700">${(item.price * item.quantity).toFixed(2)} BDT</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-        ordersList.appendChild(orderDiv);
-      });
-    }
+                    </td>
+                `;
+      modalProductList.appendChild(row);
+    });
 
-    // Rating Modal Functions
-    let productRatings = {};
-    let currentOrderId = null;
-
-    function openRatingModal(orderId, orderItems, existingRatings) {
-      currentOrderId = orderId;
-      const modal = document.getElementById('ratingModal');
-      const modalOrderId = document.getElementById('modalOrderId');
-      const modalProductList = document.getElementById('modalProductList');
-      const submitButton = document.getElementById('submitRating');
-      modalOrderId.textContent = orderId;
-
-      // Initialize product ratings
-      productRatings = {};
-      orderItems.forEach(item => {
-        productRatings[item.product_id] = existingRatings[item.product_id] || 0;
-      });
-
-      // Check if all products are rated
-      const allRated = Object.values(productRatings).every(rating => rating > 0);
-      submitButton.disabled = allRated;
-
-      // Populate product list with star ratings
-      modalProductList.innerHTML = '';
-      orderItems.forEach(item => {
-        const existingRating = existingRatings[item.product_id] || 0;
-        const isRated = existingRating > 0;
-        const row = document.createElement('tr');
-        row.className = 'border-b border-gray-200';
-        row.innerHTML = `
-                        <td class="p-3 text-gray-700">${item.name}</td>
-                        <td class="p-3 text-gray-700">${Number(item.price).toFixed(2)} BDT</td>
-                        <td class="p-3 text-gray-700">${item.quantity}</td>
-                        <td class="p-3 text-gray-700">${(item.price * item.quantity).toFixed(2)} BDT</td>
-                        <td class="p-3">
-                            <div class="star-rating" data-product-id="${item.product_id}">
-                                <span class="star ${isRated && existingRating >= 1 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="1">★</span>
-                                <span class="star ${isRated && existingRating >= 2 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="2">★</span>
-                                <span class="star ${isRated && existingRating >= 3 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="3">★</span>
-                                <span class="star ${isRated && existingRating >= 4 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="4">★</span>
-                                <span class="star ${isRated && existingRating >= 5 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="5">★</span>
-                            </div>
-                        </td>
-                    `;
-        modalProductList.appendChild(row);
-      });
-
-      // Add event listeners for stars (only for non-rated products)
-      document.querySelectorAll('.star-rating').forEach(ratingDiv => {
-        const productId = ratingDiv.getAttribute('data-product-id');
-        if (!existingRatings[productId]) {
-          ratingDiv.querySelectorAll('.star').forEach(star => {
-            star.addEventListener('click', () => {
-              const rating = parseInt(star.getAttribute('data-value'));
-              productRatings[productId] = rating;
-              ratingDiv.querySelectorAll('.star').forEach(s => {
-                if (parseInt(s.getAttribute('data-value')) <= rating) {
-                  s.classList.add('selected');
-                  s.style.color = '#f59e0b';
-                } else {
-                  s.classList.remove('selected');
-                  s.style.color = '#d1d5db';
-                }
-              });
+    // Add event listeners for stars (only for non-rated products)
+    document.querySelectorAll('.star-rating').forEach(ratingDiv => {
+      const productId = ratingDiv.getAttribute('data-product-id');
+      if (!existingRatings[productId]) {
+        ratingDiv.querySelectorAll('.star').forEach(star => {
+          star.addEventListener('click', () => {
+            const rating = parseInt(star.getAttribute('data-value'));
+            productRatings[productId] = rating;
+            ratingDiv.querySelectorAll('.star').forEach(s => {
+              if (parseInt(s.getAttribute('data-value')) <= rating) {
+                s.classList.add('selected');
+                s.style.color = '#f59e0b';
+              } else {
+                s.classList.remove('selected');
+                s.style.color = '#d1d5db';
+              }
             });
           });
+        });
+      }
+    });
+
+    modal.classList.remove('hidden');
+  }
+
+  document.getElementById('cancelRating').addEventListener('click', () => {
+    document.getElementById('ratingModal').classList.add('hidden');
+    productRatings = {};
+  });
+
+  document.getElementById('submitRating').addEventListener('click', async () => {
+    // Check if all products have a rating
+    const unratedProducts = Object.entries(productRatings).filter(([_, rating]) => rating === 0);
+    if (unratedProducts.length > 0) {
+      alert('Please provide a rating for all products.');
+      return;
+    }
+
+    const progressOverlay = document.getElementById('progressOverlay');
+    progressOverlay.classList.remove('hidden');
+
+    try {
+      // Simulate API call (since PHP backend is removed)
+      console.log('Submitting ratings:', { order_id: currentOrderId, customer_id: customerId, ratings: productRatings });
+      alert('Ratings submitted successfully! (Simulated)');
+      document.getElementById('ratingModal').classList.add('hidden');
+      productRatings = {};
+      // Simulate page reload
+      alert('Page would reload here to update ratings.');
+    } catch (error) {
+      alert('Error submitting ratings: ' + error.message);
+    } finally {
+      progressOverlay.classList.add('hidden');
+    }
+  });
+
+  async function generateInvoice(orderId, invNumber, orderDate, total, status, paymentStatus, orderItems) {
+    // Show progress overlay
+    const progressOverlay = document.getElementById('progressOverlay');
+    progressOverlay.classList.remove('hidden');
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFillColor(0, 48, 135);
+      doc.rect(0, 0, 210, 40, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(20);
+      doc.text('Ahmad Shop', 20, 20);
+      doc.setFontSize(12);
+      doc.text('Invoice: ' + invNumber, 20, 30);
+
+      // Customer Details
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.text('Customer Details:', 20, 50);
+      doc.setFontSize(10);
+      doc.text('Name: ' + customer.name, 20, 60);
+      doc.text('Email: ' + customer.email, 20, 67);
+      doc.text('Phone: ' + customer.phone, 20, 74);
+      doc.text('Address: ' + customer.address, 20, 81);
+
+      // Order Details
+      doc.setFontSize(12);
+      doc.text('Order Details:', 20, 95);
+      doc.setFontSize(10);
+      doc.text('Order ID: ' + orderId, 20, 105);
+      doc.text('Date: ' + orderDate, 20, 112);
+      doc.text('Total: ' + total.toFixed(2) + ' BDT', 20, 119);
+      doc.text('Status: ' + status, 20, 126);
+      doc.text('Payment Status: ' + paymentStatus, 20, 133);
+
+      // Order Items Table
+      doc.setFontSize(12);
+      doc.text('Order Items:', 20, 147);
+      doc.setDrawColor(0);
+      doc.setFillColor(229, 231, 235);
+      doc.rect(20, 152, 170, 10, 'F');
+      doc.setTextColor(0);
+      doc.setFontSize(10);
+      doc.text('Product', 22, 159);
+      doc.text('Price', 100, 159);
+      doc.text('Quantity', 130, 159);
+      doc.text('Subtotal', 160, 159);
+
+      let y = 169;
+      orderItems.forEach(item => {
+        doc.text(item.name, 22, y);
+        doc.text(Number(item.price).toFixed(2) + ' BDT', 100, y);
+        doc.text(item.quantity.toString(), 130, y);
+        doc.text((item.price * item.quantity).toFixed(2) + ' BDT', 160, y);
+        y += 10;
+      });
+
+      // Barcode and QR Code
+      const barcodeValue = 'INV-' + orderId + '-CUST';
+      const qrCodeUrl = 'http://localhost/ah_api/order/' + orderId;
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
+      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, y, 80, 20);
+
+      const qrCanvas = document.createElement('canvas');
+      QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
+        if (!error) {
+          doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 120, y, 20, 20);
         }
       });
 
-      modal.classList.remove('hidden');
+      // Save PDF (no server call since PHP is removed)
+      doc.save(`invoice-${invNumber}.pdf`);
+    } catch (error) {
+      alert('Error generating invoice: ' + error.message);
+    } finally {
+      // Hide progress overlay
+      progressOverlay.classList.add('hidden');
     }
-
-    document.getElementById('cancelRating').addEventListener('click', () => {
-      document.getElementById('ratingModal').classList.add('hidden');
-      productRatings = {};
-    });
-
-    document.getElementById('submitRating').addEventListener('click', async () => {
-      // Check if all products have a rating
-      const unratedProducts = Object.entries(productRatings).filter(([_, rating]) => rating === 0);
-      if (unratedProducts.length > 0) {
-        alert('Please provide a rating for all products.');
-        return;
-      }
-
-      const progressOverlay = document.getElementById('progressOverlay');
-      progressOverlay.classList.remove('hidden');
-
-      try {
-        const formData = new FormData();
-        formData.append('order_id', currentOrderId);
-        formData.append('customer_id', customer_id);
-        formData.append('ratings', JSON.stringify(productRatings));
-
-        // Simulate server response
-        console.log('Submitting ratings:', { order_id: currentOrderId, customer_id, ratings: productRatings });
-        // Mock response
-        const result = { success: true };
-        // const response = await fetch('submit_product_ratings.php', {
-        //     method: 'POST',
-        //     body: formData
-        // });
-        // const result = await response.json();
-
-        if (result.success) {
-          alert('Ratings submitted successfully!');
-          document.getElementById('ratingModal').classList.add('hidden');
-          productRatings = {};
-          // Reload the page to update the button state and ratings
-          window.location.reload();
-        } else {
-          alert('Error submitting ratings: ' + result.error);
-        }
-      } catch (error) {
-        alert('Error submitting ratings: ' + error.message);
-      } finally {
-        progressOverlay.classList.add('hidden');
-      }
-    });
-
-    async function generateInvoice(orderId, invNumber, orderDate, total, status, paymentStatus, orderItems) {
-      // Show progress overlay
-      const progressOverlay = document.getElementById('progressOverlay');
-      progressOverlay.classList.remove('hidden');
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Header
-        doc.setFillColor(0, 48, 135);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20);
-        doc.text('Ahmad Shop', 20, 20);
-        doc.setFontSize(12);
-        doc.text('Invoice: ' + invNumber, 20, 30);
-
-        // Customer Details
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.text('Customer Details:', 20, 50);
-        doc.setFontSize(10);
-        doc.text(`Name: ${customer.name}`, 20, 60);
-        doc.text(`Email: ${customer.email}`, 20, 67);
-        doc.text(`Phone: ${customer.phone}`, 20, 74);
-        doc.text(`Address: ${customer.address}`, 20, 81);
-
-        // Order Details
-        doc.setFontSize(12);
-        doc.text('Order Details:', 20, 95);
-        doc.setFontSize(10);
-        doc.text('Order ID: ' + orderId, 20, 105);
-        doc.text('Date: ' + orderDate, 20, 112);
-        doc.text('Total: ' + total.toFixed(2) + ' BDT', 20, 119);
-        doc.text('Status: ' + status, 20, 126);
-        doc.text('Payment Status: ' + paymentStatus, 20, 133);
-
-        // Order Items Table
-        doc.setFontSize(12);
-        doc.text('Order Items:', 20, 147);
-        doc.setDrawColor(0);
-        doc.setFillColor(229, 231, 235);
-        doc.rect(20, 152, 170, 10, 'F');
-        doc.setTextColor(0);
-        doc.setFontSize(10);
-        doc.text('Product', 22, 159);
-        doc.text('Price', 100, 159);
-        doc.text('Quantity', 130, 159);
-        doc.text('Subtotal', 160, 159);
-
-        let y = 169;
-        orderItems.forEach(item => {
-          doc.text(item.name, 22, y);
-          doc.text(Number(item.price).toFixed(2) + ' BDT', 100, y);
-          doc.text(item.quantity.toString(), 130, y);
-          doc.text((item.price * item.quantity).toFixed(2) + ' BDT', 160, y);
-          y += 10;
-        });
-
-        // Barcode and QR Code
-        const barcodeValue = 'INV-' + orderId + '-CUST';
-        const qrCodeUrl = 'http://localhost/ah_api/order/' + orderId;
-        const canvas = document.createElement('canvas');
-        JsBarcode(canvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
-        doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, y, 80, 20);
-
-        const qrCanvas = document.createElement('canvas');
-        QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
-          if (!error) {
-            doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 120, y, 20, 20);
-          }
-        });
-
-        // Save PDF and simulate server response
-        const pdfBlob = doc.output('blob');
-        const formData = new FormData();
-        formData.append('pdf', pdfBlob, `inv-${orderId}-customer.pdf`);
-        formData.append('order_id', orderId);
-        formData.append('inv_number', invNumber);
-        formData.append('barcode', barcodeValue);
-        formData.append('qr_code_url', qrCodeUrl);
-
-        // Simulate server response
-        console.log('Generating invoice:', { order_id: orderId, inv_number: invNumber });
-        const result = { success: true };
-        // const response = await fetch('generate_invoice.php', {
-        //     method: 'POST',
-        //     body: formData
-        // });
-        // const result = await response.json();
-
-        if (result.success) {
-          doc.save(`invoice-${invNumber}.pdf`);
-        } else {
-          alert('Error generating invoice: ' + result.error);
-        }
-      } catch (error) {
-        alert('Error generating invoice: ' + error.message);
-      } finally {
-        // Hide progress overlay
-        progressOverlay.classList.add('hidden');
-      }
-    }
-  </script>
-</div>
+  }
+</script>
 </body>
 </html>

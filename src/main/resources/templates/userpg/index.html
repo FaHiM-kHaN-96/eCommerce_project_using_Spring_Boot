@@ -595,7 +595,10 @@
                 <a href="/signup" class="icon-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" aria-label="Sign Up" data-bs-original-title="Sign Up">
                     <i class="bi bi-person-plus"></i>
                 </a>
-<!--                <a href="orders.html" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</a>-->
+                <form method="POST" th:action="@{/order-list}">
+                    <button type="submit" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</button>
+                </form>
+
 <!--                <a href="logout.html" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>-->
             </div>
         </div>
