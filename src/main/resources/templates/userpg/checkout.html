@@ -385,12 +385,12 @@
                     <form method="POST" th:action="@{/checkout_cm}" th:object="${commonUserEN}"  id="checkoutForm">
                         <div class="mb-5">
                             <label for="name" class="block text-sm font-medium text-gray-700"  >Full Name</label>
-                            <input 
-                                type="text" 
-                                id="name" 
+                            <input
+                                type="text"
+                                id="name"
                                 name="fullname"
-                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
-                                value="John Doe" 
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800"
+                                value="John Doe"
                                 required
                                 th:value="${commonUserEN.fullname}"
                                 oninput="validateEnglish(this)"
@@ -398,12 +398,12 @@
                         </div>
                         <div class="mb-5">
                             <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                            <input 
-                                type="text" 
-                                id="phone" 
-                                name="phone" 
-                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
-                                value="12345678901" 
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800"
+                                value="12345678901"
                                 required
                                 th:value="${commonUserEN.phone}"
                                 oninput="validatePhone(this)"
@@ -411,10 +411,10 @@
                         </div>
                         <div class="mb-5">
                             <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-                            <textarea 
-                                id="address" 
-                                name="address" 
-                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                            <textarea
+                                id="address"
+                                name="address"
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800"
                                 required
                                 oninput="validateEnglish(this)"
                                 th:text="${commonUserEN.address}"
@@ -424,28 +424,27 @@
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
                             <div class="flex space-x-4">
-                                <button 
-                                    type="button" 
-                                    id="prepaidBtn" 
+                                <button
+                                    type="button"
+                                    id="prepaidBtn"
                                     class="btn-primary w-1/2 text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
                                     onclick="selectPaymentMethod('prepaid')"
                                 >
                                     Prepaid
                                 </button>
-                                <button 
-                                    type="button" 
-                                    id="postpaidBtn" 
+                                <button
+                                    type="button"
+                                    id="postpaidBtn"
                                     class="btn-primary w-1/2 text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
                                     onclick="selectPaymentMethod('postpaid')"
                                 >
                                     Postpaid
                                 </button>
                             </div>
-                            <input 
+                            <input
                                 type="hidden"
-
-                                id="payment_method" 
-                                name="payment_method" 
+                                id="payment_method"
+                                name="payment_method"
                                 value=""
                             >
                         </div>
@@ -458,16 +457,16 @@
                         <!-- Transaction ID -->
                         <div id="transactionIdField" class="mb-5 hidden">
                             <label for="transaction_id" class="block text-sm font-medium text-gray-700">Transaction ID</label>
-                            <input 
-                                type="text" 
-                                id="transaction_id" 
-                                name="transaction_id" 
-                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800" 
+                            <input
+                                type="text"
+                                id="transaction_id"
+                                name="transaction_id"
+                                class="input-focus mt-1 w-full p-3 rounded-lg bg-gray-50 text-gray-800"
                                 oninput="validateEnglish(this)"
                             >
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="btn-primary w-full text-white font-semibold py-3 rounded-lg hover:bg-opacity-90"
                             disabled
                             id="placeOrderBtn"

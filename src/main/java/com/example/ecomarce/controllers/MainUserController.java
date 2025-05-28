@@ -141,8 +141,7 @@ public class MainUserController {
 
     @PostMapping("/checkout_cm")
     public String checkout_cm(
-            //@RequestParam("address") String address ,
-            @RequestParam("transaction_id") String transaction_id,
+            @RequestParam(value = "transaction_id", required = false) String transaction_id,
             Model model, HttpSession session, Principal principal) {
         //System.out.println("\n\n\n\nFullname "+fullname);
         // System.out.println("\n\nphone "+phone);
@@ -171,10 +170,15 @@ public class MainUserController {
                 orderTableEN.setOrder_quantity(item.getQuantity());
                 //orderTableEN.setOrder_total_price(calculateTotalPrice());
                 orderTableEN.setOrder_product_category(item.getProduct_category());
-                orderTableEN.setOrder_payment_method(transaction_data);
-                if (transaction_data.equals("Cash on Delivery")) {
-                    orderTableEN.setOrder_payment_status("Cash on Delivery");
+
+                if (transaction_data == null) {
+                   // orderTableEN.setOrder_payment_status("Cash on Delivery");
+                    orderTableEN.setOrder_payment_method("COD");
+                } else {
+                    orderTableEN.setOrder_payment_method(transaction_data);
+
                 }
+
                 orderTableEN.setOrder_payment_status("Pending");
                 orderTableEN.setOrder_status("Pending");
                 orderTableEN.setOrder_date(formattedTime);
@@ -250,7 +254,7 @@ public class MainUserController {
         Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
         //ekhane ekta list add korbo
         Map<OrderTableEN,List<OrderTableEN>> ord = new HashMap<>();
-        Map<String ,OrderTableEN> orderl = new HashMap<>();
+
         List<OrderTableEN> orderlist = orderManage.findOrderList(commonUserEN.getId());
         Set<String> seenInvoiceIds = new HashSet<>();
         for (OrderTableEN order : orderlist) {
