@@ -6,6 +6,7 @@ import com.example.ecomarce.entity.ProductEN;
 import com.example.ecomarce.generic_logic.PinGenerator;
 import com.example.ecomarce.helper.MessAge;
 import com.example.ecomarce.logical_class.Cart_Add;
+import com.example.ecomarce.pdf_maker_class.CustomerInvoice;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.UserAuth;
@@ -14,6 +15,10 @@ import com.example.ecomarce.service_pkg.Order_Manage_Service;
 import com.example.ecomarce.service_pkg.Verifcation_Ser;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -48,7 +52,7 @@ public class MainUserController {
 
 
 
-  private final List<Cart_Add> cartlist = new ArrayList<>();
+    private final List<Cart_Add> cartlist = new ArrayList<>();
 
     @GetMapping("/login")
     public String login() {
@@ -58,7 +62,7 @@ public class MainUserController {
 
     @GetMapping("/")
     public String product( Model model) {
-       // String email = principal.getName();
+        // String email = principal.getName();
         List<ProductEN> productlist = proDuct_repo.findAll();
 
 
@@ -137,12 +141,12 @@ public class MainUserController {
 
     @PostMapping("/checkout_cm")
     public String checkout_cm(
-                              //@RequestParam("address") String address ,
-                              @RequestParam("transaction_id") String transaction_id,
-                              Model model, HttpSession session, Principal principal) {
+            //@RequestParam("address") String address ,
+            @RequestParam("transaction_id") String transaction_id,
+            Model model, HttpSession session, Principal principal) {
         //System.out.println("\n\n\n\nFullname "+fullname);
-       // System.out.println("\n\nphone "+phone);
-      //  System.out.println("\n\naddress "+address);
+        // System.out.println("\n\nphone "+phone);
+        //  System.out.println("\n\naddress "+address);
         System.out.println("\n\npayment_method "+transaction_id);
         System.out.println("\n\n\n\npin   "+invoice_checker(PinGenerator.generateSixDigitPin()));
         String transaction_data = transaction_id;
@@ -265,6 +269,40 @@ public class MainUserController {
 
         return "userpg/orders";
     }
+    @PostMapping("/invoice/{id}")
+    public ResponseEntity<?> invoice_generator(@PathVariable("id") String  id) {
+        try {
+            // Fetch orders by invoice_id
+            List<OrderTableEN> orders = orderManage.findByOrderid(id);
+            if (orders == null || orders.isEmpty()) {
+                return ResponseEntity.status(404).body("No orders found for invoice ID: " + id);
+            }
+
+            // Generate PDF
+            byte[] pdfBytes = CustomerInvoice.generateCustomerInvoice(orders);
+            ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=seller-invoice-" + id + ".pdf");
+            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+            headers.add(HttpHeaders.PRAGMA, "no-cache");
+            headers.add(HttpHeaders.EXPIRES, "0");
+
+            // Return PDF response
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfBytes.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(resource);
+        } catch (Exception e) {
+            // Log error (in production, use SLF4J)
+            System.err.println("Error generating invoice: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error generating invoice: " + e.getMessage());
+        }
+    }
+
+
     @RequestMapping(value = "/signup_successful",method = RequestMethod.POST)
     public String signupsub(Model model,
                             @ModelAttribute("customer") Common_UserEN customer,

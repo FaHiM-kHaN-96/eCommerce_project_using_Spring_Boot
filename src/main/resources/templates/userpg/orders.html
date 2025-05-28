@@ -442,8 +442,8 @@
   <div class="card bg-white p-8 mb-8" th:each="list : ${order_list}">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div>
-        <h3 class="text-xl font-semibold text-gray-800" th:text="'Order #'+${list.key.order_id}">Order #1001</h3>
-        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.key.invoice_id}">Invoice: INV-1001</p>
+        <h3 class="text-xl font-semibold text-gray-800" th:text="'Invoice: #'+${list.key.invoice_id}">Order #1001</h3>
+<!--        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.key.invoice_id}">Invoice: INV-1001</p>-->
         <p class="text-sm text-gray-600" th:text="'Date: '+${list.key.order_date}" >Date: May 25, 2025, 10:30 AM</p>
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
@@ -451,23 +451,13 @@
         <p class="text-sm status-delivered font-medium" th:text="'Status: '+${list.key.order_status}">Status: Delivered</p>
         <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
         <div class="flex flex-col sm:flex-row gap-3 mt-3">
-          <button
-                  class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
-                  onclick='generateInvoice(
-                                1001,
-                                "INV-1001",
-                                "May 25, 2025, 10:30 AM",
-                                1500.00,
-                                "Delivered",
-                                "Paid",
-                                [
-                                    {"product_id": 1, "name": "Book - Mystery Novel", "quantity": 2, "price": 500.00},
-                                    {"product_id": 2, "name": "Toy - Action Figure", "quantity": 1, "price": 500.00}
-                                ]
-                            )'
-          >
-            Download Invoice
-          </button>
+
+          <form th:action="@{'/invoice/'+${list.key.invoice_id}}" method="post">
+            <button class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                    type="submit">
+              Download Invoice
+            </button>
+          </form>
           <button
                   class="btn-rating text-white font-semibold py-2 px-4 rounded-lg"
                   onclick='openRatingModal(1001, [
@@ -512,60 +502,9 @@
     </div>
   </div>
 
-  <div class="card bg-white p-8 mb-8">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-      <div>
-        <h3 class="text-xl font-semibold text-gray-800">Order #1002</h3>
-        <p class="text-sm text-gray-600">Invoice: INV-1002</p>
-        <p class="text-sm text-gray-600">Date: May 20, 2025, 2:15 PM</p>
-      </div>
-      <div class="text-left sm:text-right mt-4 sm:mt-0">
-        <p class="text-lg font-semibold text-gray-800">Total: 800.00 BDT</p>
-        <p class="text-sm status-pending font-medium">Status: Pending</p>
-        <p class="text-sm payment-pending font-medium">Payment: Pending</p>
-        <div class="flex flex-col sm:flex-row gap-3 mt-3">
-          <button
-                  class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
-                  onclick='generateInvoice(
-                                1002,
-                                "INV-1002",
-                                "May 20, 2025, 2:15 PM",
-                                800.00,
-                                "Pending",
-                                "Pending",
-                                [
-                                    {"product_id": 3, "name": "Book - Sci-Fi Adventure", "quantity": 1, "price": 800.00}
-                                ]
-                            )'
-          >
-            Download Invoice
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="w-full table-auto">
-        <thead class="table-header text-white" >
-        <tr>
-          <th class="p-4 text-left font-semibold">Rating</th>
-          <th class="p-4 text-left font-semibold">Product</th>
-          <th class="p-4 text-left font-semibold">Price</th>
-          <th class="p-4 text-left font-semibold">Quantity</th>
-          <th class="p-4 text-left font-semibold">Subtotal</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="order-item border-b border-gray-200" >
-          <td class="p-4 text-gray-700">Not Rated</td>
-          <td class="p-4 text-gray-700">Book - Sci-Fi Adventure</td>
-          <td class="p-4 text-gray-700">800.00 BDT</td>
-          <td class="p-4 text-gray-700">1</td>
-          <td class="p-4 text-gray-700">800.00 BDT</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+
+
+</div>
 </div>
 
 <script>
