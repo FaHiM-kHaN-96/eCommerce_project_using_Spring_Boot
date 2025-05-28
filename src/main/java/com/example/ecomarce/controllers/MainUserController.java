@@ -246,19 +246,21 @@ public class MainUserController {
         Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
         //ekhane ekta list add korbo
         Map<OrderTableEN,List<OrderTableEN>> ord = new HashMap<>();
+        Map<String ,OrderTableEN> orderl = new HashMap<>();
         List<OrderTableEN> orderlist = orderManage.findOrderList(commonUserEN.getId());
         Set<String> seenInvoiceIds = new HashSet<>();
         for (OrderTableEN order : orderlist) {
             List<OrderTableEN> same_invoice_order = orderManage.findinvoice(order.getInvoice_id());
-            if (!seenInvoiceIds.contains(order.getInvoice_id())) {
+
+            if(!seenInvoiceIds.contains(order.getInvoice_id())) {
+                seenInvoiceIds.add(same_invoice_order.get(0).getInvoice_id());
                 ord.put(order,same_invoice_order);
+
             }
-            seenInvoiceIds.add(order.getInvoice_id());
 
         }
         System.out.println(ord.size());
-
- //   model.addAttribute("order_list",ord);
+        model.addAttribute("order_list",ord);
 
 
         return "userpg/orders";

@@ -442,14 +442,14 @@
   <div class="card bg-white p-8 mb-8" th:each="list : ${order_list}">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div>
-        <h3 class="text-xl font-semibold text-gray-800" th:text="'Order #'+${list.value.}">Order #1001</h3>
-        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.invoice_id}">Invoice: INV-1001</p>
-        <p class="text-sm text-gray-600" th:text="'Date: '+${list.order_date}" >Date: May 25, 2025, 10:30 AM</p>
+        <h3 class="text-xl font-semibold text-gray-800" th:text="'Order #'+${list.key.order_id}">Order #1001</h3>
+        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.key.invoice_id}">Invoice: INV-1001</p>
+        <p class="text-sm text-gray-600" th:text="'Date: '+${list.key.order_date}" >Date: May 25, 2025, 10:30 AM</p>
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
         <p class="text-lg font-semibold text-gray-800">Total: 1500.00 BDT</p>
-        <p class="text-sm status-delivered font-medium" th:text="'Status: '+${list.order_status}">Status: Delivered</p>
-        <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.order_payment_status}">Payment: Paid</p>
+        <p class="text-sm status-delivered font-medium" th:text="'Status: '+${list.key.order_status}">Status: Delivered</p>
+        <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
         <div class="flex flex-col sm:flex-row gap-3 mt-3">
           <button
                   class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
@@ -492,7 +492,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="order-item border-b border-gray-200">
+        <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}" >
           <td class="p-4 text-gray-700">
             <div class="rating-stars">
               <span class="rating-star">★</span>
@@ -502,10 +502,10 @@
               <span class="rating-star empty">★</span>
             </div>
           </td>
-          <td class="p-4 text-gray-700" >Book - Mystery Novel</td>
-          <td class="p-4 text-gray-700" >500.00 BDT</td>
-          <td class="p-4 text-gray-700"  >2</td>
-          <td class="p-4 text-gray-700" >1000.00 BDT</td>
+          <td class="p-4 text-gray-700" th:text="${product.producten.product_name}" >Book - Mystery Novel</td>
+          <td class="p-4 text-gray-700"  th:text="${product.producten.selling_price}"  >500.00 BDT</td>
+          <td class="p-4 text-gray-700" th:text="${product.order_quantity}"  >2</td>
+          <td class="p-4 text-gray-700" th:text="${product.order_subtotal}" >1000.00 BDT</td>
         </tr>
         </tbody>
       </table>
