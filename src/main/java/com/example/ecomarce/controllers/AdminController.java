@@ -171,7 +171,7 @@ public class AdminController {
         String status;
         System.out.println(order_status);
         if (order_status) {
-            status = "delivered";
+            status = "Delivered";
         }else  {
             status = "cancelled";
         }
@@ -179,7 +179,12 @@ public class AdminController {
 
         for (OrderTableEN order : orders) {
 
-            order_service.Update_Order_Status(order.getInvoice_id(),status);
+            if (status.equals("Delivered")){
+                order_service.Update_Order_Status(order.getInvoice_id(),status,"Paid",order.getOrder_payment_method());
+            } else {
+                order_service.Update_Order_Status(order.getInvoice_id(),status,"cancelled",order.getOrder_payment_method());
+            }
+
 
         }
 

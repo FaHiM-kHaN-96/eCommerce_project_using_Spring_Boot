@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -449,12 +449,12 @@
     <div class="container d-flex justify-content-between align-items-center">
         <h1 class="h4 mb-0 calligraphy">E-Commerce</h1>
         <div class="d-flex align-items-center gap-3">
-            <div class="position-relative">
+            <div sec:authorize="isAuthenticated()" class="position-relative">
+
+                <a href="/logout" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>
+            </div>
 
             </div>
-            <!--                <a href="orders.html" class="btn btn-primary-blue btn-sm" aria-label="View Orders">Orders</a>-->
-            <!--                <a href="logout.html" class="btn btn-danger btn-sm" aria-label="Logout">Logout</a>-->
-        </div>
     </div>
 </nav>
 

@@ -574,14 +574,14 @@
                         <form th:action="@{'/admin/payment-vfy/'+${o.invoice_id}}" method="post">
                         <div class="flex items-center space-x-2">
                             <label class="flex items-center">
-                                <input type="radio"  th:checked="${o.order_payment_method == 'COD'}" name="payment_status" value="true" class="mr-1">
+                                <input type="radio"  th:checked="${o.order_payment_method == 'Cash On Delivery'}" name="payment_status" value="true" class="mr-1">
                                 COD
                             </label>
                             <label class="flex items-center">
                                 <input type="radio" th:checked="${o.order_payment_status == 'Paid'}" name="payment_status"  value="false" class="mr-1" >
                                 Paid
                             </label>
-                            <button  th:disabled="${o.order_payment_method == 'COD'}" class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                            <button type="submit"  th:disabled="${o.order_payment_method == 'Cash On Delivery' || o.order_status == 'delivered' } " class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                 Set Payment Status
                             </button>
                         </div>
@@ -589,14 +589,14 @@
                        <form th:action="@{'/admin/order-status/'+${o.invoice_id}}" method="post">
                         <div class="flex items-center space-x-2">
                             <label class="flex items-center">
-                                <input type="radio" th:checked="${o.order_status == 'delivered'}" name="order_status" value="true"   class="mr-1" >
+                                <input type="radio" th:checked="${o.order_status == 'Delivered'}" name="order_status" value="true"   class="mr-1" >
                                 Delivered
                             </label>
                             <label class="flex items-center">
                                 <input type="radio"  th:checked="${o.order_status == 'cancelled'}"  name="order_status"  value="false"  class="mr-1">
                                 Cancelled
                             </label>
-                            <button type="submit" class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                            <button type="submit" th:disabled="${ o.order_status == 'Delivered' } " class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                 Set Status
                             </button>
                         </div>
@@ -609,7 +609,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/noto-sans-bengali@latest/noto-sans-bengali.js"></script>
 <script>
     let currentOrder = null;
 

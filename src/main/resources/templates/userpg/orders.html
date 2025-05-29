@@ -449,6 +449,7 @@
       <div class="text-left sm:text-right mt-4 sm:mt-0">
         <p class="text-lg font-semibold text-gray-800">Total: 1500.00 BDT</p>
         <p class="text-sm status-delivered font-medium" th:text="'Order: '+${list.key.order_status}">Status: Delivered</p>
+        <p class="text-sm status-delivered font-medium" th:text="'Payment Method : '+${list.key.order_payment_method}">Status: Delivered</p>
         <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
         <div class="flex flex-col sm:flex-row gap-3 mt-3">
 
@@ -501,11 +502,8 @@
       </table>
     </div>
   </div>
-
-
-
 </div>
-</div>
+
 
 <script>
   // Sample customer data

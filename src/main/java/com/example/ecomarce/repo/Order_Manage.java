@@ -34,11 +34,16 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE OrderTableEN o SET o.order_status = :stetus WHERE o.invoice_id = :invoice_id")
-    int updateOrderStatus(@Param("invoice_id") String invoice_id, @Param("stetus") String stetus);
+    @Query("UPDATE OrderTableEN o SET o.order_status = :status, o.order_payment_status = :order_payment_status, o.order_payment_method = :order_payment_method  WHERE o.invoice_id = :invoice_id")
+    int updateOrderStatus(
+            @Param("invoice_id") String invoice_id,
+            @Param("status") String status,
+            @Param("order_payment_status") String order_payment_status,
+            @Param("order_payment_method") String order_payment_method
+    );
 
-    default boolean get_invoice_id(String invoice_id,String stetus) {
-        int affectedRows = updateOrderStatus(invoice_id,stetus);
+    default boolean updateOrderInfo(String invoice_id, String status, String order_payment_status, String order_payment_method) {
+        int affectedRows = updateOrderStatus(invoice_id, status, order_payment_status, order_payment_method);
         return affectedRows > 0;
     }
 

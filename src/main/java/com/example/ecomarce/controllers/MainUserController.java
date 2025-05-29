@@ -172,8 +172,8 @@ public class MainUserController {
                 orderTableEN.setOrder_product_category(item.getProduct_category());
 
                 if (transaction_data == null) {
-                   // orderTableEN.setOrder_payment_status("Cash on Delivery");
-                    orderTableEN.setOrder_payment_method("COD");
+                   // orderTableEN.setOrder_payment_status("");
+                    orderTableEN.setOrder_payment_method("Cash On Delivery");
                 } else {
                     orderTableEN.setOrder_payment_method(transaction_data+" (Online)");
 
