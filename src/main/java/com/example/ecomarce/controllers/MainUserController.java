@@ -175,7 +175,7 @@ public class MainUserController {
                    // orderTableEN.setOrder_payment_status("Cash on Delivery");
                     orderTableEN.setOrder_payment_method("COD");
                 } else {
-                    orderTableEN.setOrder_payment_method(transaction_data);
+                    orderTableEN.setOrder_payment_method(transaction_data+" (Online)");
 
                 }
 

@@ -427,9 +427,9 @@
   <div class="container flex justify-between items-center">
     <h1 class="text-3xl font-bold tracking-tight">Ahmad Shop</h1>
     <div class="flex items-center space-x-4">
-      <a href="index.html" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Home</a>
-      <a href="cart.html" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">View Cart</a>
-      <a href="logout.html" class="btn-danger text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Logout</a>
+      <a href="/" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Home</a>
+<!--      <a href="" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">View Cart</a>-->
+      <a href="/logout" class="btn-danger text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Logout</a>
     </div>
   </div>
 </nav>
@@ -448,7 +448,7 @@
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
         <p class="text-lg font-semibold text-gray-800">Total: 1500.00 BDT</p>
-        <p class="text-sm status-delivered font-medium" th:text="'Status: '+${list.key.order_status}">Status: Delivered</p>
+        <p class="text-sm status-delivered font-medium" th:text="'Order: '+${list.key.order_status}">Status: Delivered</p>
         <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
         <div class="flex flex-col sm:flex-row gap-3 mt-3">
 

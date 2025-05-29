@@ -11,6 +11,7 @@ import com.example.ecomarce.pdf_maker_class.InvoiceGenerator;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.adminrepo.Change_role_repo;
+import com.example.ecomarce.service_pkg.Order_Manage_Service;
 import com.example.ecomarce.service_pkg.adminservice.RoleChangerService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class AdminController {
 
     @Autowired
     private Order_Manage order_manage;
+
+    @Autowired
+    private Order_Manage_Service  order_service;
 
 
 
@@ -158,8 +162,53 @@ public class AdminController {
         }
     }
 
+    @PostMapping("/order-status/{id}")
+    public String order_Status(@PathVariable("id") String  id,
+                               @RequestParam("order_status") Boolean order_status,
+                                Model model) {
+        List<OrderTableEN> orders = order_manage.findByOrderid(id);
+
+        String status;
+        System.out.println(order_status);
+        if (order_status) {
+            status = "delivered";
+        }else  {
+            status = "cancelled";
+        }
 
 
+        for (OrderTableEN order : orders) {
+
+            order_service.Update_Order_Status(order.getInvoice_id(),status);
+
+        }
+
+        return "redirect:/admin/lg";
+    }
+
+    @PostMapping("/payment-vfy/{id}")
+    public String payment_Status(@PathVariable("id") String  id,
+                               @RequestParam("payment_status") Boolean payment_status,
+                               Model model) {
+        List<OrderTableEN> orders = order_manage.findByOrderid(id);
+
+        String status;
+        System.out.println(payment_status);
+        if (payment_status) {
+            status = "COD";
+        }else  {
+            status = "Paid";
+        }
+
+
+        for (OrderTableEN order : orders) {
+
+            order_service.Update_payment_Status(order.getInvoice_id(),status);
+
+        }
+
+        return "redirect:/admin/lg";
+    }
 
 
     @GetMapping("/lg")

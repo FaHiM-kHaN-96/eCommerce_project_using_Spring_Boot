@@ -4,9 +4,11 @@ package com.example.ecomarce.repo;
 import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -29,5 +31,26 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
 
     @Query("SELECT o FROM OrderTableEN o WHERE o.invoice_id = :invoice_id")
     List<OrderTableEN> findinvoice(@Param("invoice_id") String invoice_id );
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE OrderTableEN o SET o.order_status = :stetus WHERE o.invoice_id = :invoice_id")
+    int updateOrderStatus(@Param("invoice_id") String invoice_id, @Param("stetus") String stetus);
+
+    default boolean get_invoice_id(String invoice_id,String stetus) {
+        int affectedRows = updateOrderStatus(invoice_id,stetus);
+        return affectedRows > 0;
+    }
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE OrderTableEN o SET o.order_payment_status = :stetus WHERE o.invoice_id = :invoice_id")
+    int updatePaymentStatus(@Param("invoice_id") String invoice_id, @Param("stetus") String stetus);
+
+    default boolean get_invoice_id_p(String invoice_id,String stetus) {
+        int affectedRows = updatePaymentStatus(invoice_id,stetus);
+        return affectedRows > 0;
+    }
 
 }

@@ -571,33 +571,36 @@
                                 Download Seller Invoice
                             </button>
                         </form>
-
+                        <form th:action="@{'/admin/payment-vfy/'+${o.invoice_id}}" method="post">
                         <div class="flex items-center space-x-2">
                             <label class="flex items-center">
-                                <input type="radio" name="payment_status_1001" value="COD" class="mr-1">
+                                <input type="radio"  th:checked="${o.order_payment_method == 'COD'}" name="payment_status" value="true" class="mr-1">
                                 COD
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="payment_status_1001" value="Paid" class="mr-1" checked>
+                                <input type="radio" th:checked="${o.order_payment_status == 'Paid'}" name="payment_status"  value="false" class="mr-1" >
                                 Paid
                             </label>
-                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                            <button  th:disabled="${o.order_payment_method == 'COD'}" class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                 Set Payment Status
                             </button>
                         </div>
+                        </form>
+                       <form th:action="@{'/admin/order-status/'+${o.invoice_id}}" method="post">
                         <div class="flex items-center space-x-2">
                             <label class="flex items-center">
-                                <input type="radio" name="status_1001" value="delivered" class="mr-1" checked>
+                                <input type="radio" th:checked="${o.order_status == 'delivered'}" name="order_status" value="true"   class="mr-1" >
                                 Delivered
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="status_1001" value="cancelled" class="mr-1">
+                                <input type="radio"  th:checked="${o.order_status == 'cancelled'}"  name="order_status"  value="false"  class="mr-1">
                                 Cancelled
                             </label>
-                            <button class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                            <button type="submit" class="btn-blue text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                 Set Status
                             </button>
                         </div>
+                       </form>
                     </td>
                 </tr>
                 </tbody>
