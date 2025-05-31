@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -394,41 +394,12 @@
   <div class="progress-circle"></div>
 </div>
 
-<!-- Rating Modal -->
-<div id="ratingModal" class="modal hidden">
-  <div class="modal-content">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">Rate Order #<span id="modalOrderId"></span></h3>
-    <div class="mb-6">
-      <h4 class="text-lg font-medium text-gray-700 mb-2">Ordered Products</h4>
-      <div class="overflow-x-auto">
-        <table class="w-full table-auto">
-          <thead class="modal-table-header text-white">
-          <tr>
-            <th class="p-3 text-left font-semibold">Product</th>
-            <th class="p-3 text-left font-semibold">Price</th>
-            <th class="p-3 text-left font-semibold">Quantity</th>
-            <th class="p-3 text-left font-semibold">Subtotal</th>
-            <th class="p-3 text-left font-semibold">Rating</th>
-          </tr>
-          </thead>
-          <tbody id="modalProductList"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="flex justify-end gap-4 mt-4">
-      <button id="cancelRating" class="btn-danger text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90">Close</button>
-      <button id="submitRating" class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90">Submit</button>
-    </div>
-  </div>
-</div>
-
 <!-- Navbar -->
 <nav class="gradient-bg text-white p-5 nav-shadow">
   <div class="container flex justify-between items-center">
     <h1 class="text-3xl font-bold tracking-tight">Ahmad Shop</h1>
     <div class="flex items-center space-x-4">
       <a href="/" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Home</a>
-<!--      <a href="" class="btn-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">View Cart</a>-->
       <a href="/logout" class="btn-danger text-white px-5 py-2.5 rounded-full font-medium hover:bg-opacity-90">Logout</a>
     </div>
   </div>
@@ -443,7 +414,6 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div>
         <h3 class="text-xl font-semibold text-gray-800" th:text="'Invoice: #'+${list.key.invoice_id}">Order #1001</h3>
-<!--        <p class="text-sm text-gray-600" th:text="'Invoice: INV-'+${list.key.invoice_id}">Invoice: INV-1001</p>-->
         <p class="text-sm text-gray-600" th:text="'Date: '+${list.key.order_date}" >Date: May 25, 2025, 10:30 AM</p>
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
@@ -452,51 +422,46 @@
         <p class="text-sm status-delivered font-medium" th:text="'Payment Method : '+${list.key.order_payment_method}">Status: Delivered</p>
         <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
         <div class="flex flex-col sm:flex-row gap-3 mt-3">
-
           <form th:action="@{'/invoice/'+${list.key.invoice_id}}" method="post">
-            <button class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90"
-                    type="submit">
+            <button class="btn-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90" type="submit">
               Download Invoice
             </button>
           </form>
-          <button
-                  class="btn-rating text-white font-semibold py-2 px-4 rounded-lg"
-                  onclick='openRatingModal(1001, [
-                                {"product_id": 1, "name": "Book - Mystery Novel", "quantity": 2, "price": 500.00},
-                                {"product_id": 2, "name": "Toy - Action Figure", "quantity": 1, "price": 500.00}
-                            ], {"1": 4, "2": 0})'
-          >
-            Give Rating
-          </button>
         </div>
       </div>
     </div>
-    <div class="overflow-x-auto"  >
+    <div class="overflow-x-auto">
       <table class="w-full table-auto">
         <thead class="table-header text-white">
         <tr>
           <th class="p-4 text-left font-semibold">Rating</th>
-          <th class="p-4 text-left font-semibold" >Product</th>
+          <th class="p-4 text-left font-semibold">Product</th>
           <th class="p-4 text-left font-semibold">Price</th>
           <th class="p-4 text-left font-semibold">Quantity</th>
           <th class="p-4 text-left font-semibold">Subtotal</th>
         </tr>
         </thead>
         <tbody>
-        <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}" >
+        <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}">
           <td class="p-4 text-gray-700">
-            <div class="rating-stars">
-              <span class="rating-star">★</span>
-              <span class="rating-star">★</span>
-              <span class="rating-star">★</span>
-              <span class="rating-star">★</span>
-              <span class="rating-star empty">★</span>
-            </div>
+            <form th:action="@{'/invoice/'+${list.key.invoice_id}+'/rate/'+${product.producten.product_id}}" method="post">
+              <div class="star-rating">
+                <input type="hidden" name="rating" class="rating-value" value="0">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+              </div>
+              <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2" disabled>
+                Give Rating
+              </button>
+            </form>
           </td>
-          <td class="p-4 text-gray-700" th:text="${product.producten.product_name}" >Book - Mystery Novel</td>
-          <td class="p-4 text-gray-700"  th:text="${product.producten.selling_price}"  >500.00 BDT</td>
-          <td class="p-4 text-gray-700" th:text="${product.order_quantity}"  >2</td>
-          <td class="p-4 text-gray-700" th:text="${product.order_subtotal}" >1000.00 BDT</td>
+          <td class="p-4 text-gray-700" th:text="${product.producten.product_name}">Book - Mystery Novel</td>
+          <td class="p-4 text-gray-700" th:text="${product.producten.selling_price}">500.00 BDT</td>
+          <td class="p-4 text-gray-700" th:text="${product.order_quantity}">2</td>
+          <td class="p-4 text-gray-700" th:text="${product.order_subtotal}">1000.00 BDT</td>
         </tr>
         </tbody>
       </table>
@@ -504,205 +469,58 @@
   </div>
 </div>
 
-
 <script>
-  // Sample customer data
-  const customer = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+8801234567890",
-    address: "123 Main Street, Dhaka, Bangladesh"
-  };
+  document.addEventListener('DOMContentLoaded', function () {
+    // Get all star rating containers
+    const starRatings = document.querySelectorAll('.star-rating');
 
-  // Sample customer ID
-  const customerId = 1;
+    starRatings.forEach(ratingContainer => {
+      const stars = ratingContainer.querySelectorAll('.star');
+      const ratingInput = ratingContainer.querySelector('.rating-value');
+      const submitButton = ratingContainer.closest('form').querySelector('.btn-rating');
 
-  // Rating Modal Functions
-  let productRatings = {};
-  let currentOrderId = null;
-
-  function openRatingModal(orderId, orderItems, existingRatings) {
-    currentOrderId = orderId;
-    const modal = document.getElementById('ratingModal');
-    const modalOrderId = document.getElementById('modalOrderId');
-    const modalProductList = document.getElementById('modalProductList');
-    const submitButton = document.getElementById('submitRating');
-    modalOrderId.textContent = orderId;
-
-    // Initialize product ratings
-    productRatings = {};
-    orderItems.forEach(item => {
-      productRatings[item.product_id] = existingRatings[item.product_id] || 0;
-    });
-
-    // Check if all products are rated
-    const allRated = Object.values(productRatings).every(rating => rating > 0);
-    submitButton.disabled = allRated;
-
-    // Populate product list with star ratings
-    modalProductList.innerHTML = '';
-    orderItems.forEach(item => {
-      const existingRating = existingRatings[item.product_id] || 0;
-      const isRated = existingRating > 0;
-      const row = document.createElement('tr');
-      row.className = 'border-b border-gray-200';
-      row.innerHTML = `
-                    <td class="p-3 text-gray-700">${item.name}</td>
-                    <td class="p-3 text-gray-700">${Number(item.price).toFixed(2)} BDT</td>
-                    <td class="p-3 text-gray-700">${item.quantity}</td>
-                    <td class="p-3 text-gray-700">${(item.price * item.quantity).toFixed(2)} BDT</td>
-                    <td class="p-3">
-                        <div class="star-rating" data-product-id="${item.product_id}">
-                            <span class="star ${isRated && existingRating >= 1 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="1">★</span>
-                            <span class="star ${isRated && existingRating >= 2 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="2">★</span>
-                            <span class="star ${isRated && existingRating >= 3 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="3">★</span>
-                            <span class="star ${isRated && existingRating >= 4 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="4">★</span>
-                            <span class="star ${isRated && existingRating >= 5 ? 'selected' : ''} ${isRated ? 'disabled' : ''}" data-value="5">★</span>
-                        </div>
-                    </td>
-                `;
-      modalProductList.appendChild(row);
-    });
-
-    // Add event listeners for stars (only for non-rated products)
-    document.querySelectorAll('.star-rating').forEach(ratingDiv => {
-      const productId = ratingDiv.getAttribute('data-product-id');
-      if (!existingRatings[productId]) {
-        ratingDiv.querySelectorAll('.star').forEach(star => {
-          star.addEventListener('click', () => {
-            const rating = parseInt(star.getAttribute('data-value'));
-            productRatings[productId] = rating;
-            ratingDiv.querySelectorAll('.star').forEach(s => {
-              if (parseInt(s.getAttribute('data-value')) <= rating) {
-                s.classList.add('selected');
-                s.style.color = '#f59e0b';
-              } else {
-                s.classList.remove('selected');
-                s.style.color = '#d1d5db';
-              }
-            });
-          });
+      // Function to update star visuals
+      function updateStars(selectedValue) {
+        stars.forEach(star => {
+          const value = parseInt(star.getAttribute('data-value'));
+          if (value <= selectedValue) {
+            star.classList.add('selected');
+          } else {
+            star.classList.remove('selected');
+          }
         });
+        // Enable submit button if a rating is selected
+        submitButton.disabled = selectedValue === 0;
       }
+
+      // Add click event to each star
+      stars.forEach(star => {
+        star.addEventListener('click', function () {
+          const value = parseInt(this.getAttribute('data-value'));
+          ratingInput.value = value;
+          updateStars(value);
+        });
+
+        // // Add hover effect
+        // star.addEventListener('mouseover', function () {
+        //   const value = parseInt(this.getAttribute('data-value'));
+        //   stars.forEach(s => {
+        //     const sValue = parseInt(s.getAttribute('data-value'));
+        //     if (sValue <= value) {
+        //       s.classList.add('selected');
+        //     } else {
+        //       s.classList.remove('selected');
+        //     }
+        //   });
+        // });
+
+        // Reset to selected value on mouseout
+        // star.addEventListener('mouseout', function () {
+        //   updateStars(parseInt(ratingInput.value));
+        // });
+      });
     });
-
-    modal.classList.remove('hidden');
-  }
-
-  document.getElementById('cancelRating').addEventListener('click', () => {
-    document.getElementById('ratingModal').classList.add('hidden');
-    productRatings = {};
   });
-
-  document.getElementById('submitRating').addEventListener('click', async () => {
-    // Check if all products have a rating
-    const unratedProducts = Object.entries(productRatings).filter(([_, rating]) => rating === 0);
-    if (unratedProducts.length > 0) {
-      alert('Please provide a rating for all products.');
-      return;
-    }
-
-    const progressOverlay = document.getElementById('progressOverlay');
-    progressOverlay.classList.remove('hidden');
-
-    try {
-      // Simulate API call (since PHP backend is removed)
-      console.log('Submitting ratings:', { order_id: currentOrderId, customer_id: customerId, ratings: productRatings });
-      alert('Ratings submitted successfully! (Simulated)');
-      document.getElementById('ratingModal').classList.add('hidden');
-      productRatings = {};
-      // Simulate page reload
-      alert('Page would reload here to update ratings.');
-    } catch (error) {
-      alert('Error submitting ratings: ' + error.message);
-    } finally {
-      progressOverlay.classList.add('hidden');
-    }
-  });
-
-  async function generateInvoice(orderId, invNumber, orderDate, total, status, paymentStatus, orderItems) {
-    // Show progress overlay
-    const progressOverlay = document.getElementById('progressOverlay');
-    progressOverlay.classList.remove('hidden');
-
-    try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      // Header
-      doc.setFillColor(0, 48, 135);
-      doc.rect(0, 0, 210, 40, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(20);
-      doc.text('Ahmad Shop', 20, 20);
-      doc.setFontSize(12);
-      doc.text('Invoice: ' + invNumber, 20, 30);
-
-      // Customer Details
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(12);
-      doc.text('Customer Details:', 20, 50);
-      doc.setFontSize(10);
-      doc.text('Name: ' + customer.name, 20, 60);
-      doc.text('Email: ' + customer.email, 20, 67);
-      doc.text('Phone: ' + customer.phone, 20, 74);
-      doc.text('Address: ' + customer.address, 20, 81);
-
-      // Order Details
-      doc.setFontSize(12);
-      doc.text('Order Details:', 20, 95);
-      doc.setFontSize(10);
-      doc.text('Order ID: ' + orderId, 20, 105);
-      doc.text('Date: ' + orderDate, 20, 112);
-      doc.text('Total: ' + total.toFixed(2) + ' BDT', 20, 119);
-      doc.text('Status: ' + status, 20, 126);
-      doc.text('Payment Status: ' + paymentStatus, 20, 133);
-
-      // Order Items Table
-      doc.setFontSize(12);
-      doc.text('Order Items:', 20, 147);
-      doc.setDrawColor(0);
-      doc.setFillColor(229, 231, 235);
-      doc.rect(20, 152, 170, 10, 'F');
-      doc.setTextColor(0);
-      doc.setFontSize(10);
-      doc.text('Product', 22, 159);
-      doc.text('Price', 100, 159);
-      doc.text('Quantity', 130, 159);
-      doc.text('Subtotal', 160, 159);
-
-      let y = 169;
-      orderItems.forEach(item => {
-        doc.text(item.name, 22, y);
-        doc.text(Number(item.price).toFixed(2) + ' BDT', 100, y);
-        doc.text(item.quantity.toString(), 130, y);
-        doc.text((item.price * item.quantity).toFixed(2) + ' BDT', 160, y);
-        y += 10;
-      });
-
-      // Barcode and QR Code
-      const barcodeValue = 'INV-' + orderId + '-CUST';
-      const qrCodeUrl = 'http://localhost/ah_api/order/' + orderId;
-      const canvas = document.createElement('canvas');
-      JsBarcode(canvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
-      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, y, 80, 20);
-
-      const qrCanvas = document.createElement('canvas');
-      QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
-        if (!error) {
-          doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 120, y, 20, 20);
-        }
-      });
-
-      // Save PDF (no server call since PHP is removed)
-      doc.save(`invoice-${invNumber}.pdf`);
-    } catch (error) {
-      alert('Error generating invoice: ' + error.message);
-    } finally {
-      // Hide progress overlay
-      progressOverlay.classList.add('hidden');
-    }
-  }
 </script>
 </body>
 </html>
