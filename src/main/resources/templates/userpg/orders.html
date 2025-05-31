@@ -444,15 +444,16 @@
         <tbody>
         <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}">
           <td class="p-4 text-gray-700">
-            <form th:action="@{'/invoice/'+${list.key.invoice_id}+'/rate/'+${product.producten.product_id}}" method="post">
+            <form th:action="@{'/product_rating/'+${list.key.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${list.key.order_id}}" th:object="${rete}" method="post">
               <div class="star-rating">
-                <input type="hidden" name="rating" class="rating-value" value="0">
+                <input type="hidden" name="product_rating" class="rating-value" th:value="${rete.product_rating}" value="0">
                 <span class="star" data-value="1">★</span>
                 <span class="star" data-value="2">★</span>
                 <span class="star" data-value="3">★</span>
                 <span class="star" data-value="4">★</span>
                 <span class="star" data-value="5">★</span>
               </div>
+
               <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2" disabled>
                 Give Rating
               </button>

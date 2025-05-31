@@ -32,6 +32,11 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
     @Query("SELECT o FROM OrderTableEN o WHERE o.invoice_id = :invoice_id")
     List<OrderTableEN> findinvoice(@Param("invoice_id") String invoice_id );
 
+    @Query("SELECT o FROM OrderTableEN o WHERE o.order_id = :orderid AND o.producten.product_id = :product_id")
+    OrderTableEN findOrderSetForRating(@Param("orderid") int orderid,
+                                      @Param("product_id") int product_id);
+
+
     @Transactional
     @Modifying
     @Query("UPDATE OrderTableEN o SET o.order_status = :status, o.order_payment_status = :order_payment_status, o.order_payment_method = :order_payment_method  WHERE o.invoice_id = :invoice_id")
