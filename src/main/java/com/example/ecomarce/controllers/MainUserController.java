@@ -60,6 +60,7 @@ public class MainUserController {
         // String email = principal.getName();
         List<ProductEN> productlist = proDuct_repo.findAll();
 
+//        List<OrderTableEN> orderTableENS =
 
         int count = cartlist.size();
         String number = String.valueOf(count);
