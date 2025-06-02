@@ -18,11 +18,9 @@ public class OrderTableEN {
     private String order_date;
     private String invoice_id;
     private String order_payment_status;
+    private float order_payment_amount;
     @ManyToOne
     private Common_UserEN user;
-    @ManyToOne
-    private ProductEN producten;
-
 
     @Override
     public String toString() {
@@ -40,17 +38,10 @@ public class OrderTableEN {
                 ", order_date='" + order_date + '\'' +
                 ", invoice_id='" + invoice_id + '\'' +
                 ", order_payment_status='" + order_payment_status + '\'' +
+                ", order_payment_amount=" + order_payment_amount +
                 ", user=" + user +
                 ", producten=" + producten +
                 '}';
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
     }
 
     public int getOrder_id() {
@@ -109,7 +100,13 @@ public class OrderTableEN {
         this.order_product_category = order_product_category;
     }
 
+    public int getRating() {
+        return rating;
+    }
 
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
     public String getOrder_payment_method() {
         return order_payment_method;
@@ -151,6 +148,14 @@ public class OrderTableEN {
         this.order_payment_status = order_payment_status;
     }
 
+    public float getOrder_payment_amount() {
+        return order_payment_amount;
+    }
+
+    public void setOrder_payment_amount(float order_payment_amount) {
+        this.order_payment_amount = order_payment_amount;
+    }
+
     public Common_UserEN getUser() {
         return user;
     }
@@ -166,4 +171,10 @@ public class OrderTableEN {
     public void setProducten(ProductEN producten) {
         this.producten = producten;
     }
+
+    @ManyToOne
+    private ProductEN producten;
+
+
+
 }

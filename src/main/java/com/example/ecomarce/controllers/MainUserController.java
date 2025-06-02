@@ -62,21 +62,22 @@ public class MainUserController {
 
         double averageRating = 0.0;
         for (ProductEN product : productlist) {
-            double ratingSum = 0;
-            int ratingCount = 0;
 
+            int total_product =0;
+            double ratesum = 0.0;
+           // double result = 0.0;
             List<OrderTableEN> orderTableENS = orderManage.findallproduct(product.getProduct_id());
             for (OrderTableEN ordercount : orderTableENS) {
                 int rating = ordercount.getRating();
-
-                    ratingSum += rating;
-                    ratingCount++;
-                    averageRating = ratingSum / ratingCount;
-
+                ratesum += rating;
+                total_product ++;
 
             }
 
-
+            proDuct_repo.set_rating( product.getProduct_id(),ratesum/total_product);
+            total_product =0;
+            ratesum = 0.0;
+            System.out.println("rating check  "+product.getProduct_id() +"  "+ ratesum/total_product);
         }
 
 
@@ -333,16 +334,27 @@ public class MainUserController {
         Map<OrderTableEN,List<OrderTableEN>> ord = new HashMap<>();
 
         List<OrderTableEN> orderlist = orderManage.findOrderList(commonUserEN.getId());
-
+        Map<String,Float> total_price = new HashMap<>();
         Set<String> seenInvoiceIds = new HashSet<>();
+
+
         for (OrderTableEN order : orderlist) {
             List<OrderTableEN> same_invoice_order = orderManage.findinvoice(order.getInvoice_id());
 
 
+            float total_price_sum = 0 ;
+
+
+
             if(!seenInvoiceIds.contains(order.getInvoice_id())) {
-
-
-
+                List<OrderTableEN> same_invoice_order2 = orderManage.findinvoice(order.getInvoice_id());
+                for (OrderTableEN order2 : same_invoice_order2) {
+                    System.out.println(order2.getInvoice_id());
+                    total_price_sum += order2.getOrder_subtotal();
+                }
+                total_price.put(same_invoice_order.get(0).getInvoice_id(),total_price_sum);
+                System.out.println("\n\n\norder list " + total_price_sum);
+                total_price_sum =0;
                 seenInvoiceIds.add(same_invoice_order.get(0).getInvoice_id());
                 ord.put(order,same_invoice_order);
 
@@ -351,7 +363,7 @@ public class MainUserController {
         }
 
         model.addAttribute("order_list",ord);
-       // model.addAttribute("ratings",ratingENS);
+        model.addAttribute("total",total_price);
 
 
         return "userpg/orders";
