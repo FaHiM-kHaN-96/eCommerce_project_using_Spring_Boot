@@ -12,7 +12,7 @@ public class OrderTableEN {
     private int order_quantity;
     private float order_selling_price;
     private String order_product_category;
-    //private float order_total_price;
+    private int rating;
     private String order_payment_method;
     private String order_status;
     private String order_date;
@@ -22,6 +22,7 @@ public class OrderTableEN {
     private Common_UserEN user;
     @ManyToOne
     private ProductEN producten;
+
 
     @Override
     public String toString() {
@@ -33,6 +34,7 @@ public class OrderTableEN {
                 ", order_quantity=" + order_quantity +
                 ", order_selling_price=" + order_selling_price +
                 ", order_product_category='" + order_product_category + '\'' +
+                ", rating=" + rating +
                 ", order_payment_method='" + order_payment_method + '\'' +
                 ", order_status='" + order_status + '\'' +
                 ", order_date='" + order_date + '\'' +
@@ -41,6 +43,14 @@ public class OrderTableEN {
                 ", user=" + user +
                 ", producten=" + producten +
                 '}';
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public int getOrder_id() {

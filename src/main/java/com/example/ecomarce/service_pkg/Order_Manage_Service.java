@@ -27,4 +27,10 @@ public class Order_Manage_Service {
 
         return order_manage.get_invoice_id_p(invoice_id,stetus) ;
     }
+
+    @Transactional
+    public boolean Update_order_rating(int order_id,int rating) {
+
+        return order_manage.updateOrder_rate(order_id,rating) ;
+    }
 }

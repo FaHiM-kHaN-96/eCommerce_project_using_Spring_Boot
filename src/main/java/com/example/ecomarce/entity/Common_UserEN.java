@@ -21,9 +21,9 @@ private String role;
 private boolean is_verified;
 @OneToMany(cascade=CascadeType.ALL)
 private List<OrderTableEN> order_tables = new ArrayList<>();
+
 @ManyToOne
 private ProductEN producten;
-
     @Override
     public String toString() {
         return "Common_UserEN{" +
@@ -39,6 +39,7 @@ private ProductEN producten;
                 ", producten=" + producten +
                 '}';
     }
+
 
     public int getId() {
         return id;
@@ -111,6 +112,8 @@ private ProductEN producten;
     public void setOrder_tables(List<OrderTableEN> order_tables) {
         this.order_tables = order_tables;
     }
+
+
 
     public ProductEN getProducten() {
         return producten;

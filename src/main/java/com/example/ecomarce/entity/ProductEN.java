@@ -21,8 +21,7 @@ public class ProductEN {
     private List<OrderTableEN> order_tables;
     @OneToMany(cascade=CascadeType.ALL)
     private List<ImageEN> image = new ArrayList<>();
-    @OneToMany(cascade=CascadeType.ALL)
-    private List<Product_RatingEN> ratingENS = new ArrayList<>();
+
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private String templete_image;
@@ -40,7 +39,6 @@ public class ProductEN {
                 ", product_category='" + product_category + '\'' +
                 ", order_tables=" + order_tables +
                 ", image=" + image +
-                ", ratingENS=" + ratingENS +
                 ", templete_image='" + templete_image + '\'' +
                 ", useren=" + useren +
                 '}';
@@ -110,13 +108,7 @@ public class ProductEN {
         this.image = image;
     }
 
-    public List<Product_RatingEN> getRatingENS() {
-        return ratingENS;
-    }
 
-    public void setRatingENS(List<Product_RatingEN> ratingENS) {
-        this.ratingENS = ratingENS;
-    }
 
     public String getTemplete_image() {
         return templete_image;

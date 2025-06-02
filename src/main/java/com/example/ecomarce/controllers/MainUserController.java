@@ -3,14 +3,12 @@ package com.example.ecomarce.controllers;
 import com.example.ecomarce.entity.Common_UserEN;
 import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
-import com.example.ecomarce.entity.Product_RatingEN;
 import com.example.ecomarce.generic_logic.PinGenerator;
 import com.example.ecomarce.helper.MessAge;
 import com.example.ecomarce.logical_class.Cart_Add;
 import com.example.ecomarce.pdf_maker_class.CustomerInvoice;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
-import com.example.ecomarce.repo.Reting_Repo;
 import com.example.ecomarce.repo.UserAuth;
 import com.example.ecomarce.service_pkg.EmailService;
 import com.example.ecomarce.service_pkg.Order_Manage_Service;
@@ -47,8 +45,7 @@ public class MainUserController {
     @Autowired
     private Order_Manage orderManage;
 
-    @Autowired
-    private Reting_Repo reting_Repo;
+
 
     private final List<Cart_Add> cartlist = new ArrayList<>();
 
@@ -114,24 +111,32 @@ public class MainUserController {
 
 
     @PostMapping("/product_rating/{id}/rate/{pid}/{oid}")
-    public String getOrderProducts(@ModelAttribute("rete") Product_RatingEN productRatingEN,@PathVariable("id") String id,@PathVariable("pid") int pid,@PathVariable("oid") int oid,
+    public String getOrderProducts(@RequestParam("rate_prd") int rate,@PathVariable("id") String id,@PathVariable("pid") int pid,@PathVariable("oid") int oid,
                                    Principal principal,
-
                                    Model model) {
 
-        System.out.println("\n\nProduct Rating  "+id+"   "+principal.getName()+" "+pid);
+        System.out.println("\n\nProduct Rating  "+rate+"   "+principal.getName()+" "+oid);
 
-
-        OrderTableEN orderTableEN = orderManage.findOrderSetForRating(oid,pid);
-        System.out.println("    "+orderTableEN.getOrder_product_name());
+        // System.out.println("    "+orderTableEN.getOrder_product_name());
 
         try {
 
-            productRatingEN.setProduct_id(pid);
-            productRatingEN.setProduct_name(orderTableEN.getOrder_product_name());
-            productRatingEN.setInvoice_id(id);
-            productRatingEN.setProductRatingEN(orderTableEN.getProducten());
-            reting_Repo.save(productRatingEN);
+
+            if (orderManageService.Update_order_rating(oid,rate)){
+
+                System.out.println("Product Rated successfully  ");
+            }else {
+
+                System.out.println("Product Rated failed ");
+            }
+
+
+//            productRatingEN.setProduct_id(pid);
+//            productRatingEN.setProduct_name(orderTableEN.getOrder_product_name());
+//            productRatingEN.setInvoice_id(id);
+//            productRatingEN.setProductRatingEN(orderTableEN.getProducten());
+//            productRatingEN.setCommon_UserEN(userAuth.findByUsername(principal.getName()));
+//            reting_Repo.save(productRatingEN);
            // productRatingEN.setProduct_name();
         }catch (Exception e) {
 
@@ -305,25 +310,31 @@ public class MainUserController {
 
 
         Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
-        //ekhane ekta list add korbo
+
         Map<OrderTableEN,List<OrderTableEN>> ord = new HashMap<>();
 
         List<OrderTableEN> orderlist = orderManage.findOrderList(commonUserEN.getId());
+
         Set<String> seenInvoiceIds = new HashSet<>();
         for (OrderTableEN order : orderlist) {
             List<OrderTableEN> same_invoice_order = orderManage.findinvoice(order.getInvoice_id());
 
+
             if(!seenInvoiceIds.contains(order.getInvoice_id())) {
+
+
+
                 seenInvoiceIds.add(same_invoice_order.get(0).getInvoice_id());
                 ord.put(order,same_invoice_order);
 
             }
 
         }
-        System.out.println(ord.size());
-        model.addAttribute("order_list",ord);
 
-        model.addAttribute("rete", new Product_RatingEN());
+        model.addAttribute("order_list",ord);
+       // model.addAttribute("ratings",ratingENS);
+
+
         return "userpg/orders";
     }
     @PostMapping("/invoice/{id}")

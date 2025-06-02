@@ -36,6 +36,18 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
     OrderTableEN findOrderSetForRating(@Param("orderid") int orderid,
                                       @Param("product_id") int product_id);
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE OrderTableEN o SET  o.rating = :rating  WHERE o.order_id = :order_id")
+    int updateOrderRatng(
+            @Param("order_id") int order_id,
+            @Param("rating") int rating
+    );
+
+    default boolean updateOrder_rate(int order_id, int rating) {
+        int affectedRows = updateOrderRatng(order_id, rating);
+        return affectedRows > 0;
+    }
 
     @Transactional
     @Modifying

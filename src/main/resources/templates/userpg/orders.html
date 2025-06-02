@@ -141,9 +141,7 @@
       cursor: pointer;
       transition: color 0.2s;
     }
-    .star.selected,
-    .star:hover:not(.disabled),
-    .star:hover:not(.disabled) ~ .star {
+    .star.selected {
       color: #f59e0b;
     }
     .star.disabled {
@@ -152,13 +150,6 @@
     .rating-stars {
       display: flex;
       gap: 0.1rem;
-    }
-    .rating-star {
-      font-size: 1rem;
-      color: #f59e0b;
-    }
-    .rating-star.empty {
-      color: #d1d5db;
     }
     .container {
       max-width: 1320px;
@@ -444,17 +435,31 @@
         <tbody>
         <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}">
           <td class="p-4 text-gray-700">
-            <form th:action="@{'/product_rating/'+${list.key.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${list.key.order_id}}" th:object="${rete}" method="post">
-              <div class="star-rating">
-                <input type="hidden" name="product_rating" class="rating-value" th:value="${rete.product_rating}" value="0">
-                <span class="star" data-value="1">★</span>
-                <span class="star" data-value="2">★</span>
-                <span class="star" data-value="3">★</span>
-                <span class="star" data-value="4">★</span>
-                <span class="star" data-value="5">★</span>
+            <form th:action="@{'/product_rating/'+${product.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${product.order_id}}" method="post">
+              <div class="star-rating"  >
+                <input type="hidden" name="rate_prd" class="rating-value" value="0" >
+                <span class="star"
+                      data-value="1"
+                      th:classappend="${product.rating >= 1} ? 'selected' : ''">★</span>
+
+                <span class="star"
+                      data-value="2"
+                      th:classappend="${product.rating >= 2} ? 'selected' : ''">★</span>
+
+                <span class="star"
+                      data-value="3"
+                      th:classappend="${product.rating >= 3} ? 'selected' : ''">★</span>
+
+                <span class="star"
+                      data-value="4"
+                      th:classappend="${product.rating >= 4} ? 'selected' : ''">★</span>
+
+                <span class="star"
+                      data-value="5"
+                      th:classappend="${product.rating >= 5} ? 'selected' : ''">★</span>
               </div>
 
-              <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2" disabled>
+              <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2"  th:disabled="${ product.order_status != 'Delivered'  || product.rating != 0} ">
                 Give Rating
               </button>
             </form>
@@ -478,7 +483,7 @@
     starRatings.forEach(ratingContainer => {
       const stars = ratingContainer.querySelectorAll('.star');
       const ratingInput = ratingContainer.querySelector('.rating-value');
-      const submitButton = ratingContainer.closest('form').querySelector('.btn-rating');
+      const isDisabled = stars[0].classList.contains('disabled');
 
       // Function to update star visuals
       function updateStars(selectedValue) {
@@ -490,36 +495,31 @@
             star.classList.remove('selected');
           }
         });
-        // Enable submit button if a rating is selected
-        submitButton.disabled = selectedValue === 0;
       }
 
-      // Add click event to each star
-      stars.forEach(star => {
-        star.addEventListener('click', function () {
-          const value = parseInt(this.getAttribute('data-value'));
-          ratingInput.value = value;
-          updateStars(value);
+      // Skip event listeners for disabled ratings
+      if (!isDisabled) {
+        // Add click event to each star
+        stars.forEach(star => {
+          star.addEventListener('click', function () {
+            const value = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = value;
+            updateStars(value);
+          });
+
+          // Add hover event to each star
+          star.addEventListener('mouseover', function () {
+            const value = parseInt(this.getAttribute('data-value'));
+            updateStars(value);
+          });
+
+          // Reset stars when mouse leaves
+          star.addEventListener('mouseout', function () {
+            const currentValue = parseInt(ratingInput.value) || 0;
+            updateStars(currentValue);
+          });
         });
-
-        // // Add hover effect
-        // star.addEventListener('mouseover', function () {
-        //   const value = parseInt(this.getAttribute('data-value'));
-        //   stars.forEach(s => {
-        //     const sValue = parseInt(s.getAttribute('data-value'));
-        //     if (sValue <= value) {
-        //       s.classList.add('selected');
-        //     } else {
-        //       s.classList.remove('selected');
-        //     }
-        //   });
-        // });
-
-        // Reset to selected value on mouseout
-        // star.addEventListener('mouseout', function () {
-        //   updateStars(parseInt(ratingInput.value));
-        // });
-      });
+      }
     });
   });
 </script>
