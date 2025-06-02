@@ -17,6 +17,7 @@ public class ProductEN {
     private float buying_price;
     private float selling_price;
     private String product_category;
+    private double product_avg_rating;
     @OneToMany(cascade=CascadeType.ALL)
     private List<OrderTableEN> order_tables;
     @OneToMany(cascade=CascadeType.ALL)
@@ -37,6 +38,7 @@ public class ProductEN {
                 ", buying_price=" + buying_price +
                 ", selling_price=" + selling_price +
                 ", product_category='" + product_category + '\'' +
+                ", product_avg_rating=" + product_avg_rating +
                 ", order_tables=" + order_tables +
                 ", image=" + image +
                 ", templete_image='" + templete_image + '\'' +
@@ -92,6 +94,14 @@ public class ProductEN {
         this.product_category = product_category;
     }
 
+    public double getProduct_avg_rating() {
+        return product_avg_rating;
+    }
+
+    public void setProduct_avg_rating(double product_avg_rating) {
+        this.product_avg_rating = product_avg_rating;
+    }
+
     public List<OrderTableEN> getOrder_tables() {
         return order_tables;
     }
@@ -107,8 +117,6 @@ public class ProductEN {
     public void setImage(List<ImageEN> image) {
         this.image = image;
     }
-
-
 
     public String getTemplete_image() {
         return templete_image;

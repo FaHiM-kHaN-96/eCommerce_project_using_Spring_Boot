@@ -60,7 +60,25 @@ public class MainUserController {
         // String email = principal.getName();
         List<ProductEN> productlist = proDuct_repo.findAll();
 
-//        List<OrderTableEN> orderTableENS =
+        double averageRating = 0.0;
+        for (ProductEN product : productlist) {
+            double ratingSum = 0;
+            int ratingCount = 0;
+
+            List<OrderTableEN> orderTableENS = orderManage.findallproduct(product.getProduct_id());
+            for (OrderTableEN ordercount : orderTableENS) {
+                int rating = ordercount.getRating();
+
+                    ratingSum += rating;
+                    ratingCount++;
+                    averageRating = ratingSum / ratingCount;
+
+
+            }
+
+
+        }
+
 
         int count = cartlist.size();
         String number = String.valueOf(count);
