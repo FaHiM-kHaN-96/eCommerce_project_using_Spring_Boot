@@ -100,6 +100,21 @@ public class MainUserController {
         return "userpg/index";
 
     }
+
+
+    @GetMapping("/delete-c-p/{id}")
+    public String delete_cart_product(@PathVariable("id") int id) {
+        for (int i = 0; i < cartlist.size(); i++) {
+            if (cartlist.get(i).getProduct_id() == id) {
+                cartlist.remove(i);
+                break; // Exit loop after removal
+            }
+        }
+        return "redirect:/cart";
+    }
+
+
+
     @PostMapping("/add/{id}")
     public String add_cart_product(@PathVariable("id") int id,
                                    @RequestParam("quantity") int quantity,Model model) {
@@ -191,7 +206,7 @@ public class MainUserController {
 
 
 
-    @PostMapping("/cart")
+    @GetMapping("/cart")
     public String cart_product(Model model) {
 
 

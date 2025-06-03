@@ -497,10 +497,10 @@
                         <td class="p-4">
                             <form class="inline">
                                 <input type="hidden" name="product_id" value="1">
-                                <button type="button" onclick="alert('Item removed from cart!')"
+                                <a th:href="@{'/delete-c-p/'+${list.product_id}}" onclick="alert('Item removed from cart!')"
                                         class="btn-danger text-white px-4 py-2 rounded-full font-medium hover:bg-opacity-90">
                                     Remove
-                                </button>
+                                </a>
                             </form>
                         </td>
                     </tr>
