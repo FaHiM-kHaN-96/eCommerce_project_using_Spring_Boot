@@ -673,6 +673,7 @@
                 <h3 class="h5 mt-3 mb-2 text-primary-blue" th:text="${p.product_name}"></h3>
                 <p class="text-gray-700 mb-3" th:text="${p.product_description}"></p>
                 <p class="text-primary-blue fw-bold mb-3 fs-5" th:text="${p.selling_price} + ' BDT'"></p>
+                <th:block th:if="${ p.product_avg_rating > 0 }">
                 <div class="rating-stars mb-3">
                     <span class="rating-star"
                           data-value="1"
@@ -689,8 +690,9 @@
                     <span class="rating-star empty"
                           data-value="5"
                           th:classappend="${p.product_avg_rating >= 5} ? ' rating-star' : ' empty'">★</span>
-                    <span class="text-gray-600 text-sm ms-2">(4.0/5, 10)</span>
+
                 </div>
+                </th:block>
                 <div class="d-flex gap-2 mt-auto">
                     <form th:action="@{'/add/'+${p.product_id}}" method="post">
                         <input

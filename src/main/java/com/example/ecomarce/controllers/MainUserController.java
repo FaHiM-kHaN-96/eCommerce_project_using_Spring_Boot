@@ -65,7 +65,7 @@ public class MainUserController {
 
             int total_product =0;
             double ratesum = 0.0;
-           // double result = 0.0;
+            // double result = 0.0;
             List<OrderTableEN> orderTableENS = orderManage.findallproduct(product.getProduct_id());
             for (OrderTableEN ordercount : orderTableENS) {
                 int rating = ordercount.getRating();
@@ -73,11 +73,19 @@ public class MainUserController {
                 total_product ++;
 
             }
+            double rating = ratesum / total_product;
+            System.out.println("AVG rating "+product.getProduct_avg_rating());
+            if (rating > 0) {
+                proDuct_repo.set_rating(product.getProduct_id(), ratesum / total_product);
 
-            proDuct_repo.set_rating( product.getProduct_id(),ratesum/total_product);
+            }
             total_product =0;
             ratesum = 0.0;
             System.out.println("rating check  "+product.getProduct_id() +"  "+ ratesum/total_product);
+
+
+
+
         }
 
 

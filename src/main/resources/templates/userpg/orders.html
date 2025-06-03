@@ -378,7 +378,7 @@
   <div class="card bg-white p-8 mb-8" th:each="list : ${order_list}">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div>
-        <h3 class="text-xl font-semibold text-gray-800">Order #1001</h3>
+        <h3 class="text-xl font-semibold text-gray-800" th:text="'Order: '+'#'+${list.key.invoice_id}">Order #1001</h3>
         <p class="text-sm text-gray-600" th:text="'Date: '+${list.key.order_date}" >Date: May 25, 2025, 10:30 AM</p>
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
@@ -408,7 +408,7 @@
         </thead>
         <tbody>
         <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}">
-          <th:block th:if="${product.rating == null || product.rating == 0}">
+          <th:block th:if="${product.rating == 0 }">
             <td class="p-4 text-gray-700">
               <form th:action="@{'/product_rating/'+${product.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${product.order_id}}" method="post">
                 <div class="star-rating"  >
@@ -434,13 +434,13 @@
                         >★</span>
                 </div>
 
-                <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2"  >
+                <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2" th:disabled="${ product.order_status != 'Delivered' } "  >
                   Give Rating
                 </button>
               </form>
             </td>
           </th:block>
-          <th:block th:if="${product.rating != null || product.rating > 0}">
+          <th:block th:if="${product.rating != 0 || product.rating > 0}">
             <td class="p-4 text-gray-700">
             <div class="star-rating">
               <span class="star"
