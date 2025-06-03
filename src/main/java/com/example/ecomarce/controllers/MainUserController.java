@@ -352,7 +352,14 @@ public class MainUserController {
                     System.out.println(order2.getInvoice_id());
                     total_price_sum += order2.getOrder_subtotal();
                 }
-                total_price.put(same_invoice_order.get(0).getInvoice_id(),total_price_sum);
+
+                if (order.getOrder_payment_amount() == null || order.getOrder_payment_amount() == 0) {
+                    orderManage.set_order_price(order.getInvoice_id(),total_price_sum);
+                    System.out.println("All set");
+                }else {
+                    System.out.println("All set previously");
+                }
+
                 System.out.println("\n\n\norder list " + total_price_sum);
                 total_price_sum =0;
                 seenInvoiceIds.add(same_invoice_order.get(0).getInvoice_id());

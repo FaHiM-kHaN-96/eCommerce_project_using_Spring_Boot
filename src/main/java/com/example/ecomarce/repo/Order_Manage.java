@@ -54,6 +54,21 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
 
     @Transactional
     @Modifying
+    @Query("UPDATE OrderTableEN o SET o.order_payment_amount = :order_payment_amount  WHERE o.invoice_id = :invoice_id")
+    int setOrderTotalPrice(
+            @Param("invoice_id") String invoice_id,
+            @Param("order_payment_amount") Float order_payment_amount
+    );
+
+    default boolean set_order_price(String invoice_id, Float order_payment_amount) {
+        int affectedRows = setOrderTotalPrice(invoice_id, order_payment_amount);
+        return affectedRows > 0;
+    }
+
+
+
+    @Transactional
+    @Modifying
     @Query("UPDATE OrderTableEN o SET o.order_status = :status, o.order_payment_status = :order_payment_status, o.order_payment_method = :order_payment_method  WHERE o.invoice_id = :invoice_id")
     int updateOrderStatus(
             @Param("invoice_id") String invoice_id,

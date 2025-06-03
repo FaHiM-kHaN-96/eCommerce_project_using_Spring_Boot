@@ -408,7 +408,7 @@
         <p class="text-sm text-gray-600" th:text="'Date: '+${list.key.order_date}" >Date: May 25, 2025, 10:30 AM</p>
       </div>
       <div class="text-left sm:text-right mt-4 sm:mt-0">
-        <p class="text-lg font-semibold text-gray-800" th:text="${total.} + ' BDT'">Total: 1500.00 BDT</p>
+        <p class="text-lg font-semibold text-gray-800" th:text="${list.key.order_payment_amount} + ' BDT'">Total: 1500.00 BDT</p>
         <p class="text-sm status-delivered font-medium" th:text="'Order: '+${list.key.order_status}">Status: Delivered</p>
         <p class="text-sm status-delivered font-medium" th:text="'Payment Method : '+${list.key.order_payment_method}">Status: Delivered</p>
         <p class="text-sm payment-paid font-medium" th:text="'Payment: '+${list.key.order_payment_status}">Payment: Paid</p>
