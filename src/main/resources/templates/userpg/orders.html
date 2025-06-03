@@ -107,30 +107,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      transition: opacity 0.3s ease;
-    }
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      max-width: 700px;
-      width: 90%;
-      position: relative;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
+
     .star-rating {
       display: flex;
       gap: 0.25rem;
@@ -147,10 +124,7 @@
     .star.disabled {
       cursor: default;
     }
-    .rating-stars {
-      display: flex;
-      gap: 0.1rem;
-    }
+
     .container {
       max-width: 1320px;
       padding-left: 15px;
@@ -434,36 +408,61 @@
         </thead>
         <tbody>
         <tr class="order-item border-b border-gray-200" th:each="product : ${list.value}">
-          <td class="p-4 text-gray-700">
-            <form th:action="@{'/product_rating/'+${product.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${product.order_id}}" method="post">
-              <div class="star-rating"  >
-                <input type="hidden" name="rate_prd" class="rating-value" value="0" >
-                <span class="star"
-                      data-value="1"
-                      th:classappend="${product.rating >= 1} ? 'selected' : ''">★</span>
+          <th:block th:if="${product.rating == null || product.rating == 0}">
+            <td class="p-4 text-gray-700">
+              <form th:action="@{'/product_rating/'+${product.invoice_id}+'/rate/'+${product.producten.product_id}+'/'+${product.order_id}}" method="post">
+                <div class="star-rating"  >
+                  <input type="hidden" name="rate_prd" class="rating-value" value="0" >
+                  <span class="star"
+                        data-value="1"
+                        >★</span>
 
-                <span class="star"
-                      data-value="2"
-                      th:classappend="${product.rating >= 2} ? 'selected' : ''">★</span>
+                  <span class="star"
+                        data-value="2"
+                       >★</span>
 
-                <span class="star"
-                      data-value="3"
-                      th:classappend="${product.rating >= 3} ? 'selected' : ''">★</span>
+                  <span class="star"
+                        data-value="3"
+                       >★</span>
 
-                <span class="star"
-                      data-value="4"
-                      th:classappend="${product.rating >= 4} ? 'selected' : ''">★</span>
+                  <span class="star"
+                        data-value="4"
+                        >★</span>
 
-                <span class="star"
-                      data-value="5"
-                      th:classappend="${product.rating >= 5} ? 'selected' : ''">★</span>
-              </div>
+                  <span class="star"
+                        data-value="5"
+                        >★</span>
+                </div>
 
-              <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2"  th:disabled="${ product.order_status != 'Delivered'  || product.rating != 0} ">
-                Give Rating
-              </button>
-            </form>
-          </td>
+                <button type="submit" class="btn-rating text-white font-semibold py-2 px-4 rounded-lg mt-2"  >
+                  Give Rating
+                </button>
+              </form>
+            </td>
+          </th:block>
+          <th:block th:if="${product.rating != null || product.rating > 0}">
+            <td class="p-4 text-gray-700">
+            <div class="star-rating">
+              <span class="star"
+                    data-value="1"
+                    th:classappend="${product.rating >= 1} ? 'selected' : ''">★</span>
+              <span class="star"
+                    data-value="2"
+                    th:classappend="${product.rating >= 2} ? 'selected' : ''">★</span>
+              <span class="star"
+                    data-value="3"
+                    th:classappend="${product.rating >= 3} ? 'selected' : ''">★</span>
+              <span class="star"
+                    data-value="4"
+                    th:classappend="${product.rating >= 4} ? 'selected' : ''">★</span>
+              <span class="star"
+                    data-value="5"
+                    th:classappend="${product.rating >= 5} ? 'selected' : ''">★</span>
+              <span class="text-gray-600 text-sm ms-2">(4.0/5, 10)</span>
+            </div>
+            </td>
+          </th:block>
+
           <td class="p-4 text-gray-700" th:text="${product.producten.product_name}">Book - Mystery Novel</td>
           <td class="p-4 text-gray-700" th:text="${product.producten.selling_price}">500.00 BDT</td>
           <td class="p-4 text-gray-700" th:text="${product.order_quantity}">2</td>
@@ -507,17 +506,7 @@
             updateStars(value);
           });
 
-          // Add hover event to each star
-          star.addEventListener('mouseover', function () {
-            const value = parseInt(this.getAttribute('data-value'));
-            updateStars(value);
-          });
 
-          // Reset stars when mouse leaves
-          star.addEventListener('mouseout', function () {
-            const currentValue = parseInt(ratingInput.value) || 0;
-            updateStars(currentValue);
-          });
         });
       }
     });
