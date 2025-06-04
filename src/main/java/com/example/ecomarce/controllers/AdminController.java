@@ -122,13 +122,34 @@ public class AdminController {
 
         return "redirect:/admin/products";
     }
+    @PostMapping("/admin/update")
+    public String updateProduct(@ModelAttribute("product_details") ProductEN product, @RequestParam("images") MultipartFile[] images) {
+
+        System.out.println("Admin addition data  " +product);
+        // Update product and images
+        return "redirect:/admin/products";
+    }
+//    @GetMapping("/product-data/{id}")
+//    public String updateProductData(@RequestParam("id") int id,Model model) {
+//
+//
+//        // Update product and images
+//        return "redirect:/admin/products";
+//    }
 
     @GetMapping("/products")
     public String products(Model model) {
+        List<ProductEN> products_list = proDuct_repo.findAll();
+
+        model.addAttribute("product_details", new ProductEN());
+        model.addAttribute("products", products_list);
         model.addAttribute("product_details", new ProductEN());
         return "adminpg/admin_products";
 
     }
+
+
+
     @PostMapping("/invoice/{id}")
     public ResponseEntity<?> invoice_generator(@PathVariable("id") String  id) {
         try {
