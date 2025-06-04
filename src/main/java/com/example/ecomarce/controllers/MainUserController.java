@@ -312,12 +312,16 @@ public class MainUserController {
         return invoice;
     }
     @GetMapping("/checkout" )
-    public String checkout(Principal principal, Model model) {
+    public String checkout(Principal principal, Model model,HttpSession session) {
         System.out.println(principal.getName());
         Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
         System.out.println(commonUserEN);
         System.out.println("All proce");
+        if (cartlist.isEmpty()) {
 
+            session.setAttribute("no_product_available",new MessAge("No Product available on cart to process ","warning-message") );
+            return "redirect:/cart";
+        }
         model.addAttribute("order_product",cartlist);
         model.addAttribute("total_price",calculateTotalPrice());
         model.addAttribute("commonUserEN", commonUserEN);
