@@ -32,6 +32,12 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
     @Query("SELECT o FROM OrderTableEN o WHERE o.invoice_id = :invoice_id")
     List<OrderTableEN> findinvoice(@Param("invoice_id") String invoice_id );
 
+    @Query("SELECT o FROM OrderTableEN o WHERE o.order_status = :order_status")
+    List<OrderTableEN>Select_all_order_by_status(@Param("order_status") String order_status );
+
+
+    @Query("SELECT e FROM OrderTableEN e WHERE e.delivered_datetime >= :delivered_datetime")
+    List<OrderTableEN> findLast7DaysData(@Param("delivered_datetime") String delivered_datetime);
 //    @Query("SELECT o FROM OrderTableEN o WHERE o.order_id = :orderid AND o.producten.product_id = :product_id")
 //    OrderTableEN findOrderSetForRating(@Param("orderid") int orderid,
 //                                      @Param("product_id") int product_id);
@@ -69,16 +75,17 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE OrderTableEN o SET o.order_status = :status, o.order_payment_status = :order_payment_status, o.order_payment_method = :order_payment_method  WHERE o.invoice_id = :invoice_id")
+    @Query("UPDATE OrderTableEN o SET o.order_status = :status, o.order_payment_status = :order_payment_status,o.delivered_datetime = :delivered_datetime ,o.order_payment_method = :order_payment_method  WHERE o.invoice_id = :invoice_id")
     int updateOrderStatus(
             @Param("invoice_id") String invoice_id,
             @Param("status") String status,
             @Param("order_payment_status") String order_payment_status,
-            @Param("order_payment_method") String order_payment_method
+            @Param("order_payment_method") String order_payment_method,
+            @Param("delivered_datetime") String delivered_datetime
     );
 
-    default boolean updateOrderInfo(String invoice_id, String status, String order_payment_status, String order_payment_method) {
-        int affectedRows = updateOrderStatus(invoice_id, status, order_payment_status, order_payment_method);
+    default boolean updateOrderInfo(String invoice_id, String status, String order_payment_status, String order_payment_method , String delivered_datetime) {
+        int affectedRows = updateOrderStatus(invoice_id, status, order_payment_status, order_payment_method , delivered_datetime);
         return affectedRows > 0;
     }
 

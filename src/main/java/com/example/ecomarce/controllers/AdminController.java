@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -205,9 +207,17 @@ public class AdminController {
         for (OrderTableEN order : orders) {
 
             if (status.equals("Delivered")){
-                order_service.Update_Order_Status(order.getInvoice_id(),status,"Paid",order.getOrder_payment_method());
+                LocalDateTime time = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
+
+                String formattedTime = time.format(formatter);
+                order_service.Update_Order_Status(order.getInvoice_id(),status,"Paid",order.getOrder_payment_method(),formattedTime);
             } else {
-                order_service.Update_Order_Status(order.getInvoice_id(),status,"cancelled",order.getOrder_payment_method());
+                LocalDateTime time = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
+
+                String formattedTime = time.format(formatter);
+                order_service.Update_Order_Status(order.getInvoice_id(),status,"cancelled",order.getOrder_payment_method() ,formattedTime);
             }
 
 
@@ -248,7 +258,24 @@ public class AdminController {
         List<Common_UserEN> user = change_role_repo.findAll();
         List<Common_UserEN> userdatamap = new ArrayList();
         List<OrderTableEN> all_order_list = order_manage.fatchallorder();
+
+
+
         List<OrderTableEN> all_uniq_invoice_order = new ArrayList();
+        float total_sell=0;
+        float total_subtotal=0;
+        int how_many_product_sell=0;
+        List<OrderTableEN> all_uniq_order_invoice = order_manage.Select_all_order_by_status("Delivered");
+        for (OrderTableEN order_count : all_uniq_order_invoice) {
+            float calculate_profit = 0;
+            calculate_profit = order_count.getProducten().getSelling_price() - order_count.getProducten().getBuying_price();
+            total_sell = total_sell + calculate_profit;
+            total_subtotal+= order_count.getOrder_subtotal();
+            how_many_product_sell ++;
+            System.out.println("total financial status " +order_count.getProducten().getProduct_id() +"   "+"profit "+ calculate_profit +"  "+ "Total profit  " + total_sell )  ;
+        }
+        System.out.println("\n\ntotal sell "+  how_many_product_sell +"Total subtotal  "+ total_subtotal);
+
         Set<String> seenInvoiceIds = new HashSet<>();
 
         for (OrderTableEN order : all_order_list) {
@@ -267,6 +294,18 @@ public class AdminController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+
+        LocalDateTime time = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
+
+        //String formattedTime = time.format(formatter);
+        String sevenDaysAgo = LocalDateTime.now().minusDays(7).format(formatter);
+        List<OrderTableEN> all_order_status_list = order_manage.findLast7DaysData(sevenDaysAgo);
+        for (OrderTableEN order : all_order_status_list) {
+
+            System.out.println("\n\n\n Date of d  "+order.getDelivered_datetime());
         }
         model.addAttribute("order_list" , all_uniq_invoice_order);
         model.addAttribute("userdatamap", userdatamap);

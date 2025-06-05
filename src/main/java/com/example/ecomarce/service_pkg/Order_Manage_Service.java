@@ -18,9 +18,9 @@ public class Order_Manage_Service {
     }
 
     @Transactional
-    public boolean Update_Order_Status(String invoice_id,String stetus ,String payment_status  ,String payment_method ) {
+    public boolean Update_Order_Status(String invoice_id,String stetus ,String payment_status  ,String payment_method ,String delivered_datetime ) {
 
-        return order_manage.updateOrderInfo(invoice_id,stetus,payment_status,payment_method) ;
+        return order_manage.updateOrderInfo(invoice_id,stetus,payment_status,payment_method ,delivered_datetime) ;
     }
     @Transactional
     public boolean Update_payment_Status(String invoice_id,String stetus) {

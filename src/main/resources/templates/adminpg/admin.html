@@ -464,6 +464,8 @@
                 <p class="text-2xl font-bold text-green-600" id="profitLoss">50,000.00 BDT</p>
             </div>
         </div>
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        <canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
     </div>
 
     <!-- Admin Management -->
@@ -608,7 +610,7 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script>
     let currentOrder = null;
 
@@ -759,94 +761,62 @@
         currentOrder = null;
     }
 
-    async function generateSellerInvoice(order) {
-        const progressOverlay = document.getElementById('progressOverlay');
-        progressOverlay.classList.remove('hidden');
-
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(40);
-            doc.setTextColor(200, 200, 200);
-            doc.setFont('helvetica', 'italic');
-            doc.text('Seller Copy', 20, 200, { angle: 45 });
-
-            doc.setFillColor(59, 130, 246);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.setFont('helvetica', 'normal');
-            doc.text('E-Commerce', 20, 20);
-            doc.setFontSize(12);
-            doc.text('Seller Invoice: ' + order.inv_number, 20, 30);
-
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(12);
-            doc.text('Customer Details:', 20, 50);
-            doc.setFontSize(10);
-            doc.text('Name: ' + order.customer_name, 20, 60);
-            doc.text('Email: ' + order.email, 20, 67);
-            doc.text('Phone: ' + order.phone, 20, 74);
-            doc.text('Address: ' + order.address, 20, 81);
-
-            doc.setFontSize(12);
-            doc.text('Order Details:', 20, 95);
-            doc.setFontSize(10);
-            doc.text('Order ID: ' + order.order_id, 20, 105);
-            doc.text('Date: ' + order.order_date, 20, 112);
-            doc.text('Total: ' + order.total + ' BDT', 20, 119);
-            doc.text('Status: ' + order.status.charAt(0).toUpperCase() + order.status.slice(1), 20, 126);
-            doc.text('Payment Status: ' + order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1), 20, 133);
-            doc.text('Payment Method: ' + order.payment_method.charAt(0).toUpperCase() + order.payment_method.slice(1), 20, 140);
-            doc.text('Transaction ID: ' + order.transaction_id, 20, 147);
-
-            doc.setFontSize(12);
-            doc.text('Order Items:', 20, 161);
-            doc.setDrawColor(0);
-            doc.setFillColor(229, 231, 235);
-            doc.rect(20, 166, 170, 10, 'F');
-            doc.setTextColor(0);
-            doc.setFontSize(10);
-            doc.text('Product', 22, 173);
-            doc.text('Price', 100, 173);
-            doc.text('Quantity', 130, 173);
-            doc.text('Subtotal', 160, 173);
-
-            let y = 183;
-            order.items.forEach(item => {
-                doc.text(item.name, 22, y);
-                doc.text(parseFloat(item.price).toFixed(2) + ' BDT', 100, y);
-                doc.text(item.quantity.toString(), 130, y);
-                doc.text((item.price * item.quantity).toFixed(2) + ' BDT', 160, y);
-                y += 10;
-            });
-
-            const barcodeValue = 'INV-' + order.order_id + '-SELLER';
-            const qrCodeUrl = 'https://example.com/order/' + order.order_id;
-            const canvas = document.createElement('canvas');
-            JsBarcode(canvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
-            doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, y, 80, 20);
-
-            const qrCanvas = document.createElement('canvas');
-            QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
-                if (!error) {
-                    doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 120, y, 20, 20);
-                }
-            });
-
-            doc.save(`seller-invoice-${order.inv_number}.pdf`);
-        } catch (error) {
-            showErrorMessage('Error generating seller invoice: ' + error.message);
-        } finally {
-            progressOverlay.classList.add('hidden');
-        }
-    }
 
     // Download button event listener
     document.getElementById('downloadInvoiceBtn').addEventListener('click', () => {
         if (currentOrder) {
             generateSellerInvoice(currentOrder);
+        }
+    });
+</script>
+<script>
+    var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+    var yValues = [55, 49, 44, 24, 15];
+    var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+
+    new Chart("myChart", {
+        type: "doughnut",
+        data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "World Wide Wine Production 2018"
+            }
+        }
+    });
+</script>
+<script>
+    var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+    var yValues = [55, 49, 44, 24, 15];
+    var barColors = ["red", "green","blue","orange","brown"];
+
+    new Chart("myChart2", {
+        type: "bar",
+        data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            legend: {display: false},
+            title: {
+                display: true,
+                text: "World Wine Production 2018"
+            }
         }
     });
 </script>

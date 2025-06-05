@@ -18,11 +18,13 @@ public class OrderTableEN {
     private String order_date;
     private String invoice_id;
     private String order_payment_status;
+    private String delivered_datetime;
     private Float order_payment_amount;
     @ManyToOne
     private Common_UserEN user;
     @ManyToOne
     private ProductEN producten;
+
 
     @Override
     public String toString() {
@@ -40,10 +42,19 @@ public class OrderTableEN {
                 ", order_date='" + order_date + '\'' +
                 ", invoice_id='" + invoice_id + '\'' +
                 ", order_payment_status='" + order_payment_status + '\'' +
+                ", delivered_datetime='" + delivered_datetime + '\'' +
                 ", order_payment_amount=" + order_payment_amount +
                 ", user=" + user +
                 ", producten=" + producten +
                 '}';
+    }
+
+    public String getDelivered_datetime() {
+        return delivered_datetime;
+    }
+
+    public void setDelivered_datetime(String delivered_datetime) {
+        this.delivered_datetime = delivered_datetime;
     }
 
     public int getOrder_id() {
