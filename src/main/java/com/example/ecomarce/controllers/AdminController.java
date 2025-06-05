@@ -129,21 +129,25 @@ public class AdminController {
         // Update product and images
         return "redirect:/admin/products";
     }
-//    @GetMapping("/product-data/{id}")
-//    public String updateProductData(@RequestParam("id") int id,Model model) {
-//
-//
-//        // Update product and images
-//        return "redirect:/admin/products";
-//    }
+    @PostMapping("/update-req/{id}")
+    public String updateProductData(@PathVariable("id") int id,@ModelAttribute("update_p") ProductEN product ,Model model) {
+
+        System.out.println("product ID  "+ id);
+
+       ProductEN productEN = proDuct_repo.findByProduct_id(id);
+       model.addAttribute("update_p", productEN);
+       model.addAttribute("check_id",id);
+        // Update product and images
+        return "adminpg/product-update";
+    }
 
     @GetMapping("/products")
     public String products(Model model) {
         List<ProductEN> products_list = proDuct_repo.findAll();
 
-        model.addAttribute("product_details", new ProductEN());
         model.addAttribute("products", products_list);
         model.addAttribute("product_details", new ProductEN());
+        model.addAttribute("update_p", new ProductEN());
         return "adminpg/admin_products";
 
     }
