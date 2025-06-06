@@ -416,19 +416,6 @@
     </div>
 </div>
 
-<!-- Invoice Preview Modal -->
-<div id="invoiceModal" class="modal hidden">
-    <div class="modal-content relative">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-blue-800">Invoice Preview</h2>
-            <div>
-                <button id="downloadInvoiceBtn" class="btn-blue text-white px-4 py-2 rounded mr-2">Download PDF</button>
-                <button type="button" onclick="closeInvoiceModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Close</button>
-            </div>
-        </div>
-        <div id="invoiceContent" class="invoice-preview"></div>
-    </div>
-</div>
 
 <!-- Navbar -->
 <nav class="bg-blue-600 text-white p-4 shadow-lg">
@@ -452,16 +439,16 @@
         <h2 class="text-xl font-semibold mb-4">Financial Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-green-100 p-4 rounded-lg text-center">
-                <h3 class="text-lg font-medium">Total Revenue</h3>
-                <p class="text-2xl font-bold" id="totalRevenue">150,000.00 BDT</p>
+                <h3 class="text-lg font-medium">Total Profit</h3>
+                <p class="text-2xl font-bold" id="totalRevenue" th:text="${total_profit}+' BDT'">150,000.00 BDT</p>
             </div>
             <div class="bg-red-100 p-4 rounded-lg text-center">
-                <h3 class="text-lg font-medium">Total Costs</h3>
-                <p class="text-2xl font-bold" id="totalCost">100,000.00 BDT</p>
+                <h3 class="text-lg font-medium" >Total Order</h3>
+                <p class="text-2xl font-bold" id="totalCost" th:text="${total_sell}+' BDT'">100,000.00 BDT</p>
             </div>
             <div class="bg-blue-100 p-4 rounded-lg text-center">
-                <h3 class="text-lg font-medium">Profit</h3>
-                <p class="text-2xl font-bold text-green-600" id="profitLoss">50,000.00 BDT</p>
+                <h3 class="text-lg font-medium">Total Sold</h3>
+                <p class="text-2xl font-bold text-green-600" id="profitLoss" th:text="${total_sold_product}+' Product'">50,000.00 BDT</p>
             </div>
         </div>
         <canvas id="myChart" style="width:100%;max-width:600px"></canvas>

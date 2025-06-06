@@ -297,17 +297,12 @@ public class AdminController {
         }
 
 
-        LocalDateTime time = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
 
-        //String formattedTime = time.format(formatter);
-        String sevenDaysAgo = LocalDateTime.now().minusDays(7).format(formatter);
-        List<OrderTableEN> all_order_status_list = order_manage.findLast7DaysData(sevenDaysAgo);
-        for (OrderTableEN order : all_order_status_list) {
-
-            System.out.println("\n\n\n Date of d  "+order.getDelivered_datetime());
-        }
         model.addAttribute("order_list" , all_uniq_invoice_order);
+        model.addAttribute("total_sell" , total_subtotal);
+        model.addAttribute("total_profit" , total_sell);
+        model.addAttribute("total_sold_product" , how_many_product_sell);
+
         model.addAttribute("userdatamap", userdatamap);
         return "adminpg/admin";
 

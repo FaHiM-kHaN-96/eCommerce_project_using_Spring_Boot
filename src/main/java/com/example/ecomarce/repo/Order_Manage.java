@@ -36,8 +36,7 @@ public interface Order_Manage extends JpaRepository<OrderTableEN, Integer> {
     List<OrderTableEN>Select_all_order_by_status(@Param("order_status") String order_status );
 
 
-    @Query("SELECT e FROM OrderTableEN e WHERE e.delivered_datetime >= :delivered_datetime")
-    List<OrderTableEN> findLast7DaysData(@Param("delivered_datetime") String delivered_datetime);
+
 //    @Query("SELECT o FROM OrderTableEN o WHERE o.order_id = :orderid AND o.producten.product_id = :product_id")
 //    OrderTableEN findOrderSetForRating(@Param("orderid") int orderid,
 //                                      @Param("product_id") int product_id);
