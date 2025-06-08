@@ -159,7 +159,7 @@
       </div>
       <div>
         <h2 class="text-xl font-semibold text-green-800 mb-4">Add New Product</h2>
-        <form method="POST" th:action="@{/admin/add}" th:object="${update_p}" enctype="multipart/form-data">
+        <form method="POST" th:action="@{/admin/update}" th:object="${update_p}" enctype="multipart/form-data">
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -194,36 +194,34 @@
             <div>
               <div class="image-preview flex flex-wrap gap-2 mt-2">
                 <div th:each="img, iterStat : ${update_p.image}">
-                  <label for="images" class="block text-sm font-medium text-gray-700">Images (JPG, PNG, GIF,
-                    WebP)</label>
-                  <input type="file" id="images" name="images" accept="image/jpeg,image/png,image/gif,image/webp"
-                    multiple class="mt-1 w-full p-2 border rounded">
-
                   <img th:src="@{'data:image/jpeg;base64,'+${img.imageData}}" alt="Thumbnail 1" class="thumbnail"
                     loading="lazy">
                 </div>
+                <label for="images" class="block text-sm font-medium text-gray-700">Images (JPG, PNG, GIF,
+                  WebP)</label>
+                <input type="file" id="images" name="images" accept="image/jpeg,image/png,image/gif,image/webp" multiple
+                  class="mt-1 w-full p-2 border rounded">
               </div>
-
             </div>
-
           </div>
-
-          <div class="mb-4">
-            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea id="description" name="product_description" class="input-focus mt-1 w-full p-2 border rounded"
-              rows="4" th:value="${update_p.product_description}" required></textarea>
-          </div>
-          <div class="flex space-x-4">
-            <button type="submit" name="add_product"
-              class="btn-green text-white font-semibold py-2 px-4 rounded hover:bg-green-700">
-              Add Product
-            </button>
-          </div>
-        </form>
       </div>
 
-
+      <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="description" name="product_description" class="input-focus mt-1 w-full p-2 border rounded"
+          rows="4" th:text="${update_p.product_description}" required></textarea>
+      </div>
+      <div class="flex space-x-4">
+        <button type="submit" name="add_product"
+          class="btn-green text-white font-semibold py-2 px-4 rounded hover:bg-green-700">
+           update
+        </button>
+      </div>
+      </form>
     </div>
+
+
+  </div>
   </div>
 
 

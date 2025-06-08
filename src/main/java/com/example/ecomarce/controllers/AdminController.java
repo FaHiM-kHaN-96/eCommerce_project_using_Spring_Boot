@@ -1,34 +1,42 @@
 package com.example.ecomarce.controllers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.ecomarce.entity.Common_UserEN;
 import com.example.ecomarce.entity.ImageEN;
 import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
-
 import com.example.ecomarce.helper.MessAge;
-
 import com.example.ecomarce.pdf_maker_class.InvoiceGenerator;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.adminrepo.Change_role_repo;
 import com.example.ecomarce.service_pkg.Order_Manage_Service;
 import com.example.ecomarce.service_pkg.adminservice.RoleChangerService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
@@ -124,10 +132,23 @@ public class AdminController {
 
         return "redirect:/admin/products";
     }
-    @PostMapping("/admin/update")
-    public String updateProduct(@ModelAttribute("product_details") ProductEN product, @RequestParam("images") MultipartFile[] images) {
+    @PostMapping("/update")
+    public String updateProduct(@ModelAttribute("update_p") ProductEN product, @RequestParam("images") MultipartFile[] images) {
 
         System.out.println("Admin addition data  " +product);
+
+    //    for (MultipartFile img : images) {
+    //        if (!img.isEmpty()) {
+    //         break;
+    //        }
+    //    }
+        
+        if (images == null || images.length == 0) {
+            product.setImage(product.getImage());
+        }
+        product.setProduct_avg_rating(product.getProduct_avg_rating());
+        System.out.println(product);
+       
         // Update product and images
         return "redirect:/admin/products";
     }
