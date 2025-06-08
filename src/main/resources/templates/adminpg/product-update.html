@@ -117,116 +117,114 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
-<!-- Navbar -->
-<nav class="bg-green-800 text-white p-4 shadow-lg">
-  <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Manage Products</h1>
-    <div>
-      <a href="#" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mr-2">Dashboard</a>
-      <a href="#" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</a>
+  <!-- Navbar -->
+  <nav class="bg-green-800 text-white p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Manage Products</h1>
+      <div>
+        <a href="#" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mr-2">Dashboard</a>
+        <a href="#" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</a>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Main Content -->
-<div class="container mx-auto p-6">
-  <!--        &lt;!&ndash; Financial Overview &ndash;&gt;-->
-  <!--        <div class="bg-white p-6 rounded-lg shadow-md mb-6">-->
-  <!--            <h2 class="text-xl font-semibold mb-4 text-green-800">Financial Overview</h2>-->
-  <!--            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">-->
-  <!--                <div class="bg-green-100 p-4 rounded-lg text-center">-->
-  <!--                    <h3 class="text-lg font-medium">Total Revenue</h3>-->
-  <!--                    <p class="text-2xl font-bold" id="totalRevenue">150,000.00 BDT</p>-->
-  <!--                </div>-->
-  <!--                <div class="bg-red-100 p-4 rounded-lg text-center">-->
-  <!--                    <h3 class="text-lg font-medium">Total Costs</h3>-->
-  <!--                    <p class="text-2xl font-bold" id="totalCost">100,000.00 BDT</p>-->
-  <!--                </div>-->
-  <!--                <div class="bg-blue-100 p-4 rounded-lg text-center">-->
-  <!--                    <h3 class="text-lg font-medium">Profit/Loss</h3>-->
-  <!--                    <p class="text-2xl font-bold text-green-600" id="profitLoss">50,000.00 BDT</p>-->
-  <!--                </div>-->
-  <!--            </div>-->
-  <!--        </div>-->
+  <!-- Main Content -->
+  <div class="container mx-auto p-6">
+    <!--        &lt;!&ndash; Financial Overview &ndash;&gt;-->
+    <!--        <div class="bg-white p-6 rounded-lg shadow-md mb-6">-->
+    <!--            <h2 class="text-xl font-semibold mb-4 text-green-800">Financial Overview</h2>-->
+    <!--            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">-->
+    <!--                <div class="bg-green-100 p-4 rounded-lg text-center">-->
+    <!--                    <h3 class="text-lg font-medium">Total Revenue</h3>-->
+    <!--                    <p class="text-2xl font-bold" id="totalRevenue">150,000.00 BDT</p>-->
+    <!--                </div>-->
+    <!--                <div class="bg-red-100 p-4 rounded-lg text-center">-->
+    <!--                    <h3 class="text-lg font-medium">Total Costs</h3>-->
+    <!--                    <p class="text-2xl font-bold" id="totalCost">100,000.00 BDT</p>-->
+    <!--                </div>-->
+    <!--                <div class="bg-blue-100 p-4 rounded-lg text-center">-->
+    <!--                    <h3 class="text-lg font-medium">Profit/Loss</h3>-->
+    <!--                    <p class="text-2xl font-bold text-green-600" id="profitLoss">50,000.00 BDT</p>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
 
-  <!-- Messages -->
-  <div class="bg-green-100 text-green-800 p-3 rounded mb-4 hidden" id="successMessage"></div>
-  <div class="bg-red-100 text-red-800 p-3 rounded mb-4 hidden" id="errorMessage"></div>
-  <!-- Add Product Form -->
-  <div class="card bg-white rounded-lg p-6 mb-6">
-    <div th:if="${session.message_p}" th:classappend="${session.message_p.type}" class="alert" role="alert">
-      <p th:text="${session.message_p.content}"></p>
-    </div>
-    <div>
-      <h2 class="text-xl font-semibold text-green-800 mb-4">Add New Product</h2>
-      <form method="POST" th:action="@{/admin/add}" th:object="${update_p}" enctype="multipart/form-data">
+    <!-- Messages -->
+    <div class="bg-green-100 text-green-800 p-3 rounded mb-4 hidden" id="successMessage"></div>
+    <div class="bg-red-100 text-red-800 p-3 rounded mb-4 hidden" id="errorMessage"></div>
+    <!-- Add Product Form -->
+    <div class="card bg-white rounded-lg p-6 mb-6">
+      <div th:if="${session.message_p}" th:classappend="${session.message_p.type}" class="alert" role="alert">
+        <p th:text="${session.message_p.content}"></p>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-green-800 mb-4">Add New Product</h2>
+        <form method="POST" th:action="@{/admin/add}" th:object="${update_p}" enctype="multipart/form-data">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-            <input type="text" id="name" name="product_name"
-                   class="input-focus mt-1 w-full p-2 border rounded" th:value="${update_p.product_name}"
-                   required>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+              <input type="text" id="name" name="product_name" class="input-focus mt-1 w-full p-2 border rounded"
+                th:value="${update_p.product_name}" required>
+            </div>
+            <div>
+              <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+              <select id="category" name="product_category" class="input-focus mt-1 w-full p-2 border rounded"
+                th:value="${update_p.product_category}" required>
+                <option value="book">Book</option>
+                <option value="toy">Toy</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-            <select id="category" name="product_category"
-                    class="input-focus mt-1 w-full p-2 border rounded"
-                    th:value="${update_p.product_category}" required>
-              <option value="book">Book</option>
-              <option value="toy">Toy</option>
-            </select>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="buying_price" class="block text-sm font-medium text-gray-700">Buying Price
+                (BDT)</label>
+              <input type="number" id="buying_price" name="buying_price" step="0.01" min="0"
+                class="input-focus mt-1 w-full p-2 border rounded" th:value="${update_p.buying_price}" required>
+            </div>
+            <div>
+              <label for="selling_price" class="block text-sm font-medium text-gray-700">Selling Price
+                (BDT)</label>
+              <input type="number" id="selling_price" name="selling_price" step="0.01" min="0"
+                class="input-focus mt-1 w-full p-2 border rounded" th:value="${update_p.selling_price}" required>
+            </div>
           </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="buying_price" class="block text-sm font-medium text-gray-700">Buying Price
-              (BDT)</label>
-            <input type="number" id="buying_price" name="buying_price" step="0.01" min="0"
-                   class="input-focus mt-1 w-full p-2 border rounded" th:value="${update_p.buying_price}"
-                   required>
-          </div>
-          <div>
-            <label for="selling_price" class="block text-sm font-medium text-gray-700">Selling Price
-              (BDT)</label>
-            <input type="number" id="selling_price" name="selling_price" step="0.01" min="0"
-                   class="input-focus mt-1 w-full p-2 border rounded" th:value="${update_p.selling_price}"
-                   required>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <div  class="image-preview flex flex-wrap gap-2 mt-2">
-              <div th:each="img, iterStat : ${update_p.image}" >
-                <img th:src="@{'data:image/jpeg;base64,'+${img.imageData}}"  alt="Thumbnail 1" class="thumbnail" loading="lazy">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div class="image-preview flex flex-wrap gap-2 mt-2">
+                <div th:each="img, iterStat : ${update_p.image}">
+                  <label for="images" class="block text-sm font-medium text-gray-700">Images (JPG, PNG, GIF,
+                    WebP)</label>
+                  <input type="file" id="images" name="images" accept="image/jpeg,image/png,image/gif,image/webp"
+                    multiple class="mt-1 w-full p-2 border rounded">
+
+                  <img th:src="@{'data:image/jpeg;base64,'+${img.imageData}}" alt="Thumbnail 1" class="thumbnail"
+                    loading="lazy">
+                </div>
               </div>
+
             </div>
 
           </div>
-          <label for="images" class="block text-sm font-medium text-gray-700">Images (JPG, PNG, GIF,
-            WebP)</label>
-          <input type="file" id="images" name="images" accept="image/jpeg,image/png,image/gif,image/webp"
-                 multiple class="mt-1 w-full p-2 border rounded">
-        </div>
 
-        <div class="mb-4">
-          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-          <textarea id="description" name="product_description"
-                    class="input-focus mt-1 w-full p-2 border rounded" rows="4"
-                    th:value="${update_p.product_description}" required></textarea>
-        </div>
-        <div class="flex space-x-4">
-          <button type="submit" name="add_product"
-                  class="btn-green text-white font-semibold py-2 px-4 rounded hover:bg-green-700">
-            Add Product
-          </button>
-        </div>
-      </form>
+          <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" name="product_description" class="input-focus mt-1 w-full p-2 border rounded"
+              rows="4" th:value="${update_p.product_description}" required></textarea>
+          </div>
+          <div class="flex space-x-4">
+            <button type="submit" name="add_product"
+              class="btn-green text-white font-semibold py-2 px-4 rounded hover:bg-green-700">
+              Add Product
+            </button>
+          </div>
+        </form>
+      </div>
+
+
     </div>
-
-
   </div>
-</div>
 
 
 </body>
