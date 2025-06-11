@@ -60,32 +60,33 @@ public class MainUserController {
         // String email = principal.getName();
         List<ProductEN> productlist = proDuct_repo.findAll();
 
+        List<ProductEN> active_products = new ArrayList<>();
+
         double averageRating = 0.0;
         for (ProductEN product : productlist) {
+            if (product.isProduct_active()){
+                int total_product =0;
+                double ratesum = 0.0;
+                // double result = 0.0;
+                List<OrderTableEN> orderTableENS = orderManage.findallproduct(product.getProduct_id());
+                for (OrderTableEN ordercount : orderTableENS) {
+                    int rating = ordercount.getRating();
+                    ratesum += rating;
+                    total_product ++;
 
-            int total_product =0;
-            double ratesum = 0.0;
-            // double result = 0.0;
-            List<OrderTableEN> orderTableENS = orderManage.findallproduct(product.getProduct_id());
-            for (OrderTableEN ordercount : orderTableENS) {
-                int rating = ordercount.getRating();
-                ratesum += rating;
-                total_product ++;
+                }
+                double rating = ratesum / total_product;
+                System.out.println("AVG rating "+product.getProduct_avg_rating());
+                if (rating > 0) {
+                    proDuct_repo.set_rating(product.getProduct_id(), ratesum / total_product);
 
+                }
+                total_product =0;
+                ratesum = 0.0;
+                System.out.println("rating check  "+product.getProduct_id() +"  "+ ratesum/total_product);
+
+                active_products.add(product);
             }
-            double rating = ratesum / total_product;
-            System.out.println("AVG rating "+product.getProduct_avg_rating());
-            if (rating > 0) {
-                proDuct_repo.set_rating(product.getProduct_id(), ratesum / total_product);
-
-            }
-            total_product =0;
-            ratesum = 0.0;
-            System.out.println("rating check  "+product.getProduct_id() +"  "+ ratesum/total_product);
-
-
-
-
         }
 
 
@@ -93,8 +94,8 @@ public class MainUserController {
         String number = String.valueOf(count);
         System.out.println("All cart  "+ number);
         model.addAttribute("cart_dt", number);
-        model.addAttribute("imagelst", productlist);
-        model.addAttribute("productlist", productlist);
+        model.addAttribute("imagelst", active_products);
+        model.addAttribute("productlist", active_products);
         model.addAttribute("dtl", new Common_UserEN());
         model.addAttribute("list_cart", new ProductEN());
         return "userpg/index";

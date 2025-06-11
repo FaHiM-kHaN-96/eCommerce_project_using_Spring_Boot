@@ -1,11 +1,18 @@
 package com.example.ecomarce.entity;
 
 
-import jakarta.persistence.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
@@ -17,12 +24,12 @@ public class ProductEN {
     private float buying_price;
     private float selling_price;
     private String product_category;
+    private boolean product_active;
     private double product_avg_rating;
     @OneToMany(cascade=CascadeType.ALL)
     private List<OrderTableEN> order_tables;
     @OneToMany(cascade=CascadeType.ALL)
     private List<ImageEN> image = new ArrayList<>();
-
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private String templete_image;
@@ -38,6 +45,7 @@ public class ProductEN {
                 ", buying_price=" + buying_price +
                 ", selling_price=" + selling_price +
                 ", product_category='" + product_category + '\'' +
+                ", product_active=" + product_active +
                 ", product_avg_rating=" + product_avg_rating +
                 ", order_tables=" + order_tables +
                 ", image=" + image +
@@ -92,6 +100,14 @@ public class ProductEN {
 
     public void setProduct_category(String product_category) {
         this.product_category = product_category;
+    }
+
+    public boolean isProduct_active() {
+        return product_active;
+    }
+
+    public void setProduct_active(boolean product_active) {
+        this.product_active = product_active;
     }
 
     public double getProduct_avg_rating() {

@@ -121,7 +121,7 @@ public class AdminController {
                 }
 
             }
-
+            productEN.setProduct_active(true);
 
             proDuct_repo.save(productEN);
             session.setAttribute("message_p", new MessAge("Product Added Successfully", "success-message"));
@@ -132,24 +132,53 @@ public class AdminController {
 
         return "redirect:/admin/products";
     }
-    @PostMapping("/update")
-    public String updateProduct(@ModelAttribute("update_p") ProductEN product, @RequestParam("images") MultipartFile[] images) {
+    @PostMapping("/update/{id}")
+    public String updateProduct(@PathVariable("id") int id ,@ModelAttribute("update_p") ProductEN product, @RequestParam("images") MultipartFile[] images,HttpSession session) {
+
+        ProductEN productEN = proDuct_repo.findByProduct_id(id);
+        System.out.println("Product ID   "+productEN.getProduct_avg_rating());
+
+        try {
+            if (images == null || images.length == 0) {
+                productEN.setImage(product.getImage());
+            }else {
+                for (MultipartFile imageup : images) {
+                    if (!imageup.isEmpty()) {
+
+                        byte[] bytes = imageup.getBytes();
+                        String base64 = Base64.getEncoder().encodeToString(bytes);
+                        product.setTemplete_image(base64);
+                        ImageEN imageEN = new ImageEN();
+                        imageEN.setImageData(base64);
+                        imageEN.setProduct_en(product);
+                        product.getImage().add(imageEN);
+                    }
+
+                }
+            }
+
+
+            productEN.setProduct_active(false);
+            product.setProduct_active(true);
+            product.setProduct_avg_rating(productEN.getProduct_avg_rating());
+            proDuct_repo.save(product);
+            session.setAttribute("message_p", new MessAge("Product Added Successfully", "success-message"));
+
+        } catch (Exception e) {
+            session.setAttribute("message_p", new MessAge("Error adding product: " + e.getMessage(), "error-message"));
+        }
+
 
         System.out.println("Admin addition data  " +product);
-
-    //    for (MultipartFile img : images) {
-    //        if (!img.isEmpty()) {
-    //         break;
-    //        }
-    //    }
-        
         if (images == null || images.length == 0) {
             product.setImage(product.getImage());
         }
         product.setProduct_avg_rating(product.getProduct_avg_rating());
+
+        System.out.println("avg  "+product.getProduct_avg_rating());
+
         System.out.println(product);
-       
-        // Update product and images
+
         return "redirect:/admin/products";
     }
     @PostMapping("/update-req/{id}")
@@ -159,6 +188,7 @@ public class AdminController {
 
        ProductEN productEN = proDuct_repo.findByProduct_id(id);
        model.addAttribute("update_p", productEN);
+
        model.addAttribute("check_id",id);
         // Update product and images
         return "adminpg/product-update";
@@ -167,8 +197,17 @@ public class AdminController {
     @GetMapping("/products")
     public String products(Model model) {
         List<ProductEN> products_list = proDuct_repo.findAll();
+        List<ProductEN> active_product = new ArrayList<>();
 
-        model.addAttribute("products", products_list);
+
+        for (ProductEN product : products_list) {
+
+            if (product.isProduct_active()){
+                active_product.add(product);
+            }
+        }
+
+        model.addAttribute("products", active_product);
         model.addAttribute("product_details", new ProductEN());
         model.addAttribute("update_p", new ProductEN());
         return "adminpg/admin_products";
@@ -261,7 +300,6 @@ public class AdminController {
             status = "Paid";
         }
 
-
         for (OrderTableEN order : orders) {
 
             order_service.Update_payment_Status(order.getInvoice_id(),status);
@@ -323,7 +361,6 @@ public class AdminController {
         model.addAttribute("total_sell" , total_subtotal);
         model.addAttribute("total_profit" , total_sell);
         model.addAttribute("total_sold_product" , how_many_product_sell);
-
         model.addAttribute("userdatamap", userdatamap);
         return "adminpg/admin";
 

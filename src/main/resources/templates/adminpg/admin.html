@@ -481,6 +481,7 @@
                 <tr>
                     <td th:text="${p.id}" class="p-3">1</td>
                     <td th:text="${p.fullname}" class="p-3">John Doe</td>
+                    
                     <td th:text="${p.username}" class="p-3">john.doe@example.com</td>
                     <td th:text="${p.role}" class="p-3">Super Admin</td>
                     <td class="p-3">
@@ -669,78 +670,6 @@
         });
     }
 
-    function previewInvoice(order) {
-        currentOrder = order;
-        const invoiceContent = document.getElementById('invoiceContent');
-        invoiceContent.innerHTML = `
-            <div class="watermark">Seller Copy</div>
-            <div class="invoice-header">
-                <h1 style="font-size: 20px; margin: 0;">E-Commerce</h1>
-                <p style="font-size: 12px; margin: 5px 0 0;">Seller Invoice: ${order.inv_number}</p>
-            </div>
-            <div class="invoice-section">
-                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Customer Details:</h2>
-                <p>Name: ${order.customer_name}</p>
-                <p>Email: ${order.email}</p>
-                <p>Phone: ${order.phone}</p>
-                <p>Address: ${order.address}</p>
-            </div>
-            <div class="invoice-section">
-                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Order Details:</h2>
-                <p>Order ID: ${order.order_id}</p>
-                <p>Date: ${order.order_date}</p>
-                <p>Total: ${order.total} BDT</p>
-                <p>Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</p>
-                <p>Payment Status: ${order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}</p>
-                <p>Payment Method: ${order.payment_method.charAt(0).toUpperCase() + order.payment_method.slice(1)}</p>
-                <p>Transaction ID: ${order.transaction_id}</p>
-            </div>
-            <div class="invoice-section">
-                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Order Items:</h2>
-                <table class="invoice-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${order.items.map(item => `
-                            <tr>
-                                <td>${item.name}</td>
-                                <td>${parseFloat(item.price).toFixed(2)} BDT</td>
-                                <td>${item.quantity}</td>
-                                <td>${(item.price * item.quantity).toFixed(2)} BDT</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-            <div class="invoice-section" style="margin-top: 20px;">
-                <canvas id="barcodeCanvas" style="width: 200px; height: 50px;"></canvas>
-                <canvas id="qrCodeCanvas" style="width: 60px; height: 60px;"></canvas>
-            </div>
-        `;
-
-        // Generate Barcode
-        const barcodeValue = 'INV-' + order.order_id + '-SELLER';
-        const barcodeCanvas = document.getElementById('barcodeCanvas');
-        JsBarcode(barcodeCanvas, barcodeValue, { format: 'CODE128', height: 40, width: 2 });
-
-        // Generate QR Code
-        const qrCodeUrl = 'https://example.com/order/' + order.order_id;
-        const qrCanvas = document.getElementById('qrCodeCanvas');
-        QRCode.toCanvas(qrCanvas, qrCodeUrl, { width: 60 }, (error) => {
-            if (error) {
-                showErrorMessage('Error generating QR code: ' + error.message);
-            }
-        });
-
-        // Show Modal
-        document.getElementById('invoiceModal').classList.remove('hidden');
-    }
 
     function closeInvoiceModal() {
         document.getElementById('invoiceModal').classList.add('hidden');

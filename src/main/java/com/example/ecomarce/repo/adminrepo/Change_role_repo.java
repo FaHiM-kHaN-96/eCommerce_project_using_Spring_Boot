@@ -1,7 +1,8 @@
 package com.example.ecomarce.repo.adminrepo;
 
 
-import com.example.ecomarce.entity.Common_UserEN;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.example.ecomarce.entity.Common_UserEN;
 
 @Repository
-public interface Change_role_repo extends JpaRepository<Common_UserEN,String> {
+public interface Change_role_repo extends JpaRepository<Common_UserEN,Integer> {
 
     @Query("SELECT c FROM Common_UserEN c")
     List<Common_UserEN> findAll();

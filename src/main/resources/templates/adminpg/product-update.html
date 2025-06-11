@@ -159,7 +159,7 @@
       </div>
       <div>
         <h2 class="text-xl font-semibold text-green-800 mb-4">Add New Product</h2>
-        <form method="POST" th:action="@{/admin/update}" th:object="${update_p}" enctype="multipart/form-data">
+        <form method="POST" th:action="@{'/admin/update/'+${update_p.product_id}}" th:object="${update_p}" enctype="multipart/form-data">
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -204,8 +204,6 @@
               </div>
             </div>
           </div>
-      </div>
-
       <div class="mb-4">
         <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea id="description" name="product_description" class="input-focus mt-1 w-full p-2 border rounded"
@@ -223,8 +221,5 @@
 
   </div>
   </div>
-
-
 </body>
-
 </html>
