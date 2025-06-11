@@ -138,30 +138,54 @@ public class AdminController {
         ProductEN productEN = proDuct_repo.findByProduct_id(id);
         System.out.println("Product ID   "+productEN.getProduct_avg_rating());
 
+
         try {
-            if (images == null || images.length == 0) {
-                productEN.setImage(product.getImage());
+            ProductEN new_product = new ProductEN();
+            productEN.setProduct_active(false);
+            product.setProduct_active(true);
+            new_product.setProduct_name(product.getProduct_name());
+            new_product.setProduct_category(product.getProduct_category());
+            new_product.setProduct_description(product.getProduct_description());
+            new_product.setProduct_avg_rating(productEN.getProduct_avg_rating());
+            new_product.setBuying_price(product.getBuying_price());
+            new_product.setSelling_price(product.getSelling_price());
+            new_product.setProduct_active(true);
+
+            //  System.out.println("Product Updated new_product  "+ new_product);
+            product.setProduct_avg_rating(productEN.getProduct_avg_rating());
+            if ( images.length == 0 || images.length == 1 ) {
+//                new_product.setImage(productEN.getImage());
+//                new_product.setTemplete_image(productEN.getTemplete_image());
+                List<ImageEN> imageList =productEN.getImage();
+                new_product.setTemplete_image(productEN.getTemplete_image());
+                for (ImageEN image : imageList) {
+                    ImageEN imageEN = new ImageEN();
+                    imageEN.setImageData(image.getImageData());
+                    imageEN.setProduct_en(new_product);
+                    new_product.getImage().add(imageEN);
+                }
+
+                System.out.println("Execute True");
             }else {
+                System.out.println("Execute False WHY " + images.toString())  ;
+                System.out.println("Execute False");
                 for (MultipartFile imageup : images) {
-                    if (!imageup.isEmpty()) {
 
                         byte[] bytes = imageup.getBytes();
                         String base64 = Base64.getEncoder().encodeToString(bytes);
-                        product.setTemplete_image(base64);
+                        new_product.setTemplete_image(base64);
                         ImageEN imageEN = new ImageEN();
                         imageEN.setImageData(base64);
-                        imageEN.setProduct_en(product);
-                        product.getImage().add(imageEN);
-                    }
+                        imageEN.setProduct_en(productEN);
+                        new_product.getImage().add(imageEN);
 
                 }
             }
 
 
-            productEN.setProduct_active(false);
-            product.setProduct_active(true);
-            product.setProduct_avg_rating(productEN.getProduct_avg_rating());
-            proDuct_repo.save(product);
+
+           // proDuct_repo.save(product = new  ProductEN());
+             proDuct_repo.save(new_product);
             session.setAttribute("message_p", new MessAge("Product Added Successfully", "success-message"));
 
         } catch (Exception e) {

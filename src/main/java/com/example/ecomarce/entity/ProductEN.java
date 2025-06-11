@@ -33,8 +33,6 @@ public class ProductEN {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private String templete_image;
-    @OneToMany(cascade=CascadeType.ALL)
-    private List<Common_UserEN> useren = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -50,7 +48,6 @@ public class ProductEN {
                 ", order_tables=" + order_tables +
                 ", image=" + image +
                 ", templete_image='" + templete_image + '\'' +
-                ", useren=" + useren +
                 '}';
     }
 
@@ -142,11 +139,5 @@ public class ProductEN {
         this.templete_image = templete_image;
     }
 
-    public List<Common_UserEN> getUseren() {
-        return useren;
-    }
 
-    public void setUseren(List<Common_UserEN> useren) {
-        this.useren = useren;
-    }
 }
