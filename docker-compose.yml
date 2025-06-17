@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://temp.fahim-khan-96.org:3306/fahimkha_ah_db?useSSL=false&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: "fahimkha_ah_db"
+      SPRING_DATASOURCE_PASSWORD: "h%y~&*h{sxBOgU}w"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      interval: 10s
+      retries: 10
+
+  app:
+    build: .
+    container_name: ecomarce_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_USERNAME:  "fahimkha_ah_db"
+      SPRING_DATASOURCE_PASSWORD: "h%y~&*h{sxBOgU}w"
+      # Add other environment variables as needed
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
