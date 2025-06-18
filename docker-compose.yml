@@ -9,7 +9,7 @@ services:
       SPRING_DATASOURCE_USERNAME: "fahimkha_ah_db"
       SPRING_DATASOURCE_PASSWORD: "h%y~&*h{sxBOgU}w"
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
