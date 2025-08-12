@@ -145,15 +145,6 @@ public class MainUserController {
     }
 
 
-
-
-
-
-
-
-
-
-
     @PostMapping("/product_rating/{id}/rate/{pid}/{oid}")
     public String getOrderProducts(@RequestParam("rate_prd") int rate,@PathVariable("id") String id,@PathVariable("pid") int pid,@PathVariable("oid") int oid,
                                    Principal principal,
