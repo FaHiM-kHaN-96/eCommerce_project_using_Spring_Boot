@@ -51,6 +51,9 @@ public class MainUserController {
 
     @GetMapping("/login")
     public String login() {
+
+
+
         return "userpg/login";
     }
 
@@ -183,21 +186,6 @@ public class MainUserController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @GetMapping("/cart")
     public String cart_product(Model model) {
 
@@ -237,58 +225,64 @@ public class MainUserController {
     public String checkout_cm(
             @RequestParam(value = "transaction_id", required = false) String transaction_id,
             Model model, HttpSession session, Principal principal) {
+        if (checkVerifcation.verifcation_check(principal.getName())) {
+            String transaction_data = transaction_id;
 
-        
-        String transaction_data = transaction_id;
+            LocalDateTime time = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
 
-        LocalDateTime time = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
+            String formattedTime = time.format(formatter);
+            String invoice = invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin()));
+            System.out.println("time  "+ formattedTime);
+            try {
+                String invoice_data = null;
+                for (Cart_Add item : cartlist) {
+                    invoice_data= invoice;
+                    OrderTableEN orderTableEN = new OrderTableEN();
+                    System.out.println("\n\n\nproducts list "+item.getProduct_name());
+                    orderTableEN.setOrder_product_id(item.getProduct_id());
+                    orderTableEN.setOrder_product_name(item.getProduct_name());
+                    orderTableEN.setOrder_subtotal(item.getSubtotal());
+                    System.out.println("\n\n\norder table obj subtotal "+item.getSubtotal());
+                    orderTableEN.setOrder_selling_price(item.getSelling_price());
+                    orderTableEN.setOrder_quantity(item.getQuantity());
+                    //orderTableEN.setOrder_total_price(calculateTotalPrice());
+                    orderTableEN.setOrder_product_category(item.getProduct_category());
 
-        String formattedTime = time.format(formatter);
-        String invoice = invoice_checker(invoice_checker(PinGenerator.generateSixDigitPin()));
-        System.out.println("time  "+ formattedTime);
-        try {
-            String invoice_data = null;
-            for (Cart_Add item : cartlist) {
-                invoice_data= invoice;
-                OrderTableEN orderTableEN = new OrderTableEN();
-                System.out.println("\n\n\nproducts list "+item.getProduct_name());
-                orderTableEN.setOrder_product_id(item.getProduct_id());
-                orderTableEN.setOrder_product_name(item.getProduct_name());
-                orderTableEN.setOrder_subtotal(item.getSubtotal());
-                System.out.println("\n\n\norder table obj subtotal "+item.getSubtotal());
-                orderTableEN.setOrder_selling_price(item.getSelling_price());
-                orderTableEN.setOrder_quantity(item.getQuantity());
-                //orderTableEN.setOrder_total_price(calculateTotalPrice());
-                orderTableEN.setOrder_product_category(item.getProduct_category());
+                    if (transaction_data == null) {
 
-                if (transaction_data == null) {
+                        orderTableEN.setOrder_payment_method("Cash On Delivery");
+                    } else {
+                        orderTableEN.setOrder_payment_method(transaction_data+" (Online)");
 
-                    orderTableEN.setOrder_payment_method("Cash On Delivery");
-                } else {
-                    orderTableEN.setOrder_payment_method(transaction_data+" (Online)");
+                    }
+
+                    orderTableEN.setOrder_payment_status("Pending");
+                    orderTableEN.setOrder_status("Pending");
+                    orderTableEN.setOrder_date(formattedTime);
+                    orderTableEN.setProducten(proDuct_repo.findByProduct_id(item.getProduct_id()));
+                    orderTableEN.setUser(userAuth.findByUsername(principal.getName()));
+                    orderTableEN.setInvoice_id(invoice_data);
+                    orderManage.save(orderTableEN);
 
                 }
+                cartlist.clear();
+                session.setAttribute("message_check",new MessAge("Order Processed Successfully","success-message") );
+                return "userpg/order_status";
+            } catch (Exception e) {
 
-                orderTableEN.setOrder_payment_status("Pending");
-                orderTableEN.setOrder_status("Pending");
-                orderTableEN.setOrder_date(formattedTime);
-                orderTableEN.setProducten(proDuct_repo.findByProduct_id(item.getProduct_id()));
-                orderTableEN.setUser(userAuth.findByUsername(principal.getName()));
-                orderTableEN.setInvoice_id(invoice_data);
-                orderManage.save(orderTableEN);
+                session.setAttribute("message_check",new MessAge("Order Failed"+e.getMessage(),"error-message") );
 
             }
-            cartlist.clear();
-            session.setAttribute("message_check",new MessAge("Order Processed Successfully","success-message") );
-            return "userpg/order_status";
-        } catch (Exception e) {
-
-            session.setAttribute("message_check",new MessAge("Order Failed"+e.getMessage(),"error-message") );
-
-        }
 // All courted all product should be uploaded on database with single inv number
-        return "userpg/order_status";
+            return "userpg/order_status";
+        }else {
+
+
+            return "redirect:/verify";
+        }
+
+
 
     }
     private String invoice_checker(String invoice_id) {
@@ -323,17 +317,27 @@ public class MainUserController {
 
 
     @GetMapping("/verify")
-    public String verify() {
-        return "userpg/verify";
+    public String verify(Principal principal) {
+
+        if (checkVerifcation.verifcation_check(principal.getName())){
+            return "redirect:/";
+        }else {
+            emaiilSender(principal.getName());
+            return "userpg/verify";
+        }
+
     }
     @GetMapping("/verification/{email}")
     public String verification(@PathVariable("email") String email) {
         System.out.println("\n\n\nMail cheker  "+email);
-//        checkVerifcation.verify(email,true);
+
         if (checkVerifcation.verify(email,true)) {
             return "redirect:/";
+        }else {
+            return "verification failed";
+
         }
-        return "redirect:/verify";
+
     }
 
     @GetMapping("/signup")

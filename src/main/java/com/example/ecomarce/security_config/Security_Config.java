@@ -48,14 +48,14 @@ public class Security_Config {
                         .requestMatchers("/orders/**").hasAuthority("ROLE_ORDER")
                         .requestMatchers("/products/**").hasAuthority("ROLE_PRODUCT")
                         .requestMatchers("/user/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/signup_successful","/delete-c-p/**","/signup","/error","/product","/","/static/**","/details/**","/add/**","/cart/**").permitAll()
+                        .requestMatchers("/signup_successful","/delete-c-p/**","/signup","/error","/product","/","/static/**","/details/**","/add/**","/cart/**","/verify","/verification/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(
                         httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                                 .loginPage("/login")
-                                .loginProcessingUrl("/login")
-                              //  .defaultSuccessUrl("/product" , true)
+                               // .loginProcessingUrl("/login")
+                                .defaultSuccessUrl("/verify" , true)
                                 .permitAll()
                 )
                 .rememberMe(rememberMe -> rememberMe
