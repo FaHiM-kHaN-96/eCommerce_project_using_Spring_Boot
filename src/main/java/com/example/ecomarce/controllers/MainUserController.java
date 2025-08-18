@@ -265,15 +265,20 @@ public class MainUserController {
                     orderTableEN.setInvoice_id(invoice_data);
                     orderManage.save(orderTableEN);
 
+                    Common_UserEN UserThankYouEmail =  userAuth.findByUsername(principal.getName());
+                    emailService.sendThankYouEmail(principal.getName(),UserThankYouEmail.getFullname(),orderTableEN.getInvoice_id());
                 }
+
                 cartlist.clear();
                 session.setAttribute("message_check",new MessAge("Order Processed Successfully","success-message") );
+
                 return "userpg/order_status";
             } catch (Exception e) {
 
                 session.setAttribute("message_check",new MessAge("Order Failed"+e.getMessage(),"error-message") );
 
             }
+
 // All courted all product should be uploaded on database with single inv number
             return "userpg/order_status";
         }else {
