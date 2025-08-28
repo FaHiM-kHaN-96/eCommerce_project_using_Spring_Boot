@@ -18,11 +18,49 @@ private String address;
 private String phone;
 private String role;
 private boolean is_verified;
-@OneToMany(cascade=CascadeType.ALL)
+private String device_one;
+private String device_two;
+private String device_ip_one;
+private String device_ip_two;
+
+    public String getDevice_one() {
+        return device_one;
+    }
+
+    public void setDevice_one(String device_one) {
+        this.device_one = device_one;
+    }
+
+    public String getDevice_two() {
+        return device_two;
+    }
+
+    public void setDevice_two(String device_two) {
+        this.device_two = device_two;
+    }
+
+    public String getDevice_ip_one() {
+        return device_ip_one;
+    }
+
+    public void setDevice_ip_one(String device_ip_one) {
+        this.device_ip_one = device_ip_one;
+    }
+
+    public String getDevice_ip_two() {
+        return device_ip_two;
+    }
+
+    public void setDevice_ip_two(String device_ip_two) {
+        this.device_ip_two = device_ip_two;
+    }
+
+    @OneToMany(cascade=CascadeType.ALL)
 private List<OrderTableEN> order_tables = new ArrayList<>();
 
 @ManyToOne
 private ProductEN producten;
+
     @Override
     public String toString() {
         return "Common_UserEN{" +
@@ -34,11 +72,14 @@ private ProductEN producten;
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
                 ", is_verified=" + is_verified +
+                ", device_one='" + device_one + '\'' +
+                ", device_two='" + device_two + '\'' +
+                ", device_ip_one='" + device_ip_one + '\'' +
+                ", device_ip_two='" + device_ip_two + '\'' +
                 ", order_tables=" + order_tables +
                 ", producten=" + producten +
                 '}';
     }
-
 
     public int getId() {
         return id;

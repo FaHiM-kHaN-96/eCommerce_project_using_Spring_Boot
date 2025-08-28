@@ -1,5 +1,6 @@
 package com.example.ecomarce.controllers;
 
+import com.example.ecomarce.service_pkg.DeviceDetailsService;
 import com.example.ecomarce.entity.Common_UserEN;
 import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
@@ -7,6 +8,7 @@ import com.example.ecomarce.generic_logic.PinGenerator;
 import com.example.ecomarce.helper.MessAge;
 import com.example.ecomarce.logical_class.Cart_Add;
 import com.example.ecomarce.pdf_maker_class.CustomerInvoice;
+import com.example.ecomarce.repo.Check_Verifcation;
 import com.example.ecomarce.repo.Order_Manage;
 import com.example.ecomarce.repo.ProDuct_repo;
 import com.example.ecomarce.repo.UserAuth;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownHostException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +47,10 @@ public class MainUserController {
     private Order_Manage_Service orderManageService;
     @Autowired
     private Order_Manage orderManage;
-
+    @Autowired
+    private Check_Verifcation checkip;
+    @Autowired
+    private DeviceDetailsService deviceDetailsService;
 
 
     private final List<Cart_Add> cartlist = new ArrayList<>();
@@ -320,11 +326,83 @@ public class MainUserController {
         return "userpg/checkout";
     }
 
+    private boolean ip_one_compare ( String email) throws UnknownHostException {
+
+       String database_ip1 = checkip.findDeviceIP_one_ByEmail(deviceDetailsService.device_ip(),email);
+        System.out.println("comare fun ip address "+ database_ip1);
+        System.out.println( "\nderaect function " + deviceDetailsService.device_ip());
+       if (database_ip1 != null) {
+           return database_ip1.equals(deviceDetailsService.device_ip());
+       }
+
+        return false;
+    }
+    private boolean ip_two_compare ( String email) throws UnknownHostException {
+
+        String database_ip2 = checkip.findDeviceIP_two_ByEmail(deviceDetailsService.device_ip(),email);
+        if (database_ip2 != null) {
+            return database_ip2.equals(deviceDetailsService.device_ip());
+        }
+
+        return false;
+    }
+
 
     @GetMapping("/verify")
-    public String verify(Principal principal) {
+    public String verify(Principal principal,HttpSession session) throws UnknownHostException {
 
         if (checkVerifcation.verifcation_check(principal.getName())){
+
+            if (checkip.findDeviceIP_one_ByEmail(deviceDetailsService.device_ip(),principal.getName()) == null) {
+                try{
+                    if (checkip.deviceIP_one_update(principal.getName(), deviceDetailsService.device_name(), deviceDetailsService.device_ip())){
+                        System.out.println("device 1 details update ");
+                        return "redirect:/";
+                    }
+
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("!=  findDeviceIP_one_ByEmail");
+
+            } else {
+                if(ip_one_compare(principal.getName()))
+                {
+                    System.out.println("Match comp in ip one condition");
+                    return "redirect:/";
+
+
+                } else  {
+                    if(!ip_two_compare(principal.getName()) && checkip.findDeviceIP_two_ByEmail(deviceDetailsService.device_ip(),principal.getName()) == null)
+                    {
+                        if (checkip.deviceIP_two_update(principal.getName(), deviceDetailsService.device_name(), deviceDetailsService.device_ip())){
+                            System.out.println("device 2 details update ");
+                            return "redirect:/";
+                        }
+
+                    }else {
+
+                        if(ip_two_compare(principal.getName())||ip_one_compare(principal.getName()))
+                        {
+                            return "redirect:/";
+
+                        }else {
+
+                            try {
+                                session.setAttribute("message3",new MessAge("you are using more then two device for single account","alert-warning") );
+                            } catch (Exception e) {
+                                session.setAttribute("message3",new MessAge(e.getMessage(),"alert-error") );
+
+                            }
+                            return "userpg/login_status";
+                        }
+                    }
+
+
+                }
+
+            }
+            System.out.println("ip failed");
             return "redirect:/";
         }else {
             emaiilSender(principal.getName());
