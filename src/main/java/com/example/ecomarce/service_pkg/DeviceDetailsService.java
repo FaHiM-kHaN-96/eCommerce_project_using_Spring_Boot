@@ -43,7 +43,7 @@ public class DeviceDetailsService {
         if (ipAddress!=null){
             System.out.println(ipAddress);
 
-            return ipAddress+".69";
+            return ipAddress+".663";
         } else if (ipAddress==null) {
             System.out.println("Ip name is null "+ipAddress);
         }

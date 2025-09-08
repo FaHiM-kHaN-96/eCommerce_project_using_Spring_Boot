@@ -520,21 +520,7 @@ public class MainUserController {
     }
 
 
-//    @DeleteMapping("/device-delete/{deviceIp}")  // ✅ method-level mapping
-//    public ResponseEntity<Map<String, String>> deleteDevice(@PathVariable String deviceIp) {
-//        boolean removed = deviceService.deleteDeviceByIp(deviceIp);
-//
-//        Map<String, String> response = new HashMap<>();
-//        if (removed) {
-//            response.put("status", "success");
-//            response.put("message", "Device " + deviceIp + " removed successfully");
-//            return ResponseEntity.ok(response);
-//        } else {
-//            response.put("status", "error");
-//            response.put("message", "Device " + deviceIp + " not found");
-//            return ResponseEntity.status(404).body(response);
-//        }
-//    }
+
 
 
 
