@@ -2,7 +2,7 @@
 
 A backend service for an e-commerce platform built with **Java Spring Boot** and **MySQL**, providing RESTful APIs for user management, products, and orders.  
 
-🚀 **Live Demo**: [Click here](https://e34a43c4cded.ngrok-free.app/)  
+🚀 **Live Demo**: [Click here](https://da6bd8d291aa.ngrok-free.app/)  
 
 ---
 
