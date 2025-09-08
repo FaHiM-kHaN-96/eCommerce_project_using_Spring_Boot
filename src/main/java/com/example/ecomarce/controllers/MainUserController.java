@@ -1,6 +1,8 @@
 package com.example.ecomarce.controllers;
 
-import com.example.ecomarce.service_pkg.DeviceDetailsService;
+import com.example.ecomarce.entity.Otp_EN;
+import com.example.ecomarce.repo.*;
+import com.example.ecomarce.service_pkg.*;
 import com.example.ecomarce.entity.Common_UserEN;
 import com.example.ecomarce.entity.OrderTableEN;
 import com.example.ecomarce.entity.ProductEN;
@@ -8,13 +10,6 @@ import com.example.ecomarce.generic_logic.PinGenerator;
 import com.example.ecomarce.helper.MessAge;
 import com.example.ecomarce.logical_class.Cart_Add;
 import com.example.ecomarce.pdf_maker_class.CustomerInvoice;
-import com.example.ecomarce.repo.Check_Verifcation;
-import com.example.ecomarce.repo.Order_Manage;
-import com.example.ecomarce.repo.ProDuct_repo;
-import com.example.ecomarce.repo.UserAuth;
-import com.example.ecomarce.service_pkg.EmailService;
-import com.example.ecomarce.service_pkg.Order_Manage_Service;
-import com.example.ecomarce.service_pkg.Verifcation_Ser;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -52,8 +47,17 @@ public class MainUserController {
     @Autowired
     private DeviceDetailsService deviceDetailsService;
 
+    @Autowired
+    private Otp_Repo otpRepo;
+
+    @Autowired
+    private OtpUtil otpUtil;
+//    @Autowired
+//    private DeviceRemoveservice deviceService;
 
     private final List<Cart_Add> cartlist = new ArrayList<>();
+    @Autowired
+    private Otp_Repo otp_Repo;
 
     @GetMapping("/login")
     public String login() {
@@ -205,7 +209,7 @@ public class MainUserController {
     }
 
     private void emaiilSender(String email) {
-        String link = "http://localhost:8080/verification/"+email;
+        String link = "http://192.168.1.183:8080/verification/"+email;
         emailService.sendVerificationEmail(email,link);
     }
 
@@ -349,7 +353,7 @@ public class MainUserController {
 
 
     @GetMapping("/verify")
-    public String verify(Principal principal,HttpSession session) throws UnknownHostException {
+    public String verify(Principal principal,HttpSession session,Model model) throws UnknownHostException {
 
         if (checkVerifcation.verifcation_check(principal.getName())){
 
@@ -388,13 +392,18 @@ public class MainUserController {
 
                         }else {
 
-                            try {
-                                session.setAttribute("message3",new MessAge("you are using more then two device for single account","alert-warning") );
-                            } catch (Exception e) {
-                                session.setAttribute("message3",new MessAge(e.getMessage(),"alert-error") );
 
-                            }
-                            return "userpg/login_status";
+
+//                            try {
+//                                session.setAttribute("message3",new MessAge("you are using more then two device for single account","alert-warning") );
+//                            } catch (Exception e) {
+//                                session.setAttribute("message3",new MessAge(e.getMessage(),"alert-error") );
+//
+//                            }
+                            Common_UserEN commonUserEN =  userAuth.findByUsername(principal.getName());
+
+                            model.addAttribute("device", commonUserEN);
+                            return "userpg/device_display";
                         }
                     }
 
@@ -410,6 +419,125 @@ public class MainUserController {
         }
 
     }
+    @PostMapping("/device-delete/{deviceIp}")  // ✅ method-level mapping
+    public String deletsc(@PathVariable String deviceIp,Principal principal) {
+        //here all credential made by principal
+        System.out.println("hbscabchwsbha "+deviceIp+ "  " + checkip.finduserid(principal.getName()));
+
+        String ip_one= checkip.findDeviceIP_one_ByEmailForRemove(principal.getName());
+        String ip_two= checkip.findDeviceIP_two_ByEmailForRemove(principal.getName());
+        if (ip_one.equals(deviceIp)) {
+            try {
+                Otp_EN otpen_one = new Otp_EN();
+                String otp_pass_ip_one = otpUtil.generate6DigitOtp();
+                otpen_one.setOtp_password(otp_pass_ip_one);
+                otpen_one.setOtp_sender_userid(checkip.finduserid(principal.getName()));
+                otpen_one.setTarget_ip(deviceIp);
+                otpen_one.setOtp_sending_reason(true);
+                System.out.println(otpen_one);
+                deviceremovingemail(otp_pass_ip_one,principal.getName(),checkip.finduserid(principal.getName()));
+                otpRepo.save(otpen_one);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("ip one matched ");
+        }else if (ip_two.equals(deviceIp)) {
+            try {
+                String otp_pass_ip_two = otpUtil.generate6DigitOtp();
+                Otp_EN otpen = new Otp_EN();
+                otpen.setOtp_password(otp_pass_ip_two);
+                otpen.setOtp_sender_userid(checkip.finduserid(principal.getName()));
+                otpen.setTarget_ip(deviceIp);
+                otpen.setOtp_sending_reason(true);
+                System.out.println(otpen);
+                deviceremovingemail(otp_pass_ip_two,principal.getName(),checkip.finduserid(principal.getName()));
+                otpRepo.save(otpen);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            System.out.println("ip two matched ");
+        }
+
+//        System.out.println("check two ip's \n"+ "ip one  "++"\n" +" ip two  "+ checkip.findDeviceIP_two_ByEmailForRemove(principal.getName()));
+
+        return "userpg/verify";
+    }
+
+    private void deviceremovingemail(String ip,String email,int id) {
+
+        String link = "http://192.168.1.183:8080/delete-ip-vfy/"+ip+"/"+id;
+        emailService.sendRemoveDeviceVerificationEmail(email,link);
+
+
+    }
+    @GetMapping("/delete-ip-vfy/{otp}/{id}")
+    public String delete_ip(@PathVariable("otp") String otp,@PathVariable("id") String id,Principal principal,HttpSession session) {
+        System.out.println("\n\n\nipts   "+otp);
+        System.out.println("Link address otp  "+otp_Repo.return_otp(otp , false)+"UserId "+id);
+
+
+        try {
+            if (otp_Repo.return_otp(otp,false).equals(otp) && otp_Repo.return_userID(id,false).equals(id) ) {
+
+                if (checkip.findDeviceIP_one_ByEmailForRemove(principal.getName()).equals(otp_Repo.return_target(otp,false))) {
+
+                    if (otp_Repo.otp_verification_update(true,otp)){
+
+                        if (checkip.clearDeviceInfoOneByUsername(principal.getName())){
+                            session.setAttribute("message3",new MessAge(checkip.findDeviceIP_one_ByEmailForRemove(principal.getName())+" This device removed successfully ","alert-success") );
+                            System.out.println("Delete IP One");
+                            return "userpg/login_status";
+                        }
+
+
+                    }
+
+                } else if (checkip.findDeviceIP_two_ByEmailForRemove(principal.getName()).equals(otp_Repo.return_target(otp,false))) {
+                    if (checkip.clearDeviceInfoTwoByUsername(principal.getName())){
+                        session.setAttribute("message3",new MessAge(checkip.findDeviceIP_two_ByEmailForRemove(principal.getName())+" This device removed successfully ","alert-success") );
+                        System.out.println("Delete IP two");
+                        return "userpg/login_status";
+                    }
+
+                }
+
+
+            }
+        } catch (Exception e) {
+            session.setAttribute("message3",new MessAge("device not found ","alert-error") );
+
+        }
+
+
+
+
+        return "userpg/login_status";
+
+
+
+    }
+
+
+//    @DeleteMapping("/device-delete/{deviceIp}")  // ✅ method-level mapping
+//    public ResponseEntity<Map<String, String>> deleteDevice(@PathVariable String deviceIp) {
+//        boolean removed = deviceService.deleteDeviceByIp(deviceIp);
+//
+//        Map<String, String> response = new HashMap<>();
+//        if (removed) {
+//            response.put("status", "success");
+//            response.put("message", "Device " + deviceIp + " removed successfully");
+//            return ResponseEntity.ok(response);
+//        } else {
+//            response.put("status", "error");
+//            response.put("message", "Device " + deviceIp + " not found");
+//            return ResponseEntity.status(404).body(response);
+//        }
+//    }
+
+
+
     @GetMapping("/verification/{email}")
     public String verification(@PathVariable("email") String email) {
         System.out.println("\n\n\nMail cheker  "+email);

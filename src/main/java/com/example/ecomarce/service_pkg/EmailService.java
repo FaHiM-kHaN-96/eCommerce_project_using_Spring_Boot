@@ -87,4 +87,56 @@ public class EmailService {
             throw new RuntimeException("Failed to send email: " + e.getMessage());
         }
     }
+
+
+
+    public void sendRemoveDeviceVerificationEmail(String to, String verificationLink) {
+        String subject = "Verify Your Email Address";
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { color: #2c3e50; font-size: 22px; font-weight: bold; margin-bottom: 20px; }" +
+                "        .content { margin: 20px 0; }" +
+                "        .button { background-color: #3498db; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px; }" +
+                "        .footer { margin-top: 30px; font-size: 14px; color: #7f8c8d; border-top: 1px solid #f1f1f1; padding-top: 10px; }" +
+                "    </style>" +
+                "</head>" +
+                "<body>" +
+                "    <div class='header'>Email Verification</div>" +
+                "    <div class='content'>" +
+                "        <p>Hello,</p>" +
+                "        <p>Thank you for registering. Please verify your email address by clicking the button below:</p>" +
+                "        <p><a href='" + verificationLink + "' class='button'>Verify Email</a></p>" +
+                "        <p>If the button doesn’t work, copy and paste this link into your browser:</p>" +
+                "        <p><a href='" + verificationLink + "'>" + verificationLink + "</a></p>" +
+                "    </div>" +
+                "    <div class='footer'>" +
+                "        <p>If you didn’t request this, please ignore this email.</p>" +
+                "        <p>Best regards,<br>The [Your Company] Team</p>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+
+        System.out.println("Sending verification email to " + to + " with link " + verificationLink);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true); // ✅ Send as HTML
+            helper.setFrom("ah.java@fahim-khan-96.org"); // Must match spring.mail.username
+
+            mailSender.send(message);
+
+            System.out.println("Verification email sent to: " + to);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send verification email: " + e.getMessage());
+        }
+    }
 }

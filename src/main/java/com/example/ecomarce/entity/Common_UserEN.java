@@ -23,6 +23,7 @@ private String device_two;
 private String device_ip_one;
 private String device_ip_two;
 
+
     public String getDevice_one() {
         return device_one;
     }
@@ -57,6 +58,7 @@ private String device_ip_two;
 
     @OneToMany(cascade=CascadeType.ALL)
 private List<OrderTableEN> order_tables = new ArrayList<>();
+
 
 @ManyToOne
 private ProductEN producten;

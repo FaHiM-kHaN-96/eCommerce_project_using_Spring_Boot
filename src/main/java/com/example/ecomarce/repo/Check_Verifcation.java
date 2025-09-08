@@ -12,15 +12,30 @@ import com.example.ecomarce.entity.Common_UserEN;
 @Repository
 public interface Check_Verifcation extends JpaRepository<Common_UserEN, Integer> {
 
+    @Query("SELECT c.id FROM Common_UserEN c WHERE c.username = :username")
+    Integer finduserid( @Param("username") String username);
+
     @Query("SELECT c.is_verified FROM Common_UserEN c WHERE c.username = :username")
     Boolean findVerificationStatusByEmail(@Param("username") String username);
 
     @Query("SELECT c.device_ip_one FROM Common_UserEN c WHERE c.username = :username")
     String findDeviceIP_one_ByEmail(@Param("device_ip_one") String device_ip_one,
                                      @Param("username") String username);
+
+
     @Query("SELECT c.device_ip_two FROM Common_UserEN c WHERE c.username = :username")
     String findDeviceIP_two_ByEmail(@Param("device_ip_two") String device_ip_two,
                                      @Param("username") String username);
+
+    @Query("SELECT c.device_ip_one FROM Common_UserEN c WHERE c.username = :username")
+    String findDeviceIP_one_ByEmailForRemove(
+                                 @Param("username") String username);
+
+
+    @Query("SELECT c.device_ip_two FROM Common_UserEN c WHERE c.username = :username")
+    String findDeviceIP_two_ByEmailForRemove(
+                                    @Param("username") String username);
+
 
     @Query("SELECT c.id FROM Common_UserEN c WHERE c.username = :username")
     int findID(@Param("username") String username);
@@ -60,6 +75,29 @@ public interface Check_Verifcation extends JpaRepository<Common_UserEN, Integer>
     );
     default boolean deviceIP_two_update(String email,String device_two ,String device_IP_two) {
         int affectedRows = deviceIP_two(device_IP_two,device_two,email);
+        return affectedRows > 0;
+    }
+
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Common_UserEN o SET o.device_ip_two = NULL, o.device_two = NULL WHERE o.username = :username")
+    int clearDeviceInfoTwo(@Param("username") String username);
+
+    default boolean clearDeviceInfoTwoByUsername(String email) {
+        int affectedRows = clearDeviceInfoTwo(email);
+        return affectedRows > 0;
+    }
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Common_UserEN o SET o.device_ip_two = NULL, o.device_two = NULL WHERE o.username = :username")
+    int clearDeviceInfoOne(@Param("username") String username);
+
+    default boolean clearDeviceInfoOneByUsername(String email) {
+        int affectedRows = clearDeviceInfoOne(email);
         return affectedRows > 0;
     }
 }

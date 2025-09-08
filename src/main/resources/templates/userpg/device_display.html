@@ -1,0 +1,632 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Device Management - Book & Toy Store</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: 'Poppins', sans-serif;-->
+<!--            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            min-height: 100vh;-->
+<!--            margin: 0;-->
+<!--            padding: 1rem;-->
+<!--        }-->
+<!--        .card {-->
+<!--            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);-->
+<!--            border-radius: 1.2rem;-->
+<!--            padding: 2.5rem;-->
+<!--            background: white;-->
+<!--            max-width: 700px;-->
+<!--            width: 100%;-->
+<!--            position: relative;-->
+<!--            overflow: hidden;-->
+<!--        }-->
+<!--        .card-header {-->
+<!--            margin-bottom: 1.8rem;-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .logo {-->
+<!--            font-size: 2rem;-->
+<!--            font-weight: 700;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--            background: linear-gradient(45deg, #003087, #005566);-->
+<!--            -webkit-background-clip: text;-->
+<!--            -webkit-text-fill-color: transparent;-->
+<!--        }-->
+<!--        .tagline {-->
+<!--            color: #6b7280;-->
+<!--            font-size: 0.95rem;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--        }-->
+<!--        .alert {-->
+<!--            padding: 1.2rem;-->
+<!--            border-radius: 0.8rem;-->
+<!--            margin-bottom: 2rem;-->
+<!--            font-weight: 500;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            animation: fadeIn 0.5s ease-in-out;-->
+<!--        }-->
+<!--        .alert-icon {-->
+<!--            margin-right: 0.8rem;-->
+<!--            font-size: 1.5rem;-->
+<!--        }-->
+<!--        .alert-success {-->
+<!--            background-color: #f0fdf4;-->
+<!--            color: #166534;-->
+<!--            border: 1px solid #bbf7d0;-->
+<!--        }-->
+<!--        .alert-error {-->
+<!--            background-color: #fef2f2;-->
+<!--            color: #991b1b;-->
+<!--            border: 1px solid #fecaca;-->
+<!--        }-->
+<!--        .alert-info {-->
+<!--            background-color: #eff6ff;-->
+<!--            color: #1e40af;-->
+<!--            border: 1px solid #bfdbfe;-->
+<!--        }-->
+<!--        .alert-warning {-->
+<!--            background-color: #fffbeb;-->
+<!--            color: #92400e;-->
+<!--            border: 1px solid #fde68a;-->
+<!--        }-->
+<!--        .btn-primary {-->
+<!--            background: linear-gradient(45deg, #003087, #005566);-->
+<!--            color: white;-->
+<!--            padding: 0.7rem 1.5rem;-->
+<!--            border-radius: 0.7rem;-->
+<!--            text-decoration: none;-->
+<!--            display: inline-block;-->
+<!--            font-weight: 500;-->
+<!--            transition: all 0.3s ease;-->
+<!--            box-shadow: 0 4px 6px rgba(0, 80, 102, 0.15);-->
+<!--            border: none;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--        .btn-primary:hover {-->
+<!--            background: linear-gradient(45deg, #005566, #007a7a);-->
+<!--            transform: translateY(-2px);-->
+<!--            box-shadow: 0 6px 12px rgba(0, 80, 102, 0.2);-->
+<!--        }-->
+<!--        .btn-remove {-->
+<!--            background: linear-gradient(45deg, #dc2626, #ef4444);-->
+<!--            color: white;-->
+<!--            padding: 0.5rem 1rem;-->
+<!--            border-radius: 0.5rem;-->
+<!--            border: none;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.3s ease;-->
+<!--        }-->
+<!--        .btn-remove:hover {-->
+<!--            background: linear-gradient(45deg, #b91c1c, #dc2626);-->
+<!--            transform: translateY(-2px);-->
+<!--        }-->
+<!--        .card-footer {-->
+<!--            margin-top: 2rem;-->
+<!--            font-size: 0.9rem;-->
+<!--            color: #6b7280;-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .card-footer a {-->
+<!--            color: #005566;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: 500;-->
+<!--        }-->
+<!--        .card-footer a:hover {-->
+<!--            text-decoration: underline;-->
+<!--        }-->
+<!--        @keyframes fadeIn {-->
+<!--            from { opacity: 0; transform: translateY(-10px); }-->
+<!--            to { opacity: 1; transform: translateY(0); }-->
+<!--        }-->
+<!--        .device-icon {-->
+<!--            font-size: 1.8rem;-->
+<!--            color: #005566;-->
+<!--            margin-right: 1rem;-->
+<!--        }-->
+<!--        .devices-header {-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 1.5rem;-->
+<!--        }-->
+<!--        .devices-title {-->
+<!--            font-size: 1.5rem;-->
+<!--            font-weight: 600;-->
+<!--            color: #1f2937;-->
+<!--        }-->
+<!--        .devices-count {-->
+<!--            font-size: 1rem;-->
+<!--            color: #6b7280;-->
+<!--        }-->
+<!--        .device-list {-->
+<!--            list-style: none;-->
+<!--            padding: 0;-->
+<!--            margin: 0;-->
+<!--        }-->
+<!--        .device-item {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            padding: 1.2rem;-->
+<!--            border-radius: 0.8rem;-->
+<!--            margin-bottom: 1rem;-->
+<!--            background-color: #f9fafb;-->
+<!--            transition: all 0.3s ease;-->
+<!--        }-->
+<!--        .device-item:hover {-->
+<!--            background-color: #f3f4f6;-->
+<!--            transform: translateY(-2px);-->
+<!--            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);-->
+<!--        }-->
+<!--        .device-info {-->
+<!--            flex-grow: 1;-->
+<!--        }-->
+<!--        .device-name {-->
+<!--            font-weight: 500;-->
+<!--            color: #1f2937;-->
+<!--            margin-bottom: 0.3rem;-->
+<!--        }-->
+<!--        .device-ip {-->
+<!--            font-size: 0.9rem;-->
+<!--            color: #6b7280;-->
+<!--        }-->
+<!--        .device-actions {-->
+<!--            display: flex;-->
+<!--            gap: 0.8rem;-->
+<!--        }-->
+<!--        .current-device {-->
+<!--            border-left: 4px solid #005566;-->
+<!--        }-->
+<!--        .current-label {-->
+<!--            background: linear-gradient(45deg, #003087, #005566);-->
+<!--            color: white;-->
+<!--            padding: 0.2rem 0.6rem;-->
+<!--            border-radius: 0.4rem;-->
+<!--            font-size: 0.7rem;-->
+<!--            margin-left: 0.8rem;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="card">-->
+<!--    <div class="card-header">-->
+<!--        <div class="logo">Book & Toy Store</div>-->
+<!--        <div class="tagline">Manage your connected devices</div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Alert Section &ndash;&gt;-->
+<!--&lt;!&ndash;    <div th:if="${session.message3}" th:classappend="${session.message3.type}" class="alert" role="alert">&ndash;&gt;-->
+<!--&lt;!&ndash;    <span class="alert-icon" th:switch="${session.message3.type}">&ndash;&gt;-->
+<!--&lt;!&ndash;      <span th:case="'success'">✅</span>&ndash;&gt;-->
+<!--&lt;!&ndash;      <span th:case="'error'">❌</span>&ndash;&gt;-->
+<!--&lt;!&ndash;      <span th:case="'warning'">⚠️</span>&ndash;&gt;-->
+<!--&lt;!&ndash;      <span th:case="*">ℹ️</span>&ndash;&gt;-->
+<!--&lt;!&ndash;    </span>&ndash;&gt;-->
+<!--&lt;!&ndash;        <p th:text="${session.message3.content}"></p>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <div class="devices-header">&ndash;&gt;-->
+<!--&lt;!&ndash;        <h2 class="devices-title">Your Devices</h2>&ndash;&gt;-->
+<!--&lt;!&ndash;        <span class="devices-count" th:text="'Total: ' + ${devices != null ? devices.size() : 0}"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--    <ul class="device-list">-->
+<!--        &lt;!&ndash; Sample device data - in real application this would come from the backend &ndash;&gt;-->
+<!--        <li class="device-item current-device" >-->
+<!--&lt;!&ndash;            <i class="device-icon fas fa-laptop" th:classappend="*{type == 'mobile'} ? 'fa-mobile-alt' : 'fa-laptop'"></i>&ndash;&gt;-->
+<!--            <div class="device-info">-->
+<!--                <div class="device-name">-->
+<!--                    <span th:text=" ${device.device_one}">MacBook Pro</span>-->
+<!--&lt;!&ndash;                    <span class="current-label" th:if="*{current}">Current Device</span>&ndash;&gt;-->
+<!--                </div>-->
+<!--                <div class="device-ip" th:text=" ${device.device_ip_one}">192.168.1.105</div>-->
+<!--            </div>-->
+<!--            <div class="device-info">-->
+<!--                <div class="device-name">-->
+<!--                    <span th:text=" ${device.device_two}">MacBook Pro</span>-->
+<!--&lt;!&ndash;                    <span class="current-label" th:if="*{current}">Current Device</span>&ndash;&gt;-->
+<!--                </div>-->
+<!--                <div class="device-ip" th:text=" ${device.device_ip_two}">192.168.1.105</div>-->
+<!--            </div>-->
+<!--            <div class="device-actions">-->
+<!--&lt;!&ndash;                <button class="btn-remove" th:unless="*{current}" th:onclick="'removeDevice(\'' + *{id} + '\')'">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <i class="fas fa-trash-alt"></i> Remove&ndash;&gt;-->
+<!--&lt;!&ndash;                </button>&ndash;&gt;-->
+<!--            </div>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Fallback message if no devices &ndash;&gt;-->
+<!--        <li  class="device-item">-->
+<!--            <i class="device-icon fas fa-exclamation-circle"></i>-->
+<!--            <div class="device-info">-->
+<!--                <div class="device-name">No devices found</div>-->
+<!--                <div class="device-ip">Your connected devices will appear here</div>-->
+<!--            </div>-->
+<!--        </li>-->
+<!--    </ul>-->
+
+<!--    <div class="card-footer">-->
+<!--        <p>Need help with device management? <a href="#">Contact support</a></p>-->
+<!--        <p>© 2023 Book & Toy Store. All rights reserved.</p>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    function removeDevice(deviceId) {-->
+<!--        if (confirm('Are you sure you want to remove this device?')) {-->
+<!--            // In a real application, this would make an API call to remove the device-->
+<!--            console.log('Removing device with ID:', deviceId);-->
+<!--            alert('Device removal functionality would be implemented here.');-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Management - Book & Toy Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border-radius: 1.2rem;
+            padding: 2.5rem;
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header {
+            margin-bottom: 1.8rem;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #003087, #005566);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tagline {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .alert {
+            padding: 1.2rem;
+            border-radius: 0.8rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .alert-icon {
+            margin-right: 0.8rem;
+            font-size: 1.5rem;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .alert-info {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #003087, #005566);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 0.7rem;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 80, 102, 0.15);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #005566, #007a7a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 80, 102, 0.2);
+        }
+        .btn-remove {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-remove:hover {
+            background: linear-gradient(45deg, #b91c1c, #dc2626);
+            transform: translateY(-2px);
+        }
+        .btn-loading {
+            background: linear-gradient(45deg, #9ca3af, #d1d5db);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+        }
+        .card-footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-align: center;
+        }
+        .card-footer a {
+            color: #005566;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .card-footer a:hover {
+            text-decoration: underline;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .device-icon {
+            font-size: 1.8rem;
+            color: #005566;
+            margin-right: 1rem;
+        }
+        .devices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .devices-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .devices-count {
+            font-size: 1rem;
+            color: #6b7280;
+        }
+        .device-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .device-item {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem;
+            border-radius: 0.8rem;
+            margin-bottom: 1rem;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+        }
+        .device-item:hover {
+            background-color: #f3f4f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .device-info {
+            flex-grow: 1;
+        }
+        .device-name {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+        .device-ip {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .device-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        .current-device {
+            border-left: 4px solid #005566;
+        }
+        .current-label {
+            background: linear-gradient(45deg, #003087, #005566);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.4rem;
+            font-size: 0.7rem;
+            margin-left: 0.8rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hourglass-spinner {
+            animation: spin 1.5s linear infinite;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <div class="logo">Book & Toy Store</div>
+        <div class="tagline">Manage your connected devices</div>
+    </div>
+
+    <div class="devices-header">
+        <h2 class="devices-title">Your Devices</h2>
+        <span class="devices-count">Total: 2</span>
+    </div>
+
+    <ul class="device-list">
+        <!-- First Device -->
+        <li class="device-item current-device">
+            <i class="device-icon fas fa-laptop"></i>
+            <div class="device-info">
+                <div class="device-name">
+                    <span th:text="${device.device_one}">MacBook Pro (15-inch, 2023)</span>
+
+                </div>
+                <div class="device-ip" th:text="${device.device_ip_one}">IP: 192.168.1.105 • Last active: Today, 10:23 AM</div>
+            </div>
+            <div class="device-actions">
+                <button class="btn-remove" th:attr="data-ip=${device.device_ip_one}" onclick="removeDevice(this, this.getAttribute('data-ip'))">
+                    <i class="fas fa-trash-alt"></i> Remove
+                </button>
+            </div>
+        </li>
+
+        <!-- Second Device -->
+        <li class="device-item">
+            <i class="device-icon fas fa-mobile-alt"></i>
+            <div class="device-info">
+                <div class="device-name" th:text="${device.device_two}">iPhone 14 Pro Max</div>
+                <div class="device-ip" th:text="${device.device_ip_two}">IP: 192.168.1.112 • Last active: Yesterday, 5:47 PM</div>
+            </div>
+            <div class="device-actions">
+                <button class="btn-remove" th:attr="data-ip=${device.device_ip_two}" onclick="removeDevice(this, this.getAttribute('data-ip'))">
+                    <i class="fas fa-trash-alt"></i> Remove
+                </button>
+            </div>
+        </li>
+    </ul>
+
+    <div class="card-footer">
+        <p>Need help with device management? <a href="#">Contact support</a></p>
+        <p>© 2023 Book & Toy Store. All rights reserved.</p>
+    </div>
+</div>
+
+<script>
+    function removeDevice(buttonElement, deviceIp) {
+        // if (confirm('Are you sure you want to remove this device? You will need to sign in again on this device.')) {
+            // Replace the remove button with a loading spinner
+            buttonElement.outerHTML = `
+                <button class="btn-loading" disabled>
+                    <i class="fas fa-hourglass-half hourglass-spinner"></i> Processing
+                </button>
+            `;
+
+            // Create a loading indicator
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-info';
+            alertDiv.innerHTML = `
+                <span class="alert-icon">⏳</span>
+                <p>Please wait...</p>
+            `;
+            document.querySelector('.card-header').after(alertDiv);
+
+            // Call backend API
+            fetch(`http://192.168.1.183:8080/device-delete/${deviceIp}`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    alertDiv.remove();
+                    if (response.ok) {
+                        // Show success message
+                        const successDiv = document.createElement('div');
+                        successDiv.className = 'alert alert-success';
+                        successDiv.innerHTML = `
+                        <span class="alert-icon">✅</span>
+                        <p>We sent a verification link to your email </p>
+                    `;
+                        document.querySelector('.card-header').after(successDiv);
+
+                        // Remove the device from the UI
+                        const deviceElement = document.querySelector(`[data-ip="${deviceIp}"]`).closest('.device-item');
+                        deviceElement.style.opacity = '0';
+                        deviceElement.style.transform = 'translateX(100px)';
+
+                        setTimeout(() => {
+                            deviceElement.remove();
+                            updateDeviceCount();
+
+                            // Remove success message after 3 seconds
+                            setTimeout(() => {
+                                successDiv.remove();
+                            }, 10000);
+                        }, 500);
+
+                    } else {
+                        // Restore the remove button if there's an error
+                        const loadingButton = document.querySelector('.btn-loading');
+                        if (loadingButton) {
+                            loadingButton.outerHTML = `
+                                <button class="btn-remove" data-ip="${deviceIp}" onclick="removeDevice(this, '${deviceIp}')">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            `;
+                        }
+                        alert('Failed to remove device. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    alertDiv.remove();
+                    // Restore the remove button if there's an error
+                    const loadingButton = document.querySelector('.btn-loading');
+                    if (loadingButton) {
+                        loadingButton.outerHTML = `
+                            <button class="btn-loading" disabled>
+                                  <i class="fas fa-hourglass-half hourglass-spinner"></i> Processing
+                             </button>
+                        `;
+                    }
+                    //alert('Errosvcasr: ' + error);
+                });
+        // }
+    }
+
+    // Update device count after removal
+    function updateDeviceCount() {
+        const count = document.querySelectorAll('.device-item').length;
+        document.querySelector('.devices-count').textContent = `Total: ${count}`;
+    }
+</script>
+
+</body>
+</html>
