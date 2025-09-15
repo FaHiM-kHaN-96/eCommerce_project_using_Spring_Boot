@@ -16,6 +16,4 @@ public interface UserAuth extends JpaRepository<Common_UserEN, Integer> {
     Common_UserEN findByUsername(String username);
 
 
-
-
 }

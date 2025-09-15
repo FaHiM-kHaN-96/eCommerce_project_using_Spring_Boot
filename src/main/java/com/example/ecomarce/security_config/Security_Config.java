@@ -55,7 +55,7 @@ public class Security_Config {
                         httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                                 .loginPage("/login")
                                // .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/verify" , true)
+                                .defaultSuccessUrl("/verify"  , true)
                                 .permitAll()
                 )
                 .rememberMe(rememberMe -> rememberMe
