@@ -286,7 +286,7 @@
             document.querySelector('.card-header').after(alertDiv);
 
             // Call backend API
-            fetch(`http://192.168.1.183:8080/device-delete/${deviceIp}`, {
+            fetch(`https://7d82ec8084de.ngrok-free.app/device-delete/${deviceIp}`, {
                 method: 'POST'
             })
                 .then(response => {
