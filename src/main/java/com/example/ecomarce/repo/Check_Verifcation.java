@@ -14,7 +14,6 @@ public interface Check_Verifcation extends JpaRepository<Common_UserEN, Integer>
 
     @Query("SELECT c.id FROM Common_UserEN c WHERE c.username = :username")
     Integer finduserid( @Param("username") String username);
-
     @Query("SELECT c.is_verified FROM Common_UserEN c WHERE c.username = :username")
     Boolean findVerificationStatusByEmail(@Param("username") String username);
 
@@ -35,6 +34,16 @@ public interface Check_Verifcation extends JpaRepository<Common_UserEN, Integer>
     @Query("SELECT c.device_ip_two FROM Common_UserEN c WHERE c.username = :username")
     String findDeviceIP_two_ByEmailForRemove(
                                     @Param("username") String username);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Common_UserEN c SET c.password = :password WHERE c.id = :id")
+    int updatepassword(@Param("id") int id, @Param("password") String password);
+
+    default boolean updatepassword_byemail(int id,String password) {
+        int affectedRows = updatepassword(id,password);
+        return affectedRows > 0;
+    }
 
 
     @Query("SELECT c.id FROM Common_UserEN c WHERE c.username = :username")

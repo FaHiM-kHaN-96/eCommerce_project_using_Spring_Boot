@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.UnknownHostException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -58,6 +59,28 @@ public class MainUserController {
     private final List<Cart_Add> cartlist = new ArrayList<>();
     @Autowired
     private Otp_Repo otp_Repo;
+
+
+    // forget password data variable start
+     private String forget_otp;
+     private int userid;
+
+    public String getForget_otp() {
+        return forget_otp;
+    }
+
+    public void setForget_otp(String forget_otp) {
+        this.forget_otp = forget_otp;
+    }
+
+    public int getUserid() {
+        return userid;
+    }
+
+    public void setUserid(int userid) {
+        this.userid = userid;
+    }
+// forget password data variable end
 
     @GetMapping("/login")
     public String login() {
@@ -435,7 +458,7 @@ public class MainUserController {
                 otpen_one.setTarget_ip(deviceIp);
                 otpen_one.setOtp_sending_reason(true);
                 System.out.println(otpen_one);
-                deviceremovingemail(otp_pass_ip_one,principal.getName(),checkip.finduserid(principal.getName()));
+                device_removin_email(otp_pass_ip_one,principal.getName(),checkip.finduserid(principal.getName()));
                 otpRepo.save(otpen_one);
 
             } catch (Exception e) {
@@ -451,7 +474,7 @@ public class MainUserController {
                 otpen.setTarget_ip(deviceIp);
                 otpen.setOtp_sending_reason(true);
                 System.out.println(otpen);
-                deviceremovingemail(otp_pass_ip_two,principal.getName(),checkip.finduserid(principal.getName()));
+                device_removin_email(otp_pass_ip_two,principal.getName(),checkip.finduserid(principal.getName()));
                 otpRepo.save(otpen);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -465,7 +488,7 @@ public class MainUserController {
         return "userpg/verify";
     }
 
-    private void deviceremovingemail(String ip,String email,int id) {
+    private void device_removin_email(String ip,String email,int id) {
 
         String link = "http://192.168.1.183:8080/delete-ip-vfy/"+ip+"/"+id;
         emailService.sendRemoveDeviceVerificationEmail(email,link);
@@ -511,15 +534,164 @@ public class MainUserController {
         }
 
 
-
-
         return "userpg/login_status";
 
+    }
 
+    @GetMapping("/forget-vfy")
+    public String forget_vfy_s() {
+
+        return "userpg/forget_password";
+
+    }
+
+    @GetMapping("/forget-vfy/reset-pass")
+    public String reset_pass() {
+
+        return "userpg/reset-password";
 
     }
 
 
+    @PostMapping("/forget-vfy/get-inp")
+    public String forget_vfy_email(@RequestParam("email") String email,HttpSession session ) throws InterruptedException {
+
+
+
+        try {
+            System.out.println("\n\n\nforget-vfy  "+email+" User ID  "+  checkip.findID(email));
+
+            String otp_forget_password = otpUtil.generate6DigitOtp();
+            Otp_EN otpen = new Otp_EN();
+            otpen.setOtp_password(otp_forget_password);
+            otpen.setOtp_sender_userid(checkip.findID(email));
+            otpen.setTarget_ip(email);
+            otpen.setOtp_sending_reason(false);
+            setForget_otp(otp_forget_password);
+            setUserid(checkip.findID(email));
+            System.out.println(otpen);
+            forget_password_email(otp_forget_password,email);
+            otpRepo.save(otpen);
+          //  here set 60 secound timer
+
+
+
+
+        } catch (Exception e) {
+
+            session.setAttribute("message2",new MessAge("Sending Failed"+e.getMessage(),"alert-error") );
+
+        }
+
+
+
+
+        return "userpg/forget_password";
+
+
+    }
+
+    private void forget_password_email(String otp,String email) {
+
+
+        emailService.sendOtpEmail(email,otp);
+
+
+    }
+//    @PostMapping("/forget-vfy/countdown-start")
+//
+
+    @PostMapping("/forget-vfy/reset-password/")
+    public String reset_password(@RequestParam("confarmpassword") String confarmpassword ,HttpSession session ) {
+
+
+        System.out.println("Rest password and userid "+confarmpassword+" "+getUserid());
+
+
+        try{
+
+            if (checkip.updatepassword_byemail(getUserid(),new BCryptPasswordEncoder(12).encode(confarmpassword))) {
+                session.setAttribute("message_forget",new MessAge("Password reset successfully","success-message") );
+                return "userpg/alert_page";
+
+            }
+
+
+        } catch (Exception e) {
+            session.setAttribute("message_forget",new MessAge(e.getMessage(),"error-message") );
+        }
+
+
+        return "userpg/alert_page";
+
+
+    }
+
+    @PostMapping("/forget-vfy/new-pass/{otp}")
+    public String newpass_inputer(@PathVariable("otp") String otp) {
+
+        String dbOtp = otp_Repo.return_otp_with_userid(otp, true,userid);
+        if (dbOtp.equals(otp)) {
+            return "userpg/new_password_inputer";
+        }
+
+        return "userpg/verify";
+    }
+    @PostMapping("/forget-vfy/otp-vfy/{otp}")
+    public ResponseEntity<String> forget_vfy_otp(@PathVariable("otp") String otp,
+                                                 @RequestBody Map<String, String> payload) {
+
+        String email = payload.get("email");
+        System.out.println("Client sent OTP: " + otp + " for email: " + email);
+        int userid = checkip.findID(email);
+
+        setUserid(userid);
+
+        String dbOtp = otp_Repo.return_otp_with_userid(otp, false,userid);
+
+        if (dbOtp != null && dbOtp.equals(otp)) {
+
+
+            // ✅ OTP matched
+
+            if (otp_Repo.otp_verification_update(true,otp)) {
+
+                System.out.println("✅ OTP verified successfully!");
+            }
+
+            return ResponseEntity.ok("OTP verification successful");
+        } else {
+            // ❌ OTP invalid
+            System.out.println("❌ OTP verification failed!");
+            return ResponseEntity.badRequest().body("Invalid verification code");
+        }
+    }
+
+
+
+    @PostMapping("/forget-vfy/countdown-start")
+    @ResponseBody
+    public ResponseEntity<String> countdownFinished() throws InterruptedException {
+        System.out.println("Countdown started for OTP verification...");
+
+        for (int i = 60; i > 0; i--) {
+            System.out.println("Time left: " + i + " seconds");
+            System.out.println("Checking OTP for user: " + getUserid() + ", OTP: " + getForget_otp());
+
+            // ✅ OTP চেক
+            if (otpRepo.return_verification(getForget_otp(), getUserid(), false)) {
+                System.out.println("✅ OTP verified successfully at " + (60 - i + 1) + " second!");
+
+                // সাথে সাথে response পাঠানো হবে
+                return ResponseEntity.ok("OTP verified");
+            }
+
+            Thread.sleep(1000); // প্রতি সেকেন্ডে চেক করবে
+        }
+
+        System.out.println("❌ Time’s up! OTP not verified.");
+        return ResponseEntity.status(408).body("OTP verification failed - Timeout (60s passed)");
+    }
 
 
 
@@ -543,6 +715,11 @@ public class MainUserController {
         return "userpg/signup";
 
     }
+
+
+
+
+
 
     @GetMapping("/order-list")
     public String order_list(Model model,Principal principal) {

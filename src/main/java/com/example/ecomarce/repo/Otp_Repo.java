@@ -33,11 +33,45 @@ public interface Otp_Repo extends JpaRepository<Otp_EN, Integer>
                       @Param("Otp_verifide") boolean Otp_verifide);
 
 
+    @Query("SELECT o.otp_password FROM Otp_EN o " +
+            "WHERE o.otp_password = :Otp_password " +
+            "AND o.otp_verifide = :Otp_verifide " +
+            "AND o.otp_sender_userid = :otp_sender_userid" )
+    String return_otp_with_userid(@Param("Otp_password") String Otp_password,
+                      @Param("Otp_verifide") boolean Otp_verifide,
+                      @Param("otp_sender_userid") int otp_sender_userid);
+
+    @Query("SELECT o.otp_verifide FROM Otp_EN o " +
+            "WHERE o.otp_password = :Otp_password " +
+            "AND o.otp_sender_userid = :otp_sender_userid " +
+            "AND o.otp_sending_reason = :otp_sending_reason")
+    boolean return_verification(@Param("Otp_password") String Otp_password,
+                                @Param("otp_sender_userid") int otp_sender_userid,
+                                @Param("otp_sending_reason") boolean otp_sending_reason);
+
+
+
+
     @Query("SELECT o.target_ip FROM Otp_EN o " +
             "WHERE o.otp_password = :Otp_password " +
             "AND o.otp_verifide = :Otp_verifide")
     String return_target(@Param("Otp_password") String Otp_password,
                       @Param("Otp_verifide") boolean Otp_verifide);
+
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Otp_EN o SET o.otp_verifide = :Otp_verifide   WHERE o.otp_password = :Otp_password")
+    int forget_password_verifide(
+            @Param("Otp_verifide") boolean Otp_verifide,
+            @Param("Otp_password") String Otp_password
+    );
+    default boolean forget_password_verifide_update(boolean Otp_verifide ,String Otp_password) {
+        int affectedRows = otp_verification(Otp_verifide,Otp_password);
+        return affectedRows > 0;
+    }
+
 
 
 

@@ -48,7 +48,7 @@ public class Security_Config {
                         .requestMatchers("/orders/**").hasAuthority("ROLE_ORDER")
                         .requestMatchers("/products/**").hasAuthority("ROLE_PRODUCT")
                         .requestMatchers("/user/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/signup_successful","/delete-c-p/**","/signup","/error","/product","/","/static/**","/details/**","/add/**","/cart/**","/verify","/verification/**").permitAll()
+                        .requestMatchers("/signup_successful","/delete-c-p/**","/signup","/error","/product","/","/static/**","/forget-vfy/**","/details/**","/add/**","/cart/**","/verify","/verification/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(

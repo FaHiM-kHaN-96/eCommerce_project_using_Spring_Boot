@@ -139,4 +139,58 @@ public class EmailService {
             throw new RuntimeException("Failed to send verification email: " + e.getMessage());
         }
     }
+
+
+    public void sendOtpEmail(String to, String otpCode) {
+        String subject = "Your OTP Code";
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { color: #2c3e50; font-size: 22px; font-weight: bold; margin-bottom: 20px; }" +
+                "        .content { margin: 20px 0; }" +
+                "        .otp { background-color: #f4f4f4; border: 1px dashed #2c3e50; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; border-radius: 8px; display: inline-block; }" +
+                "        .footer { margin-top: 30px; font-size: 14px; color: #7f8c8d; border-top: 1px solid #f1f1f1; padding-top: 10px; }" +
+                "    </style>" +
+                "</head>" +
+                "<body>" +
+                "    <div class='header'>OTP Verification</div>" +
+                "    <div class='content'>" +
+                "        <p>Hello,</p>" +
+                "        <p>We received a request for verification. Use the following OTP code to proceed:</p>" +
+                "        <p class='otp'>" + otpCode + "</p>" +
+                "        <p><strong>Note:</strong> This OTP will expire in 5 minutes for your security.</p>" +
+                "    </div>" +
+                "    <div class='footer'>" +
+                "        <p>If you did not request this, please ignore this email or contact support.</p>" +
+                "        <p>Best regards,<br>The [Your Company] Team</p>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+
+        System.out.println("Sending OTP email to " + to + " with OTP " + otpCode);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true); // ✅ HTML email
+            helper.setFrom("ah.java@fahim-khan-96.org"); // Must match spring.mail.username
+
+            mailSender.send(message);
+
+            System.out.println("OTP email sent to: " + to);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send OTP email: " + e.getMessage());
+        }
+    }
+
+
+
+
 }
