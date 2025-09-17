@@ -554,40 +554,36 @@ public class MainUserController {
 
 
     @PostMapping("/forget-vfy/get-inp")
-    public String forget_vfy_email(@RequestParam("email") String email,HttpSession session ) throws InterruptedException {
+    public ResponseEntity<String> forget_vfy_email(@RequestParam("email") String email, HttpSession session ) {
 
-
+    if(checkip.existsByUsername(email)){
 
         try {
             System.out.println("\n\n\nforget-vfy  "+email+" User ID  "+  checkip.findID(email));
 
-            String otp_forget_password = otpUtil.generate6DigitOtp();
-            Otp_EN otpen = new Otp_EN();
-            otpen.setOtp_password(otp_forget_password);
-            otpen.setOtp_sender_userid(checkip.findID(email));
-            otpen.setTarget_ip(email);
-            otpen.setOtp_sending_reason(false);
-            setForget_otp(otp_forget_password);
-            setUserid(checkip.findID(email));
-            System.out.println(otpen);
-            forget_password_email(otp_forget_password,email);
-            otpRepo.save(otpen);
-          //  here set 60 secound timer
+                String otp_forget_password = otpUtil.generate6DigitOtp();
+                Otp_EN otpen = new Otp_EN();
+                otpen.setOtp_password(otp_forget_password);
+                otpen.setOtp_sender_userid(checkip.findID(email));
+                otpen.setTarget_ip(email);
+                otpen.setOtp_sending_reason(false);
+                setForget_otp(otp_forget_password);
+                setUserid(checkip.findID(email));
+                System.out.println(otpen);
+                forget_password_email(otp_forget_password,email);
+                otpRepo.save(otpen);
 
+                return ResponseEntity.ok("OTP Send successfully ");
+                //  here set 60 secound timer
+            } catch (Exception e) {
 
+                session.setAttribute("message2",new MessAge("Sending Failed"+e.getMessage(),"alert-error") );
 
-
-        } catch (Exception e) {
-
-            session.setAttribute("message2",new MessAge("Sending Failed"+e.getMessage(),"alert-error") );
-
+            }
         }
 
 
-
-
-        return "userpg/forget_password";
-
+        return ResponseEntity.badRequest().body("Invalid email!! user not found");
 
     }
 
@@ -671,27 +667,50 @@ public class MainUserController {
 
     @PostMapping("/forget-vfy/countdown-start")
     @ResponseBody
-    public ResponseEntity<String> countdownFinished() throws InterruptedException {
+    public ResponseEntity<String> countdownFinished() {
         System.out.println("Countdown started for OTP verification...");
 
-        for (int i = 60; i > 0; i--) {
-            System.out.println("Time left: " + i + " seconds");
-            System.out.println("Checking OTP for user: " + getUserid() + ", OTP: " + getForget_otp());
+        try {
+            for (int i = 60; i > 0; i--) {
+                System.out.println("Time left: " + i + " seconds");
+                System.out.println("Checking OTP for user: " + getUserid() + ", OTP: " + getForget_otp());
 
-            // ✅ OTP চেক
-            if (otpRepo.return_verification(getForget_otp(), getUserid(), false)) {
-                System.out.println("✅ OTP verified successfully at " + (60 - i + 1) + " second!");
 
-                // সাথে সাথে response পাঠানো হবে
-                return ResponseEntity.ok("OTP verified");
+                if (otpRepo.existsByOtpPassword(getForget_otp())) {
+                    boolean verified = otpRepo.return_verification(getForget_otp(), getUserid(), false);
+                    if (verified) {
+                        System.out.println("✅ OTP verified successfully at " + (60 - i + 1) + " second!");
+                        return ResponseEntity.ok("OTP verified");
+                    } else {
+                        System.out.println("❌ OTP not found or not verified yet.");
+                        Thread.sleep(1000); // প্রতি সেকেন্ডে চেক করবে
+                    }
+
+                }else {
+                    break;
+                }
+
+
             }
 
-            Thread.sleep(1000); // প্রতি সেকেন্ডে চেক করবে
-        }
+            // ❌ Time’s up → delete OTP
+            int deletedRows = otpRepo.deleteByOtpPassword(getForget_otp());
+            if (deletedRows > 0) {
+                setForget_otp(null);
+                System.out.println("OTP deleted successfully!");
+            } else {
+                System.out.println("No OTP found to delete!");
+            }
 
-        System.out.println("❌ Time’s up! OTP not verified.");
-        return ResponseEntity.status(408).body("OTP verification failed - Timeout (60s passed)");
+            return ResponseEntity.status(408).body("OTP verification failed - Timeout (60s passed)");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Server error: " + e.getMessage());
+        }
     }
+
+
 
 
 

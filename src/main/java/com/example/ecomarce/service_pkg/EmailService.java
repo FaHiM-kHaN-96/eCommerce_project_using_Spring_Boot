@@ -161,11 +161,11 @@ public class EmailService {
                 "        <p>Hello,</p>" +
                 "        <p>We received a request for verification. Use the following OTP code to proceed:</p>" +
                 "        <p class='otp'>" + otpCode + "</p>" +
-                "        <p><strong>Note:</strong> This OTP will expire in 5 minutes for your security.</p>" +
+                "        <p><strong>Note:</strong> This OTP will expire in 1 minutes for your security.</p>" +
                 "    </div>" +
                 "    <div class='footer'>" +
                 "        <p>If you did not request this, please ignore this email or contact support.</p>" +
-                "        <p>Best regards,<br>The [Your Company] Team</p>" +
+                "        <p>Best regards,<br>The [E-Commerce] Team</p>" +
                 "    </div>" +
                 "</body>" +
                 "</html>";

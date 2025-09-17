@@ -11,12 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface Otp_Repo extends JpaRepository<Otp_EN, Integer>
 {
-    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END FROM Otp_EN c WHERE c.otp_password = :Otp_password")
-    Boolean existsByOtppass(@Param("Otp_password") String Otp_password);
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END FROM Otp_EN c WHERE c.otp_password = :otp_password")
+    Boolean existsByOtppass(@Param("otp_password") String otp_password);
 //    @Query("SELECT o.Otp_password FROM Otp_EN o WHERE o.Otp_password = :Otp_password")
 //    String return_otp(@Param("Otp_password") String Otp_password);
 //    @Query("SELECT o.Otp_sender_userid FROM Otp_EN o WHERE o.Otp_sender_userid = :Otp_sender_userid")
 //    String return_userID(@Param("Otp_sender_userid") String Otp_sender_userid);
+
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Otp_EN o WHERE o.otp_password = :Otp_password")
+    int deleteByOtpPassword(@Param("Otp_password") String otpPassword);
+
+
 
 
     @Query("SELECT o.otp_sender_userid FROM Otp_EN o " +
@@ -41,6 +49,8 @@ public interface Otp_Repo extends JpaRepository<Otp_EN, Integer>
                       @Param("Otp_verifide") boolean Otp_verifide,
                       @Param("otp_sender_userid") int otp_sender_userid);
 
+
+
     @Query("SELECT o.otp_verifide FROM Otp_EN o " +
             "WHERE o.otp_password = :Otp_password " +
             "AND o.otp_sender_userid = :otp_sender_userid " +
@@ -48,6 +58,11 @@ public interface Otp_Repo extends JpaRepository<Otp_EN, Integer>
     boolean return_verification(@Param("Otp_password") String Otp_password,
                                 @Param("otp_sender_userid") int otp_sender_userid,
                                 @Param("otp_sending_reason") boolean otp_sending_reason);
+
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
+            "FROM Otp_EN o " +
+            "WHERE o.otp_password = :Otp_password")
+    boolean existsByOtpPassword(@Param("Otp_password") String Otp_password);
 
 
 

@@ -12,6 +12,10 @@ import com.example.ecomarce.entity.Common_UserEN;
 @Repository
 public interface Check_Verifcation extends JpaRepository<Common_UserEN, Integer> {
 
+//    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
+//            "FROM Common_UserEN c WHERE c.email = :email")
+    boolean existsByUsername(String username);
+
     @Query("SELECT c.id FROM Common_UserEN c WHERE c.username = :username")
     Integer finduserid( @Param("username") String username);
     @Query("SELECT c.is_verified FROM Common_UserEN c WHERE c.username = :username")
