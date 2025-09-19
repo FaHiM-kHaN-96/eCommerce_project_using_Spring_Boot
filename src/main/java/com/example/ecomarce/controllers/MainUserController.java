@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -843,6 +844,14 @@ public class MainUserController {
 
         return "redirect:/signup";
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(Exception.class)
+    public String handleNotFound(Exception ex, Model model) {
+        model.addAttribute("error", ex.getMessage());
+        return "error";
+    }
+  
 
 
 
