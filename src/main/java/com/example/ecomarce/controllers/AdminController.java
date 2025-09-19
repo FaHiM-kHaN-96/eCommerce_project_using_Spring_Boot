@@ -2,11 +2,7 @@ package com.example.ecomarce.controllers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -15,13 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ecomarce.entity.Common_UserEN;
@@ -388,6 +378,31 @@ public class AdminController {
         model.addAttribute("userdatamap", userdatamap);
         return "adminpg/admin";
 
+    }
+
+    @GetMapping("/api/financial/overview")
+    @ResponseBody
+    public Map<String, Object> getFinancialOverview() {
+        Map<String, Object> response = new HashMap<>();
+
+        List<OrderTableEN> all_uniq_order_invoice = order_manage.Select_all_order_by_status("Delivered");
+
+        double totalProfit = 0;
+        double totalSell = 0;
+        int totalSoldProduct = 0;
+
+        for (OrderTableEN order : all_uniq_order_invoice) {
+            double profit = order.getProducten().getSelling_price() - order.getProducten().getBuying_price();
+            totalProfit += profit;
+            totalSell += order.getOrder_subtotal();
+            totalSoldProduct++;
+        }
+
+        response.put("totalProfit", totalProfit);
+        response.put("totalSell", totalSell);
+        response.put("totalSoldProduct", totalSoldProduct);
+
+        return response;
     }
 
 }
