@@ -233,7 +233,7 @@ public class MainUserController {
     }
 
     private void emaiilSender(String email) {
-        String link = "https://7d82ec8084de.ngrok-free.app/verification/"+email;
+        String link = "https://f4c6437cacb4.ngrok-free.app/verification/"+email;
         emailService.sendVerificationEmail(email,link);
     }
 
@@ -491,7 +491,7 @@ public class MainUserController {
 
     private void device_removin_email(String ip,String email,int id) {
 
-        String link = "https://7d82ec8084de.ngrok-free.app/delete-ip-vfy/"+ip+"/"+id;
+        String link = "https://f4c6437cacb4.ngrok-free.app/delete-ip-vfy/"+ip+"/"+id;
         emailService.sendRemoveDeviceVerificationEmail(email,link);
 
 
